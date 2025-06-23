@@ -1,0 +1,16 @@
+package com.ptithcm.intern_project.data_jpa.repositories;
+
+import com.ptithcm.intern_project.data_jpa.entities.Authority;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
+
+@Repository
+public interface AuthorityRepository extends JpaRepository<Authority, Long> {
+
+    @Query("SELECT a FROM Authority a WHERE a.authorityName LIKE :enumVal")
+    Optional<Authority> findByEnumStr(@Param("enumVal") String enumVal);
+}
