@@ -6,7 +6,7 @@ import com.ptithcm.intern_project.common.enums.TokenClaimNames;
 import com.ptithcm.intern_project.common.enums.TokenTypes;
 import com.ptithcm.intern_project.common.exception.ApplicationException;
 import com.ptithcm.intern_project.common.wrappers.ApiResponseObject;
-import com.ptithcm.intern_project.data_jpa.entities.Account;
+import com.ptithcm.intern_project.dataJpa.entities.Account;
 import com.ptithcm.intern_project.redis.redis_cruds.InvalidTokenCrud;
 import com.ptithcm.intern_project.redis.redis_cruds.RefreshTokenCrud;
 import com.ptithcm.intern_project.services.JwtService;

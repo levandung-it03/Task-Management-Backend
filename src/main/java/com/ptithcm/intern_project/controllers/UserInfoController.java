@@ -1,7 +1,7 @@
 package com.ptithcm.intern_project.controllers;
 
 import com.ptithcm.intern_project.common.wrappers.ApiResponseObject;
-import com.ptithcm.intern_project.data_jpa.entities.UserInfo;
+import com.ptithcm.intern_project.dataJpa.entities.UserInfo;
 import com.ptithcm.intern_project.dto.request.DTO_UpdateUserInfo;
 import com.ptithcm.intern_project.services.UserInfoService;
 import jakarta.validation.Valid;

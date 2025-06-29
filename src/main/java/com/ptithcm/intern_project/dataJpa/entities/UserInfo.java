@@ -1,4 +1,4 @@
-package com.ptithcm.intern_project.data_jpa.entities;
+package com.ptithcm.intern_project.dataJpa.entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -30,35 +30,8 @@ public class UserInfo {
     @JsonIgnore
     Account account;
 
-    @Column(name = "coins", nullable = false)
-    Long coins;
-
     @JsonFormat(pattern = "yyyy-MM-dd")
     @Column(name = "date_of_birth")
     LocalDate dob;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "gender")
-    Gender gender;
-
-    public static enum Gender {
-        MALE,
-        FEMALE,
-        ;
-        public static boolean exists(String gender) {
-            for (Gender g : Gender.values())
-                if (g.toString().equalsIgnoreCase(gender))
-                    return true;
-            return false;
-        }
-
-        public static UserInfo.Gender customizedValueOf(Object gender) {
-            if (Objects.isNull(gender)) return null;
-            for (Gender g : Gender.values())
-                if (g.toString().equalsIgnoreCase(gender.toString()))
-                    return g;
-            return null;
-        }
-    }
 
 }

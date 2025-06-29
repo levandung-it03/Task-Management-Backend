@@ -1,7 +1,8 @@
+```java
 package com.ptithcm.intern_project.common.annotations.validators;
 
 import com.ptithcm.intern_project.common.annotations.GenderConstraint;
-import com.ptithcm.intern_project.data_jpa.entities.UserInfo;
+import com.ptithcm.intern_project.dataJpa.entities.UserInfo;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
@@ -14,3 +15,5 @@ public class GenderValidator implements ConstraintValidator<GenderConstraint, St
         return UserInfo.Gender.exists(value);
     }
 }
+
+```

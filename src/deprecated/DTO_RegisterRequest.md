@@ -1,6 +1,8 @@
+```java
 package com.ptithcm.intern_project.dto.request;
 
 import com.ptithcm.intern_project.common.annotations.DobConstraint;
+import com.ptithcm.intern_project.common.annotations.Oauth2EnumConstraint;
 import com.ptithcm.intern_project.common.annotations.OtpConstraint;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
@@ -41,6 +43,15 @@ public class DTO_RegisterRequest {
 
     @NotNull
     @NotEmpty
+    @GenderConstraint
+    String gender;
+
+    @NotNull
+    @NotEmpty
     @OtpConstraint
     String otp;
+
+    @Oauth2EnumConstraint
+    String oauth2Service;
 }
+```

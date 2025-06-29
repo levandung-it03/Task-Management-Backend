@@ -1,3 +1,4 @@
+```java
 
 package com.ptithcm.intern_project.common.enums;
 
@@ -10,6 +11,7 @@ import lombok.experimental.FieldDefaults;
 public enum TokenClaimNames {
     OWNER("OWNER"),
     SCOPES("SCOPES"),
+    OAUTH2_REFRESH_TOKEN("OAUTH2_REFRESH_TOKEN"),
     TOKEN_TYPE("TOKEN_TYPE"),
     IS_OAUTH2("IS_OAUTH2"),
     ;
@@ -18,3 +20,4 @@ public enum TokenClaimNames {
         this.str = str;
     }
 }
+```

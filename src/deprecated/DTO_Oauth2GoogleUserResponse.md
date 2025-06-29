@@ -1,3 +1,4 @@
+```java
 package com.ptithcm.intern_project.dto.response;
 
 import lombok.*;
@@ -19,3 +20,4 @@ public class DTO_Oauth2GoogleUserResponse {
     List<Map<String, Object>> genders;
     List<Map<String, Object>> birthdays;
 }
+```

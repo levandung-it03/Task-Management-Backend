@@ -1,3 +1,4 @@
+```java
 package com.ptithcm.intern_project.common.enums;
 
 public enum Oauth2ServiceEnum {
@@ -12,3 +13,4 @@ public enum Oauth2ServiceEnum {
         return false;
     }
 }
+```

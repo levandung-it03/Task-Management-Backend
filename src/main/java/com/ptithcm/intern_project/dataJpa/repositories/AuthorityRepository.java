@@ -1,6 +1,6 @@
-package com.ptithcm.intern_project.data_jpa.repositories;
+package com.ptithcm.intern_project.dataJpa.repositories;
 
-import com.ptithcm.intern_project.data_jpa.entities.Authority;
+import com.ptithcm.intern_project.dataJpa.entities.Authority;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

@@ -1,4 +1,4 @@
-package com.ptithcm.intern_project.data_jpa.entities;
+package com.ptithcm.intern_project.dataJpa.entities;
 
 import jakarta.persistence.*;
 import lombok.*;

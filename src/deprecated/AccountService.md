@@ -1,3 +1,4 @@
+```java
 package com.ptithcm.intern_project.services;
 
 import com.ptithcm.intern_project.common.enums.*;
@@ -50,7 +51,7 @@ public class AccountService {
         if (!userPasswordEncoder.matches(dto.getPassword(), authAccount.getPassword()))
             throw new ApplicationException(ErrorCodes.INVALID_CREDENTIALS);
 
-        if (!authAccount.isActive())
+        if (!authAccount.isActive() || Objects.nonNull(authAccount.getOauth2ServiceEnum()))
             throw new ApplicationException(ErrorCodes.FORBIDDEN_USER);
 
         UserInfo userInfo = userInfoRepository.findByAccountAccountId(authAccount.getAccountId())
@@ -116,9 +117,11 @@ public class AccountService {
     public DTO_VerifyEmailResponse authorizeEmailByOtp(String token) {
         Map<String, String> emailCustom = emailService.getEmailCustom();
         String email = jwtService.readPayload(token).getOrDefault("sub", "");
+        Account account = accountRepository.findByUsername(email)
+            .orElseThrow(() -> new ApplicationException(ErrorCodes.WEIRD_TOKEN_SUBJECT));
 
-        if (!accountRepository.existsByUsername(email))
-            throw new ApplicationException(ErrorCodes.WEIRD_TOKEN_SUBJECT);
+        if (Objects.nonNull(account.getOauth2ServiceEnum()))
+            throw new ApplicationException(ErrorCodes.FORBIDDEN_USER);
         if (changePassOtpCrud.existsById(email))
             throw new ApplicationException(ErrorCodes.OTP_HAS_NOT_EXPIRED);
 
@@ -154,8 +157,10 @@ public class AccountService {
                 return DTO_VerifyEmailResponse.builder().otpAgeInSeconds(RegisterOtp.OTP_AGE).build();
 
             case OtpTypes.LOST_PASSWORD:
-                if (!accountRepository.existsByUsername(dto.getEmail()))
-                    throw new ApplicationException(ErrorCodes.EMAIL_NOT_FOUND);
+                Account account = accountRepository.findByUsername(dto.getEmail())
+                    .orElseThrow(() -> new ApplicationException(ErrorCodes.EMAIL_NOT_FOUND));
+                if (Objects.nonNull(account.getOauth2ServiceEnum()))
+                    throw new ApplicationException(ErrorCodes.FORBIDDEN_USER);
                 if (lostPassOtpCrud.existsById(dto.getEmail()))
                     throw new ApplicationException(ErrorCodes.OTP_HAS_NOT_EXPIRED);
                 lostPassOtpCrud.save(LostPassOtp.builder()
@@ -174,23 +179,80 @@ public class AccountService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
-    public void registerNewAccount(DTO_RegisterRequest dto) {
+    public void register(DTO_RegisterRequest dto) {
+        if (accountRepository.existsByUsername(dto.getEmail()))
+            throw new ApplicationException(ErrorCodes.DUPLICATED_EMAIL);
+
+        RegisterOtp otp = registerOtpCrud.findById(dto.getEmail())
+            .orElseThrow(() -> new ApplicationException(ErrorCodes.OTP_NOT_FOUND));
+        if (!otp.getOtp().equals(dto.getOtp()))
+            throw new ApplicationException(ErrorCodes.OTP_NOT_CORRECT);
+
+        this.registerUserCore(dto);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
+    public void registerUserCore(DTO_RegisterRequest dto) {
         var authorities = List.of(
-            authorityRepository.findByEnumStr(AuthorityEnum.ROLE_PM.toString())
+            authorityRepository.findByEnumStr(AuthorityEnum.ROLE_USER.toString())
                 .orElseThrow(() -> new ApplicationException(ErrorCodes.UNAWARE_ERROR))
         );
+        var oauth2Enum = (dto.getOauth2Service() == null) ? null : Oauth2ServiceEnum.valueOf(dto.getOauth2Service());
         var savedAccount = accountRepository.save(Account.builder()
             .authorities(authorities)
             .username(dto.getEmail())
             .password(userPasswordEncoder.encode(dto.getPassword()))
             .active(true)
             .createdTime(LocalDateTime.now(ZoneId.systemDefault()))
+            .oauth2ServiceEnum(oauth2Enum)
             .build());
         userInfoRepository.save(UserInfo.builder()
             .fullName(dto.getFullName())
             .account(savedAccount)
             .dob(dto.getDob())
             .build());
+        //--Put it at the last position to make sure any exc above will not delete OTP.
+        registerOtpCrud.deleteById(dto.getEmail());
+    }
+
+    public DTO_AuthResponse oauth2Authenticate(DTO_Oauth2Authenticate dto) {
+        Map<String, Object> oauth2UserInfo = oauth2Service.authenticateUser(dto);
+        if (!accountRepository.existsByUsername(oauth2UserInfo.get("sub").toString())) {
+            var savedUserDto = DTO_RegisterRequest.builder()
+                .email(oauth2UserInfo.get("sub").toString())
+                .password(UUID.randomUUID().toString())
+                .fullName(oauth2UserInfo.get("owner").toString())
+                .oauth2Service(oauth2UserInfo.get("oauth2Service").toString())
+                .build();
+            if (Objects.nonNull(oauth2UserInfo.get("gender")))
+                savedUserDto.setGender(oauth2UserInfo.get("gender").toString());
+            if (Objects.nonNull(oauth2UserInfo.get("dob")))
+                savedUserDto.setDob((LocalDate) oauth2UserInfo.get("dob"));
+            ((AccountService) AopContext.currentProxy()).registerUserCore(savedUserDto);
+        }
+        TokenInfo accessTokenInfo = jwtService.generateToken(GeneralTokenClaims.builder()
+            .subject(oauth2UserInfo.get("sub").toString())
+            .owner(oauth2UserInfo.get("owner").toString())
+            .scopes(oauth2UserInfo.get("scopes").toString())
+            .typeEnum(TokenTypes.ACCESS)
+            .isOauth2(true)
+            .build());
+        TokenInfo refreshTokenInfo = jwtService.generateToken(GeneralTokenClaims.builder()
+            .subject(oauth2UserInfo.get("sub").toString())
+            .owner(oauth2UserInfo.get("owner").toString())
+            .scopes(oauth2UserInfo.get("scopes").toString())
+            .typeEnum(TokenTypes.REFRESH)
+            .isOauth2(true)
+            .build());
+        refreshTokenCrud.save(RefreshToken.builder().id(refreshTokenInfo.getJti()).build());
+        return DTO_AuthResponse.builder()
+            .accessToken(accessTokenInfo.getToken())
+            .refreshToken(refreshTokenInfo.getToken())
+            .build();
+    }
+
+    public Map<String, String> getOauth2Authorizer(String oauth2Enum) {
+        return Map.of("authorizer", oauth2Service.getOauth2Authorizer(Oauth2ServiceEnum.valueOf(oauth2Enum)));
     }
 
     public void lostPassword(DTO_LostPassRequest dto) {
@@ -202,6 +264,9 @@ public class AccountService {
             .orElseThrow(() -> new ApplicationException(ErrorCodes.OTP_NOT_FOUND));
         if (!otp.getOtp().equals(dto.getOtp()))
             throw new ApplicationException(ErrorCodes.OTP_NOT_CORRECT);
+
+        if (!account.isActive() || Objects.nonNull(account.getOauth2ServiceEnum()))
+            throw new ApplicationException(ErrorCodes.FORBIDDEN_USER);
 
         String newPassword = OtpGenerator.randOTP();
         account.setPassword(userPasswordEncoder.encode(newPassword));
@@ -218,7 +283,11 @@ public class AccountService {
         Account account = accountRepository.findByUsername(email)
             .orElseThrow(() -> new ApplicationException(ErrorCodes.INVALID_TOKEN));
 
+        if (Objects.nonNull(account.getOauth2ServiceEnum()))
+            throw new ApplicationException(ErrorCodes.FORBIDDEN_USER);
+
         account.setPassword(userPasswordEncoder.encode(dto.getPassword()));
         accountRepository.save(account);
     }
 }
+```

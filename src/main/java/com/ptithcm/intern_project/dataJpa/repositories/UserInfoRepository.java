@@ -1,6 +1,6 @@
-package com.ptithcm.intern_project.data_jpa.repositories;
+package com.ptithcm.intern_project.dataJpa.repositories;
 
-import com.ptithcm.intern_project.data_jpa.entities.UserInfo;
+import com.ptithcm.intern_project.dataJpa.entities.UserInfo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

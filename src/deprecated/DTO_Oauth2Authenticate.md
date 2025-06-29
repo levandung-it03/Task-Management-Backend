@@ -1,3 +1,4 @@
+```java
 package com.ptithcm.intern_project.dto.request;
 
 import com.ptithcm.intern_project.common.annotations.Oauth2EnumConstraint;
@@ -21,3 +22,5 @@ public class DTO_Oauth2Authenticate {
     @Oauth2EnumConstraint
     String oauth2Service;
 }
+
+```

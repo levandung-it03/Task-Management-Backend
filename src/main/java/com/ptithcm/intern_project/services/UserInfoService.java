@@ -2,8 +2,8 @@ package com.ptithcm.intern_project.services;
 
 import com.ptithcm.intern_project.common.enums.ErrorCodes;
 import com.ptithcm.intern_project.common.exception.ApplicationException;
-import com.ptithcm.intern_project.data_jpa.entities.UserInfo;
-import com.ptithcm.intern_project.data_jpa.repositories.UserInfoRepository;
+import com.ptithcm.intern_project.dataJpa.entities.UserInfo;
+import com.ptithcm.intern_project.dataJpa.repositories.UserInfoRepository;
 import com.ptithcm.intern_project.dto.request.DTO_UpdateUserInfo;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +32,6 @@ public class UserInfoService {
 
         originInfo.setFullName(dto.getFullName());
         originInfo.setDob(dto.getDob());
-        originInfo.setGender(UserInfo.Gender.valueOf(dto.getGender()));
         userInfoRepository.save(originInfo);
     }
 }

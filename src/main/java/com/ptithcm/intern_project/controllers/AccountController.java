@@ -19,8 +19,6 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
-
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
@@ -90,8 +88,8 @@ public class AccountController {
 
     @ResponseBody
     @PostMapping("/public/auth/account/v1/register")
-    public ResponseEntity<ApiResponseObject<Void>> register(@Valid @RequestBody DTO_RegisterRequest dto) {
-        accountService.register(dto);
+    public ResponseEntity<ApiResponseObject<Void>> registerNewAccount(@Valid @RequestBody DTO_RegisterRequest dto) {
+        accountService.registerNewAccount(dto);
         return ApiResponseObject.fromScs(REGISTER);
     }
 
@@ -109,19 +107,5 @@ public class AccountController {
         @Valid @RequestBody DTO_ChangePassRequest dto) {
         accountService.changePassword(token, dto);
         return ApiResponseObject.fromScs(LOST_PASSWORD);
-    }
-
-    @ResponseBody
-    @GetMapping("/public/auth/account/v1/get-oauth2-authorizer")
-    public ResponseEntity<ApiResponseObject<Map<String, String>>> getOauth2Authorizer(
-        @Valid DTO_GetOauth2Authorizer dto) {
-        return ApiResponseObject.fromScs(AUTHENTICATE, accountService.getOauth2Authorizer(dto.getOauth2Service()));
-    }
-
-    @ResponseBody
-    @PostMapping("/public/auth/account/v1/oauth2-authenticate")
-    public ResponseEntity<ApiResponseObject<DTO_AuthResponse>> oauth2Authenticate(
-        @Valid @RequestBody DTO_Oauth2Authenticate dto) {
-        return ApiResponseObject.fromScs(REGISTER, accountService.oauth2Authenticate(dto));
     }
 }

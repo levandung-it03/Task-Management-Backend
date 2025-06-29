@@ -1,3 +1,4 @@
+```java
 package com.ptithcm.intern_project.services;
 
 import com.ptithcm.intern_project.common.enums.AuthorityEnum;
@@ -183,3 +184,4 @@ public class Oauth2Service {
         return getTokenResponse.get("access_token").toString();
     }
 }
+```

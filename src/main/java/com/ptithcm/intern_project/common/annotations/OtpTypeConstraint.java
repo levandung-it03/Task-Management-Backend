@@ -1,6 +1,5 @@
 package com.ptithcm.intern_project.common.annotations;
 
-import com.ptithcm.intern_project.common.annotations.validators.GenderValidator;
 import com.ptithcm.intern_project.common.annotations.validators.OtpTypeValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;

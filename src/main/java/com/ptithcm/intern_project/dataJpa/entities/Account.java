@@ -1,7 +1,6 @@
-package com.ptithcm.intern_project.data_jpa.entities;
+package com.ptithcm.intern_project.dataJpa.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.ptithcm.intern_project.common.enums.Oauth2ServiceEnum;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -19,7 +18,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Builder
 @Table(
-    name = "user",
+    name = "account",
     uniqueConstraints = {@UniqueConstraint(columnNames = {"username"})}
 )
 @Entity
@@ -44,10 +43,6 @@ public class Account {
 
     @Column(name = "active", columnDefinition = "BIT", nullable = false)
     boolean active;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "oauth2_service_enum", nullable = true)
-    Oauth2ServiceEnum oauth2ServiceEnum;
 
     @ManyToMany(fetch = FetchType.EAGER, targetEntity = Authority.class)
     @JoinTable(

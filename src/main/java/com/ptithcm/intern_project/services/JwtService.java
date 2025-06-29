@@ -46,8 +46,7 @@ public class JwtService {
                 .expirationTime(Date.from(nowInstant.plusSeconds(this.getExpirationByTokenTypes(claims.getTypeEnum()))))
                 .claim(TokenClaimNames.OWNER.getStr(), claims.getOwner())
                 .claim(TokenClaimNames.SCOPES.getStr(), claims.getScopes())
-                .claim(TokenClaimNames.TOKEN_TYPE.getStr(), claims.getTypeEnum().toString())
-                .claim(TokenClaimNames.IS_OAUTH2.getStr(), claims.getIsOauth2().toString());
+                .claim(TokenClaimNames.TOKEN_TYPE.getStr(), claims.getTypeEnum().toString());
 
             var jwtHeader = new JWSHeader.Builder(JWSAlgorithm.HS512).type(JOSEObjectType.JWT).build();
             var jwsObject = new JWSObject(jwtHeader, jwtClaimsSetBuilder.build().toPayload());
@@ -98,8 +97,8 @@ public class JwtService {
 
     private int getExpirationByTokenTypes(TokenTypes type) {
         return switch (type) {
-            case REFRESH, OAUTH2_REFRESH -> REFRESH_TIME;
-            case ACCESS, OAUTH2_ACCESS -> ACCESS_TIME;
+            case REFRESH -> REFRESH_TIME;
+            case ACCESS -> ACCESS_TIME;
             default -> 0;
         };
     }

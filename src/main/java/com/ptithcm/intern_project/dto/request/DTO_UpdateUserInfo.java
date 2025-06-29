@@ -1,7 +1,6 @@
 package com.ptithcm.intern_project.dto.request;
 
 import com.ptithcm.intern_project.common.annotations.DobConstraint;
-import com.ptithcm.intern_project.common.annotations.GenderConstraint;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -27,9 +26,4 @@ public class DTO_UpdateUserInfo {
     @NotNull
     @DobConstraint
     LocalDate dob;
-
-    @NotNull
-    @NotEmpty
-    @GenderConstraint
-    String gender;
 }

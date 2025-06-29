@@ -1,3 +1,4 @@
+```java
 package com.ptithcm.intern_project.common.annotations.validators;
 
 import com.ptithcm.intern_project.common.annotations.Oauth2EnumConstraint;
@@ -16,3 +17,5 @@ public class Oauth2EnumValidator implements ConstraintValidator<Oauth2EnumConstr
         return Oauth2ServiceEnum.exists(value);
     }
 }
+
+```
