@@ -11,7 +11,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class DTO_ChangePassRequest {
+public class ChangePassRequestDTO {
     @NotNull
     @NotEmpty
     String password;

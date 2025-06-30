@@ -8,6 +8,6 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class DTO_VerifyEmailResponse {
+public class VerifyEmailResponse {
     int otpAgeInSeconds;
 }

@@ -2,7 +2,7 @@ package com.ptithcm.intern_project.controllers;
 
 import com.ptithcm.intern_project.common.wrappers.ApiResponseObject;
 import com.ptithcm.intern_project.dataJpa.entities.UserInfo;
-import com.ptithcm.intern_project.dto.request.DTO_UpdateUserInfo;
+import com.ptithcm.intern_project.dto.request.UpdateUserInfoDTO;
 import com.ptithcm.intern_project.services.UserInfoService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -31,7 +31,7 @@ public class UserInfoController {
     @PutMapping({"/user/user-info/v1/update-user-info", "/admin/user-info/v1/update-user-info"})
     public ResponseEntity<ApiResponseObject<Void>> updateUserInfo(
         @RequestHeader("Authorization") String token,
-        @Valid @RequestBody DTO_UpdateUserInfo dto) {
+        @Valid @RequestBody UpdateUserInfoDTO dto) {
         userInfoService.updateUserInfo(token, dto);
         return ApiResponseObject.fromScs(UPDATE_USER_INFO);
     }

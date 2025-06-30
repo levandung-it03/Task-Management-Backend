@@ -2,8 +2,8 @@ package com.ptithcm.intern_project.controllers;
 
 import com.ptithcm.intern_project.common.wrappers.ApiResponseObject;
 import com.ptithcm.intern_project.dto.request.*;
-import com.ptithcm.intern_project.dto.response.DTO_AuthResponse;
-import com.ptithcm.intern_project.dto.response.DTO_VerifyEmailResponse;
+import com.ptithcm.intern_project.dto.response.AuthResponse;
+import com.ptithcm.intern_project.dto.response.VerifyEmailResponse;
 import com.ptithcm.intern_project.services.AccountService;
 import static com.ptithcm.intern_project.common.enums.SuccessCodes.*;
 
@@ -51,15 +51,15 @@ public class AccountController {
     })
     @ResponseBody
     @PostMapping("/public/auth/account/v1/authenticate")
-    public ResponseEntity<ApiResponseObject<DTO_AuthResponse>> authenticate(@Valid @RequestBody DTO_AuthRequest dto) {
+    public ResponseEntity<ApiResponseObject<AuthResponse>> authenticate(@Valid @RequestBody AuthRequestDTO dto) {
         return ApiResponseObject.fromScs(AUTHENTICATE, accountService.authenticate(dto));
     }
 
     @ResponseBody
     @PostMapping("/private/auth/account/v1/refresh-token")
-    public ResponseEntity<ApiResponseObject<DTO_Token>> refreshToken(
+    public ResponseEntity<ApiResponseObject<TokenDTO>> refreshToken(
         @RequestHeader("Authorization") String refreshToken,
-        @Valid @RequestBody DTO_Token dto) {
+        @Valid @RequestBody TokenDTO dto) {
         return ApiResponseObject.fromScs(REFRESH_TOKEN, accountService.refreshToken(refreshToken, dto.getAccessToken()));
     }
 
@@ -67,35 +67,35 @@ public class AccountController {
     @PostMapping("/private/auth/account/v1/log-out")
     public ResponseEntity<ApiResponseObject<Void>> logout(
         @RequestHeader("Authorization") String refreshToken,
-        @Valid @RequestBody DTO_Token dto) {
+        @Valid @RequestBody TokenDTO dto) {
         accountService.logout(refreshToken, dto.getAccessToken());
         return ApiResponseObject.fromScs(LOGOUT);
     }
 
     @ResponseBody
     @PostMapping("/public/auth/account/v1/verify-email")
-    public ResponseEntity<ApiResponseObject<DTO_VerifyEmailResponse>> verifyEmailByOtp(
-        @Valid @RequestBody DTO_VerifyEmailRequest dto) {
+    public ResponseEntity<ApiResponseObject<VerifyEmailResponse>> verifyEmailByOtp(
+        @Valid @RequestBody VerifyEmailRequestDTO dto) {
         return ApiResponseObject.fromScs(GET_OTP, accountService.verifyEmailByOtp(dto));
     }
 
     @ResponseBody
     @PostMapping({"/private/user/account/v1/authorize-email", "/private/admin/account/v1/authorize-email"})
-    public ResponseEntity<ApiResponseObject<DTO_VerifyEmailResponse>> authorizeEmailByOtp(
+    public ResponseEntity<ApiResponseObject<VerifyEmailResponse>> authorizeEmailByOtp(
         @RequestHeader("Authorization") String token) {
         return ApiResponseObject.fromScs(GET_OTP, accountService.authorizeEmailByOtp(token));
     }
 
     @ResponseBody
     @PostMapping("/public/auth/account/v1/register")
-    public ResponseEntity<ApiResponseObject<Void>> registerNewAccount(@Valid @RequestBody DTO_RegisterRequest dto) {
+    public ResponseEntity<ApiResponseObject<Void>> registerNewAccount(@Valid @RequestBody RegisterRequestDTO dto) {
         accountService.registerNewAccount(dto);
         return ApiResponseObject.fromScs(REGISTER);
     }
 
     @ResponseBody
     @PostMapping("/public/auth/account/v1/lost-password")
-    public ResponseEntity<ApiResponseObject<Void>> lostPassword(@Valid @RequestBody DTO_LostPassRequest dto) {
+    public ResponseEntity<ApiResponseObject<Void>> lostPassword(@Valid @RequestBody LostPassRequestDTO dto) {
         accountService.lostPassword(dto);
         return ApiResponseObject.fromScs(LOST_PASSWORD);
     }
@@ -104,7 +104,7 @@ public class AccountController {
     @PutMapping({"/private/user/account/v1/change-password", "/private/admin/account/v1/change-password"})
     public ResponseEntity<ApiResponseObject<Void>> changePassword(
         @RequestHeader("Authorization") String token,
-        @Valid @RequestBody DTO_ChangePassRequest dto) {
+        @Valid @RequestBody ChangePassRequestDTO dto) {
         accountService.changePassword(token, dto);
         return ApiResponseObject.fromScs(LOST_PASSWORD);
     }

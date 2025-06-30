@@ -1,6 +1,6 @@
 package com.ptithcm.intern_project.dto.request;
 
-import com.ptithcm.intern_project.common.annotations.OtpTypeConstraint;
+import com.ptithcm.intern_project.common.annotations.OtpConstraint;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -12,14 +12,14 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class DTO_VerifyEmailRequest {
-    @Email
+public class LostPassRequestDTO {
     @NotNull
     @NotEmpty
+    @Email
     String email;
 
     @NotNull
     @NotEmpty
-    @OtpTypeConstraint
-    String otpType;
+    @OtpConstraint
+    String otp;
 }

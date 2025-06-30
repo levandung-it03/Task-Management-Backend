@@ -11,8 +11,8 @@ import com.ptithcm.intern_project.dataJpa.repositories.AccountRepository;
 import com.ptithcm.intern_project.dataJpa.repositories.AuthorityRepository;
 import com.ptithcm.intern_project.dataJpa.repositories.UserInfoRepository;
 import com.ptithcm.intern_project.dto.request.*;
-import com.ptithcm.intern_project.dto.response.DTO_AuthResponse;
-import com.ptithcm.intern_project.dto.response.DTO_VerifyEmailResponse;
+import com.ptithcm.intern_project.dto.response.AuthResponse;
+import com.ptithcm.intern_project.dto.response.VerifyEmailResponse;
 import com.ptithcm.intern_project.redis.redis_cruds.*;
 import com.ptithcm.intern_project.redis.redis_tables.*;
 import lombok.Getter;
@@ -44,7 +44,7 @@ public class AccountService {
     private final ChangePassOtpCrud changePassOtpCrud;
     private final UserInfoRepository userInfoRepository;
 
-    public DTO_AuthResponse authenticate(DTO_AuthRequest dto) {
+    public AuthResponse authenticate(AuthRequestDTO dto) {
         Account authAccount = accountRepository.findByUsername(dto.getEmail())
             .orElseThrow(() -> new ApplicationException(ErrorCodes.INVALID_CREDENTIALS));
 
@@ -72,13 +72,13 @@ public class AccountService {
             .build());
 
         refreshTokenCrud.save(RefreshToken.builder().id(refreshTokenInfo.getJti()).build());
-        return DTO_AuthResponse.builder()
+        return AuthResponse.builder()
             .accessToken(accessTokenInfo.getToken())
             .refreshToken(refreshTokenInfo.getToken())
             .build();
     }
 
-    public DTO_Token refreshToken(String refreshToken, String accessToken) {
+    public TokenDTO refreshToken(String refreshToken, String accessToken) {
         HashMap<String, String> refreshClaims = jwtService.readPayload(refreshToken);
         HashMap<String, String> accessClaims = jwtService.readPayload(accessToken);
         Account authAccount = accountRepository.findByUsername(accessClaims.get("sub"))
@@ -97,7 +97,7 @@ public class AccountService {
             .isOauth2(Boolean.parseBoolean(refreshClaims.get(TokenClaimNames.IS_OAUTH2.getStr())))
             .build());
 
-        return DTO_Token.builder().accessToken(accessTokenInfo.getToken()).build();
+        return TokenDTO.builder().accessToken(accessTokenInfo.getToken()).build();
     }
 
     public void logout(String refreshToken, String accessToken) {
@@ -114,7 +114,7 @@ public class AccountService {
                 .build());
     }
 
-    public DTO_VerifyEmailResponse authorizeEmailByOtp(String token) {
+    public VerifyEmailResponse authorizeEmailByOtp(String token) {
         Map<String, String> emailCustom = emailService.getEmailCustom();
         String email = jwtService.readPayload(token).getOrDefault("sub", "");
         Account account = accountRepository.findByUsername(email)
@@ -134,10 +134,10 @@ public class AccountService {
             email,
             String.format(emailCustom.get("subject"), "Register OTP"),
             String.format(emailCustom.get("msg"), email, otp));
-        return DTO_VerifyEmailResponse.builder().otpAgeInSeconds(ChangePassOtp.OTP_AGE).build();
+        return VerifyEmailResponse.builder().otpAgeInSeconds(ChangePassOtp.OTP_AGE).build();
     }
 
-    public DTO_VerifyEmailResponse verifyEmailByOtp(DTO_VerifyEmailRequest dto) {
+    public VerifyEmailResponse verifyEmailByOtp(VerifyEmailRequestDTO dto) {
         Map<String, String> emailCustom = emailService.getEmailCustom();
         String otp = OtpGenerator.randOTP();
         switch (OtpTypes.valueOf(dto.getOtpType())) {
@@ -154,7 +154,7 @@ public class AccountService {
                     dto.getEmail(),
                     String.format(emailCustom.get("subject"), "Register OTP"),
                     String.format(emailCustom.get("msg"), dto.getEmail(), otp));
-                return DTO_VerifyEmailResponse.builder().otpAgeInSeconds(RegisterOtp.OTP_AGE).build();
+                return VerifyEmailResponse.builder().otpAgeInSeconds(RegisterOtp.OTP_AGE).build();
 
             case OtpTypes.LOST_PASSWORD:
                 Account account = accountRepository.findByUsername(dto.getEmail())
@@ -171,7 +171,7 @@ public class AccountService {
                     dto.getEmail(),
                     String.format(emailCustom.get("subject"), "Lost Password OTP"),
                     String.format(emailCustom.get("msg"), dto.getEmail(), otp));
-                return DTO_VerifyEmailResponse.builder().otpAgeInSeconds(LostPassOtp.OTP_AGE).build();
+                return VerifyEmailResponse.builder().otpAgeInSeconds(LostPassOtp.OTP_AGE).build();
 
             default:
                 throw new ApplicationException(ErrorCodes.OTP_TYPE_NOT_FOUND);
@@ -179,7 +179,7 @@ public class AccountService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
-    public void register(DTO_RegisterRequest dto) {
+    public void register(RegisterRequestDTO dto) {
         if (accountRepository.existsByUsername(dto.getEmail()))
             throw new ApplicationException(ErrorCodes.DUPLICATED_EMAIL);
 
@@ -192,7 +192,7 @@ public class AccountService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
-    public void registerUserCore(DTO_RegisterRequest dto) {
+    public void registerUserCore(RegisterRequestDTO dto) {
         var authorities = List.of(
             authorityRepository.findByEnumStr(AuthorityEnum.ROLE_USER.toString())
                 .orElseThrow(() -> new ApplicationException(ErrorCodes.UNAWARE_ERROR))
@@ -215,10 +215,10 @@ public class AccountService {
         registerOtpCrud.deleteById(dto.getEmail());
     }
 
-    public DTO_AuthResponse oauth2Authenticate(DTO_Oauth2Authenticate dto) {
+    public AuthResponse oauth2Authenticate(DTO_Oauth2Authenticate dto) {
         Map<String, Object> oauth2UserInfo = oauth2Service.authenticateUser(dto);
         if (!accountRepository.existsByUsername(oauth2UserInfo.get("sub").toString())) {
-            var savedUserDto = DTO_RegisterRequest.builder()
+            var savedUserDto = RegisterRequestDTO.builder()
                 .email(oauth2UserInfo.get("sub").toString())
                 .password(UUID.randomUUID().toString())
                 .fullName(oauth2UserInfo.get("owner").toString())
@@ -245,7 +245,7 @@ public class AccountService {
             .isOauth2(true)
             .build());
         refreshTokenCrud.save(RefreshToken.builder().id(refreshTokenInfo.getJti()).build());
-        return DTO_AuthResponse.builder()
+        return AuthResponse.builder()
             .accessToken(accessTokenInfo.getToken())
             .refreshToken(refreshTokenInfo.getToken())
             .build();
@@ -255,7 +255,7 @@ public class AccountService {
         return Map.of("authorizer", oauth2Service.getOauth2Authorizer(Oauth2ServiceEnum.valueOf(oauth2Enum)));
     }
 
-    public void lostPassword(DTO_LostPassRequest dto) {
+    public void lostPassword(LostPassRequestDTO dto) {
         Map<String, String> emailCustom = emailService.getEmailCustom();
         var account = accountRepository.findByUsername(dto.getEmail())
             .orElseThrow(() -> new ApplicationException(ErrorCodes.EMAIL_NOT_FOUND));
@@ -278,7 +278,7 @@ public class AccountService {
             String.format(emailCustom.get("msg"), dto.getEmail(), newPassword));
     }
 
-    public void changePassword(String token, DTO_ChangePassRequest dto) {
+    public void changePassword(String token, ChangePassRequestDTO dto) {
         String email = jwtService.readPayload(token).getOrDefault("sub", "");
         Account account = accountRepository.findByUsername(email)
             .orElseThrow(() -> new ApplicationException(ErrorCodes.INVALID_TOKEN));

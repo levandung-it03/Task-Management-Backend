@@ -4,7 +4,7 @@ import com.ptithcm.intern_project.common.enums.ErrorCodes;
 import com.ptithcm.intern_project.common.exception.ApplicationException;
 import com.ptithcm.intern_project.dataJpa.entities.UserInfo;
 import com.ptithcm.intern_project.dataJpa.repositories.UserInfoRepository;
-import com.ptithcm.intern_project.dto.request.DTO_UpdateUserInfo;
+import com.ptithcm.intern_project.dto.request.UpdateUserInfoDTO;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -25,7 +25,7 @@ public class UserInfoService {
             .orElseThrow(() -> new ApplicationException(ErrorCodes.INVALID_TOKEN));
     }
 
-    public void updateUserInfo(String token, DTO_UpdateUserInfo dto) {
+    public void updateUserInfo(String token, UpdateUserInfoDTO dto) {
         HashMap<String, String> claims = jwtService.readPayload(token);
         UserInfo originInfo = userInfoRepository.findByAccountUsername(claims.get("sub"))
             .orElseThrow(() -> new ApplicationException(ErrorCodes.INVALID_TOKEN));

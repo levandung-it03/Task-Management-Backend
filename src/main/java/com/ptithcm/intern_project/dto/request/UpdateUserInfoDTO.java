@@ -1,26 +1,29 @@
 package com.ptithcm.intern_project.dto.request;
 
-import jakarta.validation.constraints.Email;
+import com.ptithcm.intern_project.common.annotations.DobConstraint;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.validator.constraints.Length;
+
+import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class DTO_AuthRequest {
-    @Email
-    @NotNull
-    @NotEmpty
-    @Length(min = 6, max = 50)
-    String email;
+public class UpdateUserInfoDTO {
 
     @NotNull
     @NotEmpty
-    @Length(min = 6, max = 20)
-    String password;
+    @Length(max = 200)
+    @Pattern(regexp = "^[\\p{L} ]+$")
+    String fullName;
+
+    @NotNull
+    @DobConstraint
+    LocalDate dob;
 }
