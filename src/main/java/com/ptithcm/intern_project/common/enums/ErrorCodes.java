@@ -10,7 +10,7 @@ import static org.springframework.http.HttpStatus.*;
 @Getter
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public enum ErrorCodes {
-    UNAWARE_ERROR(10000, "Unaware Exc Thrown from server", BAD_REQUEST),
+    UNAWARE_ERROR(10000, "Unaware Exc Thrown from server", INTERNAL_SERVER_ERROR),
     VALIDATOR_ERR_RESPONSE(10001, "Invalid data or format of '${field}'", BAD_REQUEST),
     PARSE_JSON_ERR(10002, "Invalid data or format of '${field}'", BAD_REQUEST),
     INVALID_TOKEN(10003, "Auth Token is invalid", UNAUTHORIZED),
@@ -18,6 +18,7 @@ public enum ErrorCodes {
     KILLED_TOKEN(10005, "Auth Token was killed", BAD_REQUEST),
     EXPIRED_SESSION(10006, "Session is expired, please login again", UNAUTHORIZED),
     WEIRD_ENUM(10007, "Enum value is invalid", BAD_REQUEST),
+    INVALID_ID(10008, "Id is not existed in Database", BAD_REQUEST),
     //--Account(11)
     FORBIDDEN_USER(11000, "User not found or access denied", FORBIDDEN),
     INVALID_CREDENTIALS(11001, "Invalid Credentials", BAD_REQUEST),

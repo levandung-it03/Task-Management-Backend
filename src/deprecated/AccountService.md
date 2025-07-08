@@ -54,7 +54,7 @@ public class AccountService {
         if (!authAccount.isStatus() || Objects.nonNull(authAccount.getOauth2ServiceEnum()))
             throw new ApplicationException(ErrorCodes.FORBIDDEN_USER);
 
-        UserInfo userInfo = userInfoRepository.findByAccountAccountId(authAccount.getId())
+        UserInfo userInfo = userInfoRepository.findByAccountId(authAccount.getId())
             .orElseThrow(() -> new ApplicationException(ErrorCodes.FORBIDDEN_USER));
         TokenInfo accessTokenInfo = jwtService.generateToken(GeneralTokenClaims.builder()
             .subject(authAccount.getUsername())
@@ -87,7 +87,7 @@ public class AccountService {
         if (!authAccount.isStatus())
             throw new ApplicationException(ErrorCodes.FORBIDDEN_USER);
 
-        UserInfo userInfo = userInfoRepository.findByAccountAccountId(authAccount.getId())
+        UserInfo userInfo = userInfoRepository.findByAccountId(authAccount.getId())
             .orElseThrow(() -> new ApplicationException(ErrorCodes.FORBIDDEN_USER));
         TokenInfo accessTokenInfo = jwtService.generateToken(GeneralTokenClaims.builder()
             .subject(authAccount.getUsername())

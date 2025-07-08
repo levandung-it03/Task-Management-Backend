@@ -8,7 +8,7 @@ import java.util.Optional;
 
 @Repository
 public interface UserInfoRepository extends JpaRepository<UserInfo, Long> {
-    Optional<UserInfo> findByAccountAccountId(Long accountId);
+    Optional<UserInfo> findByAccountId(Long accountId);
 
     Optional<UserInfo> findByAccountUsername(String sub);
 }

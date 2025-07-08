@@ -18,6 +18,11 @@ import java.time.LocalDate;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RegisterRequestDTO {
+    @NotNull
+    @NotEmpty
+    @Length(min = 6, max = 50)
+    String username;
+
     @Email
     @NotNull
     @NotEmpty
@@ -38,6 +43,14 @@ public class RegisterRequestDTO {
     @NotNull
     @DobConstraint
     LocalDate dob;
+
+    @NotNull
+    @NotEmpty
+    @Pattern(regexp = "^[0-9]{9,20}$")
+    String phone;
+
+    @NotNull
+    Long departmentId;
 
     @NotNull
     @NotEmpty

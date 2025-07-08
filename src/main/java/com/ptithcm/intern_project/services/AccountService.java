@@ -8,14 +8,17 @@ import com.ptithcm.intern_project.dataJpa.entities.Account;
 import com.ptithcm.intern_project.dataJpa.entities.UserInfo;
 import com.ptithcm.intern_project.dataJpa.repositories.AccountRepository;
 import com.ptithcm.intern_project.dataJpa.repositories.AuthorityRepository;
+import com.ptithcm.intern_project.dataJpa.repositories.DepartmentRepository;
 import com.ptithcm.intern_project.dataJpa.repositories.UserInfoRepository;
 import com.ptithcm.intern_project.dto.request.*;
 import com.ptithcm.intern_project.dto.response.AuthResponse;
 import com.ptithcm.intern_project.dto.response.VerifyEmailResponse;
 import com.ptithcm.intern_project.redis.redis_cruds.*;
 import com.ptithcm.intern_project.redis.redis_tables.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -29,22 +32,24 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 @EnableAspectJAutoProxy(exposeProxy = true)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AccountService {
-    private final AuthorityRepository authorityRepository;
-    private final InvalidTokenCrud invalidTokenCrud;
+    AuthorityRepository authorityRepository;
+    InvalidTokenCrud invalidTokenCrud;
     @Getter
-    private final AccountRepository accountRepository;
-    private final RefreshTokenCrud refreshTokenCrud;
-    private final JwtService jwtService;
-    private final PasswordEncoder userPasswordEncoder;
-    private final EmailService emailService;
-    private final RegisterOtpCrud registerOtpCrud;
-    private final LostPassOtpCrud lostPassOtpCrud;
-    private final ChangePassOtpCrud changePassOtpCrud;
-    private final UserInfoRepository userInfoRepository;
+    AccountRepository accountRepository;
+    RefreshTokenCrud refreshTokenCrud;
+    JwtService jwtService;
+    PasswordEncoder userPasswordEncoder;
+    EmailService emailService;
+    RegisterOtpCrud registerOtpCrud;
+    LostPassOtpCrud lostPassOtpCrud;
+    ChangePassOtpCrud changePassOtpCrud;
+    UserInfoRepository userInfoRepository;
+    DepartmentRepository departmentRepository;
 
     public AuthResponse authenticate(AuthRequestDTO dto) {
-        Account authAccount = accountRepository.findByUsername(dto.getEmail())
+        Account authAccount = accountRepository.findByUsername(dto.getUsername())
             .orElseThrow(() -> new ApplicationException(ErrorCodes.INVALID_CREDENTIALS));
 
         if (!userPasswordEncoder.matches(dto.getPassword(), authAccount.getPassword()))
@@ -53,7 +58,7 @@ public class AccountService {
         if (!authAccount.isStatus())
             throw new ApplicationException(ErrorCodes.FORBIDDEN_USER);
 
-        UserInfo userInfo = userInfoRepository.findByAccountAccountId(authAccount.getId())
+        UserInfo userInfo = userInfoRepository.findByAccountId(authAccount.getId())
             .orElseThrow(() -> new ApplicationException(ErrorCodes.FORBIDDEN_USER));
         TokenInfo accessTokenInfo = jwtService.generateToken(GeneralTokenClaims.builder()
             .subject(authAccount.getUsername())
@@ -86,7 +91,7 @@ public class AccountService {
         if (!authAccount.isStatus())
             throw new ApplicationException(ErrorCodes.FORBIDDEN_USER);
 
-        UserInfo userInfo = userInfoRepository.findByAccountAccountId(authAccount.getId())
+        UserInfo userInfo = userInfoRepository.findByAccountId(authAccount.getId())
             .orElseThrow(() -> new ApplicationException(ErrorCodes.FORBIDDEN_USER));
         TokenInfo accessTokenInfo = jwtService.generateToken(GeneralTokenClaims.builder()
             .subject(authAccount.getUsername())
@@ -175,18 +180,24 @@ public class AccountService {
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void registerNewAccount(RegisterRequestDTO dto) {
+        var department = departmentRepository.findById(dto.getDepartmentId())
+            .orElseThrow(() -> new ApplicationException(ErrorCodes.INVALID_ID));
         var authorities = List.of(
             authorityRepository.findByEnumStr(AuthorityEnum.ROLE_PM.toString())
                 .orElseThrow(() -> new ApplicationException(ErrorCodes.UNAWARE_ERROR))
         );
         var savedAccount = accountRepository.save(Account.builder()
             .authorities(authorities)
-            .username(dto.getEmail())
+            .username(dto.getUsername())
             .password(userPasswordEncoder.encode(dto.getPassword()))
-            .active(true)
+            .status(true)
             .createdTime(LocalDateTime.now(ZoneId.systemDefault()))
+            .updatedTime(LocalDateTime.now(ZoneId.systemDefault()))
             .build());
         userInfoRepository.save(UserInfo.builder()
+            .email(dto.getEmail())
+            .phone(dto.getPhone())
+            .department(department)
             .fullName(dto.getFullName())
             .account(savedAccount)
             .dob(dto.getDob())

@@ -13,11 +13,10 @@ import org.hibernate.validator.constraints.Length;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AuthRequestDTO {
-    @Email
     @NotNull
     @NotEmpty
     @Length(min = 6, max = 50)
-    String email;
+    String username;
 
     @NotNull
     @NotEmpty

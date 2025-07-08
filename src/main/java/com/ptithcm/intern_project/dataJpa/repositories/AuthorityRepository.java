@@ -11,6 +11,6 @@ import java.util.Optional;
 @Repository
 public interface AuthorityRepository extends JpaRepository<Authority, Long> {
 
-    @Query("SELECT a FROM Authority a WHERE a.authorityName LIKE :enumVal")
+    @Query("SELECT a FROM Authority a WHERE a.name LIKE :enumVal")
     Optional<Authority> findByEnumStr(@Param("enumVal") String enumVal);
 }

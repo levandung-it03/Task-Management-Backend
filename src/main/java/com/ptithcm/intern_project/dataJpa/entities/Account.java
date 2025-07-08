@@ -28,7 +28,6 @@ public class Account {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     Long id;
 
     @Column(name = "username", nullable = false)
@@ -59,7 +58,7 @@ public class Account {
     public static String buildScope(Collection<Authority> authorities) {
         return String.join(
             Account.SCOPES_DELIMITER,
-            authorities.stream().map(Authority::getAuthorityName).toList());
+            authorities.stream().map(Authority::getName).toList());
     }
 
     public static List<SimpleGrantedAuthority> extractAuthorities(String scopes) {
