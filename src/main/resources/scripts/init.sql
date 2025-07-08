@@ -54,7 +54,7 @@ VALUES ('IT Admin', 'admin@gmail.com', '0123456789',
         (SELECT id FROM department WHERE name = 'IT Department'),
         (SELECT id FROM account WHERE username = 'admin@gmail.com'),
         NULL),
-``
+
        ('Hải PM', 'pm@gmail.com', '0123456790',
         (SELECT id FROM department WHERE name = 'IT Department'),
         (SELECT id FROM account WHERE username = 'pm@gmail.com'),
