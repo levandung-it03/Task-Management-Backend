@@ -50,10 +50,10 @@ public class AccountService {
         if (!userPasswordEncoder.matches(dto.getPassword(), authAccount.getPassword()))
             throw new ApplicationException(ErrorCodes.INVALID_CREDENTIALS);
 
-        if (!authAccount.isActive())
+        if (!authAccount.isStatus())
             throw new ApplicationException(ErrorCodes.FORBIDDEN_USER);
 
-        UserInfo userInfo = userInfoRepository.findByAccountAccountId(authAccount.getAccountId())
+        UserInfo userInfo = userInfoRepository.findByAccountAccountId(authAccount.getId())
             .orElseThrow(() -> new ApplicationException(ErrorCodes.FORBIDDEN_USER));
         TokenInfo accessTokenInfo = jwtService.generateToken(GeneralTokenClaims.builder()
             .subject(authAccount.getUsername())
@@ -83,10 +83,10 @@ public class AccountService {
         Account authAccount = accountRepository.findByUsername(accessClaims.get("sub"))
             .orElseThrow(() -> new ApplicationException(ErrorCodes.INVALID_TOKEN));
 
-        if (!authAccount.isActive())
+        if (!authAccount.isStatus())
             throw new ApplicationException(ErrorCodes.FORBIDDEN_USER);
 
-        UserInfo userInfo = userInfoRepository.findByAccountAccountId(authAccount.getAccountId())
+        UserInfo userInfo = userInfoRepository.findByAccountAccountId(authAccount.getId())
             .orElseThrow(() -> new ApplicationException(ErrorCodes.FORBIDDEN_USER));
         TokenInfo accessTokenInfo = jwtService.generateToken(GeneralTokenClaims.builder()
             .subject(authAccount.getUsername())

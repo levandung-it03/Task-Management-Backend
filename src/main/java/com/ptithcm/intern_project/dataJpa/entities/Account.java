@@ -24,12 +24,12 @@ import java.util.stream.Collectors;
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Account {
-    private static final String SCOPES_DELIMITER = " "; //--static fields will not be included when there is a new instance.
+    static final String SCOPES_DELIMITER = " "; //--static fields will not be included when there is a new instance.
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "account_id")
-    Long accountId;
+    @Column(name = "id")
+    Long id;
 
     @Column(name = "username", nullable = false)
     @Length(min = 6, max = 50)
@@ -38,11 +38,14 @@ public class Account {
     @Column(name = "password", nullable = false)
     String password;
 
-    @Column(name = "created_time", nullable = false)
+    @Column(name = "status", columnDefinition = "BIT", nullable = false)
+    boolean status;
+
+    @Column(name = "created_time", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
     LocalDateTime createdTime;
 
-    @Column(name = "active", columnDefinition = "BIT", nullable = false)
-    boolean active;
+    @Column(name = "updated_time", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
+    LocalDateTime updatedTime;
 
     @ManyToMany(fetch = FetchType.EAGER, targetEntity = Authority.class)
     @JoinTable(

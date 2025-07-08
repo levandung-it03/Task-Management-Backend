@@ -9,7 +9,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.Objects;
 
 @Data
 @NoArgsConstructor
@@ -24,6 +23,15 @@ public class UserInfo {
 
     @Column(name = "full_name", nullable = false, length = 200)
     String fullName;
+
+    @Column(name = "email", nullable = false, unique = true)
+    String email;
+
+    @Column(name = "phone", nullable = false)
+    String phone;
+
+    @Column(name = "department", nullable = false)
+    String department;
 
     @OneToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id", referencedColumnName = "account_id", nullable = false)

@@ -51,10 +51,10 @@ public class AccountService {
         if (!userPasswordEncoder.matches(dto.getPassword(), authAccount.getPassword()))
             throw new ApplicationException(ErrorCodes.INVALID_CREDENTIALS);
 
-        if (!authAccount.isActive() || Objects.nonNull(authAccount.getOauth2ServiceEnum()))
+        if (!authAccount.isStatus() || Objects.nonNull(authAccount.getOauth2ServiceEnum()))
             throw new ApplicationException(ErrorCodes.FORBIDDEN_USER);
 
-        UserInfo userInfo = userInfoRepository.findByAccountAccountId(authAccount.getAccountId())
+        UserInfo userInfo = userInfoRepository.findByAccountAccountId(authAccount.getId())
             .orElseThrow(() -> new ApplicationException(ErrorCodes.FORBIDDEN_USER));
         TokenInfo accessTokenInfo = jwtService.generateToken(GeneralTokenClaims.builder()
             .subject(authAccount.getUsername())
@@ -84,10 +84,10 @@ public class AccountService {
         Account authAccount = accountRepository.findByUsername(accessClaims.get("sub"))
             .orElseThrow(() -> new ApplicationException(ErrorCodes.INVALID_TOKEN));
 
-        if (!authAccount.isActive())
+        if (!authAccount.isStatus())
             throw new ApplicationException(ErrorCodes.FORBIDDEN_USER);
 
-        UserInfo userInfo = userInfoRepository.findByAccountAccountId(authAccount.getAccountId())
+        UserInfo userInfo = userInfoRepository.findByAccountAccountId(authAccount.getId())
             .orElseThrow(() -> new ApplicationException(ErrorCodes.FORBIDDEN_USER));
         TokenInfo accessTokenInfo = jwtService.generateToken(GeneralTokenClaims.builder()
             .subject(authAccount.getUsername())
@@ -265,7 +265,7 @@ public class AccountService {
         if (!otp.getOtp().equals(dto.getOtp()))
             throw new ApplicationException(ErrorCodes.OTP_NOT_CORRECT);
 
-        if (!account.isActive() || Objects.nonNull(account.getOauth2ServiceEnum()))
+        if (!account.isStatus() || Objects.nonNull(account.getOauth2ServiceEnum()))
             throw new ApplicationException(ErrorCodes.FORBIDDEN_USER);
 
         String newPassword = OtpGenerator.randOTP();
