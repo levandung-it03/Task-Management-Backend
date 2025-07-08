@@ -6,13 +6,13 @@ VALUES ('ROLE_ADMIN'),
        ('ROLE_EMP');
 
 -- === Step 2: Insert accounts ===
--- Replace {ENCODED_PASSWORD} with actual encoded values if needed
+-- {ENCODED_PASSWORD} = 123123
 INSERT INTO account (username, password, status, created_time, updated_time)
-VALUES ('admin@gmail.com', '{ENCODED_PASSWORD}', 1, NOW(), NOW()),
-       ('pm@gmail.com', '{ENCODED_PASSWORD}', 1, NOW(), NOW()),
-       ('lead@gmail.com', '{ENCODED_PASSWORD}', 1, NOW(), NOW()),
-       ('emp@gmail.com', '{ENCODED_PASSWORD}', 1, NOW(), NOW()),
-       ('thanhlongphong647@gmail.com', '{ENCODED_PASSWORD}', 1, NOW(), NOW());
+VALUES ('admin@gmail.com', '$2a$08$fU4tZF/pE.xyWDidbmkGOO7lqvFABd5rqOyIOvTWQxSUnhx.v3J9K', 1, NOW(), NOW()),
+       ('pm@gmail.com', '$2a$08$fU4tZF/pE.xyWDidbmkGOO7lqvFABd5rqOyIOvTWQxSUnhx.v3J9K', 1, NOW(), NOW()),
+       ('lead@gmail.com', '$2a$08$fU4tZF/pE.xyWDidbmkGOO7lqvFABd5rqOyIOvTWQxSUnhx.v3J9K', 1, NOW(), NOW()),
+       ('emp@gmail.com', '$2a$08$fU4tZF/pE.xyWDidbmkGOO7lqvFABd5rqOyIOvTWQxSUnhx.v3J9K', 1, NOW(), NOW()),
+       ('thanhlongphong647@gmail.com', '$2a$08$fU4tZF/pE.xyWDidbmkGOO7lqvFABd5rqOyIOvTWQxSUnhx.v3J9K', 1, NOW(), NOW());
 
 -- === Step 3: Insert account-authority mapping ===
 INSERT INTO account_authorities (account_id, authority_id)
