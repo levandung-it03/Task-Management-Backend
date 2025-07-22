@@ -18,7 +18,7 @@ import java.time.ZoneId;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ApiResponseObject <T> implements Serializable {
+public class RestApiResponse<T> implements Serializable {
     int code;
     String msg;
     int status;
@@ -26,8 +26,8 @@ public class ApiResponseObject <T> implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
     LocalDateTime time;
 
-    public static ResponseEntity<ApiResponseObject<Void>> fromErr(ErrorCodes errorEnum, String replacedMsg) {
-        var result = new ApiResponseObject<Void>();
+    public static ResponseEntity<RestApiResponse<Void>> fromErr(ErrorCodes errorEnum, String replacedMsg) {
+        var result = new RestApiResponse<Void>();
         result.code = errorEnum.getCode();
         result.msg = replacedMsg;
         result.status = errorEnum.getStatus().value();
@@ -36,12 +36,12 @@ public class ApiResponseObject <T> implements Serializable {
     }
 
     @Overloads
-    public static ResponseEntity<ApiResponseObject<Void>> fromErr(ErrorCodes errorEnum) {
-        return ApiResponseObject.fromErr(errorEnum, errorEnum.getMsg());
+    public static ResponseEntity<RestApiResponse<Void>> fromErr(ErrorCodes errorEnum) {
+        return RestApiResponse.fromErr(errorEnum, errorEnum.getMsg());
     }
 
-    public static <T> ResponseEntity<ApiResponseObject<T>> fromScs(SuccessCodes successEnum, T body) {
-        var result = new ApiResponseObject<T>();
+    public static <T> ResponseEntity<RestApiResponse<T>> fromScs(SuccessCodes successEnum, T body) {
+        var result = new RestApiResponse<T>();
         result.code = successEnum.getCode();
         result.msg = successEnum.getMsg();
         result.status = HttpStatus.OK.value();
@@ -51,7 +51,7 @@ public class ApiResponseObject <T> implements Serializable {
     }
 
     @Overloads
-    public static ResponseEntity<ApiResponseObject<Void>> fromScs(SuccessCodes successEnum) {
-        return ApiResponseObject.fromScs(successEnum, null);
+    public static ResponseEntity<RestApiResponse<Void>> fromScs(SuccessCodes successEnum) {
+        return RestApiResponse.fromScs(successEnum, null);
     }
 }

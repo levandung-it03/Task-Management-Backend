@@ -20,8 +20,8 @@ public class CommentOfReport {
     Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_info_id", referencedColumnName = "id", nullable = false)
-    UserInfo userInfo;
+    @JoinColumn(name = "created_by_id", referencedColumnName = "id", nullable = false)
+    UserInfo userInfoCreated;
 
     @ManyToOne
     @JoinColumn(name = "report_id", referencedColumnName = "id", nullable = false)

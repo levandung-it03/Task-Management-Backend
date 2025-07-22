@@ -17,7 +17,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class RegisterRequestDTO {
+public class RegisterRequest {
     @NotNull
     @NotEmpty
     @Length(min = 6, max = 50)

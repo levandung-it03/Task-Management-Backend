@@ -5,7 +5,7 @@ import com.ptithcm.intern_project.common.enums.ErrorCodes;
 import com.ptithcm.intern_project.common.enums.TokenClaimNames;
 import com.ptithcm.intern_project.common.enums.TokenTypes;
 import com.ptithcm.intern_project.common.exception.ApplicationException;
-import com.ptithcm.intern_project.common.wrappers.ApiResponseObject;
+import com.ptithcm.intern_project.common.wrappers.RestApiResponse;
 import com.ptithcm.intern_project.dataJpa.entities.Account;
 import com.ptithcm.intern_project.redis.redis_cruds.InvalidTokenCrud;
 import com.ptithcm.intern_project.redis.redis_cruds.RefreshTokenCrud;
@@ -110,7 +110,7 @@ public class JWTAuthFilter extends OncePerRequestFilter {
         var errorEnum = e.getErrorEnum();
         response.setContentType("application/json;charset=UTF-8");
         var writer = response.getWriter();
-        var json = objectMapper.writeValueAsString(ApiResponseObject.builder()
+        var json = objectMapper.writeValueAsString(RestApiResponse.builder()
             .status(errorEnum.getStatus().value())
             .code(errorEnum.getCode())
             .body(null)

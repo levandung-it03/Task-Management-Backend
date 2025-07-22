@@ -21,8 +21,8 @@ public class GroupHasUsers {
     Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_info_id", referencedColumnName = "id", nullable = false)
-    UserInfo userInfo;
+    @JoinColumn(name = "joined_user_info_id", referencedColumnName = "id", nullable = false)
+    UserInfo joinedUserInfo;
 
     @ManyToOne
     @JoinColumn(name = "group_id", referencedColumnName = "id", nullable = false)

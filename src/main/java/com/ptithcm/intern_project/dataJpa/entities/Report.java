@@ -22,8 +22,11 @@ public class Report {
     Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_task_id", referencedColumnName = "id", nullable = false)
-    TaskForUsers userTask;
+    @JoinColumn(name = "created_by_id", referencedColumnName = "id", nullable = false)
+    TaskForUsers userTaskCreated;
+
+    @Column(name = "title", nullable = false)
+    String title;
 
     @Lob
     @Column(name = "content", nullable = false)

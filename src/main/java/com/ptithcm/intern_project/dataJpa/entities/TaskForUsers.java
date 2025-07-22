@@ -21,8 +21,8 @@ public class TaskForUsers {
     Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_info_id", referencedColumnName = "id", nullable = false)
-    UserInfo userInfo;
+    @JoinColumn(name = "assigned_to_id", referencedColumnName = "id", nullable = false)
+    UserInfo assignedUser;
 
     @ManyToOne
     @JoinColumn(name = "task_id", referencedColumnName = "id", nullable = false)

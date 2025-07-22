@@ -30,6 +30,9 @@ public class UserInfo {
     @Column(name = "phone")
     String phone;
 
+    @Column(name = "identity")
+    String identity;
+
     @ManyToOne
     @JoinColumn(name = "department_id", referencedColumnName = "id", nullable = false)
     Department department;

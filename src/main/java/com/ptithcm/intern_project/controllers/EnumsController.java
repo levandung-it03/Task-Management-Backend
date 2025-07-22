@@ -2,7 +2,7 @@ package com.ptithcm.intern_project.controllers;
 
 import com.ptithcm.intern_project.common.enums.OtpTypes;
 import com.ptithcm.intern_project.common.enums.SuccessCodes;
-import com.ptithcm.intern_project.common.wrappers.ApiResponseObject;
+import com.ptithcm.intern_project.common.wrappers.RestApiResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -22,10 +22,10 @@ public class EnumsController {
 
     @ResponseBody
     @GetMapping("/v1/get-otp-enum-types")
-    public ResponseEntity<ApiResponseObject<HashMap<String, String>>> getOtpEnumTypes() {
+    public ResponseEntity<RestApiResponse<HashMap<String, String>>> getOtpEnumTypes() {
         var response = new HashMap<String, String>();
         for (OtpTypes e: OtpTypes.values())
             response.put(e.getName(), e.toString());
-        return ApiResponseObject.fromScs(SuccessCodes.GET_ENUMS, response);
+        return RestApiResponse.fromScs(SuccessCodes.GET_ENUMS, response);
     }
 }

@@ -22,8 +22,8 @@ public class Project {
     Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_info_id", referencedColumnName = "id", nullable = false)
-    UserInfo userInfo;
+    @JoinColumn(name = "created_by_id", referencedColumnName = "id", nullable = false)
+    UserInfo userInfoCreated;
 
     @Column(name = "name", nullable = false)
     String name;
@@ -39,6 +39,9 @@ public class Project {
 
     @Column(name = "due_date", nullable = false)
     LocalDate dueDate;
+
+    @Column(name = "status", columnDefinition = "BIT", nullable = false)
+    boolean status;
 
     @Column(name = "created_time", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
     LocalDateTime createdTime;

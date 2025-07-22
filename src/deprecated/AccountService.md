@@ -44,7 +44,7 @@ public class AccountService {
     private final ChangePassOtpCrud changePassOtpCrud;
     private final UserInfoRepository userInfoRepository;
 
-    public AuthResponse authenticate(AuthRequestDTO dto) {
+    public AuthResponse authenticate(AuthRequest dto) {
         Account authAccount = accountRepository.findByUsername(dto.getEmail())
             .orElseThrow(() -> new ApplicationException(ErrorCodes.INVALID_CREDENTIALS));
 
@@ -137,7 +137,7 @@ public class AccountService {
         return VerifyEmailResponse.builder().otpAgeInSeconds(ChangePassOtp.OTP_AGE).build();
     }
 
-    public VerifyEmailResponse verifyEmailByOtp(VerifyEmailRequestDTO dto) {
+    public VerifyEmailResponse verifyEmailByOtp(VerifyEmailRequest dto) {
         Map<String, String> emailCustom = emailService.getEmailCustom();
         String otp = OtpGenerator.randOTP();
         switch (OtpTypes.valueOf(dto.getOtpType())) {
@@ -179,7 +179,7 @@ public class AccountService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
-    public void register(RegisterRequestDTO dto) {
+    public void register(RegisterRequest dto) {
         if (accountRepository.existsByUsername(dto.getEmail()))
             throw new ApplicationException(ErrorCodes.DUPLICATED_EMAIL);
 
@@ -192,7 +192,7 @@ public class AccountService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
-    public void registerUserCore(RegisterRequestDTO dto) {
+    public void registerUserCore(RegisterRequest dto) {
         var authorities = List.of(
             authorityRepository.findByEnumStr(AuthorityEnum.ROLE_USER.toString())
                 .orElseThrow(() -> new ApplicationException(ErrorCodes.UNAWARE_ERROR))
@@ -218,7 +218,7 @@ public class AccountService {
     public AuthResponse oauth2Authenticate(DTO_Oauth2Authenticate dto) {
         Map<String, Object> oauth2UserInfo = oauth2Service.authenticateUser(dto);
         if (!accountRepository.existsByUsername(oauth2UserInfo.get("sub").toString())) {
-            var savedUserDto = RegisterRequestDTO.builder()
+            var savedUserDto = RegisterRequest.builder()
                 .email(oauth2UserInfo.get("sub").toString())
                 .password(UUID.randomUUID().toString())
                 .fullName(oauth2UserInfo.get("owner").toString())
@@ -255,7 +255,7 @@ public class AccountService {
         return Map.of("authorizer", oauth2Service.getOauth2Authorizer(Oauth2ServiceEnum.valueOf(oauth2Enum)));
     }
 
-    public void lostPassword(LostPassRequestDTO dto) {
+    public void lostPassword(LostPassRequest dto) {
         Map<String, String> emailCustom = emailService.getEmailCustom();
         var account = accountRepository.findByUsername(dto.getEmail())
             .orElseThrow(() -> new ApplicationException(ErrorCodes.EMAIL_NOT_FOUND));
@@ -278,7 +278,7 @@ public class AccountService {
             String.format(emailCustom.get("msg"), dto.getEmail(), newPassword));
     }
 
-    public void changePassword(String token, ChangePassRequestDTO dto) {
+    public void changePassword(String token, ChangePassRequest dto) {
         String email = jwtService.readPayload(token).getOrDefault("sub", "");
         Account account = accountRepository.findByUsername(email)
             .orElseThrow(() -> new ApplicationException(ErrorCodes.INVALID_TOKEN));

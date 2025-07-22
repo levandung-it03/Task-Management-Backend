@@ -3,7 +3,7 @@ package com.ptithcm.intern_project.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ptithcm.intern_project.common.enums.ErrorCodes;
 import com.ptithcm.intern_project.common.filters.JWTAuthFilter;
-import com.ptithcm.intern_project.common.wrappers.ApiResponseObject;
+import com.ptithcm.intern_project.common.wrappers.RestApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -61,7 +61,7 @@ public class SecurityFilterChainConfig {
     public AccessDeniedHandler accessDeniedHandler() {
         return (httpServletRequest, httpServletResponse, accessDeniedException) -> {
             int httpStatus = ErrorCodes.FORBIDDEN_USER.getStatus().value();
-            var responseObject = ApiResponseObject.fromErr(ErrorCodes.FORBIDDEN_USER);
+            var responseObject = RestApiResponse.fromErr(ErrorCodes.FORBIDDEN_USER);
             var jsonResponse = objectMapper.writeValueAsString(responseObject);
             httpServletResponse.getWriter().write(jsonResponse);
             httpServletResponse.setStatus(httpStatus);

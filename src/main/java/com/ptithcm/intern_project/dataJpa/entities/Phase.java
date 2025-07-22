@@ -22,9 +22,9 @@ public class Phase {
     Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_info_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "created_by_id", referencedColumnName = "id", nullable = false)
     @JsonIgnore
-    UserInfo userInfo;
+    UserInfo userInfoCreated;
 
     @ManyToOne
     @JoinColumn(name = "project_id", referencedColumnName = "id", nullable = false)

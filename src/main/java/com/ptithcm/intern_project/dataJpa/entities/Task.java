@@ -1,5 +1,7 @@
 package com.ptithcm.intern_project.dataJpa.entities;
 
+import com.ptithcm.intern_project.dataJpa.entities.enums.TaskLevel;
+import com.ptithcm.intern_project.dataJpa.entities.enums.TaskPriority;
 import com.ptithcm.intern_project.dataJpa.entities.enums.TaskType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
@@ -24,12 +26,12 @@ public class Task {
     Long id;
 
     @ManyToOne
-    @JoinColumn(name = "task_list_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "collection_id", referencedColumnName = "id", nullable = false)
     Collection collection;
 
     @ManyToOne
-    @JoinColumn(name = "user_info_id", referencedColumnName = "id", nullable = false)
-    UserInfo userInfo;
+    @JoinColumn(name = "created_by_id", referencedColumnName = "id", nullable = false)
+    UserInfo userInfoCreated;
 
     @ManyToOne
     @JoinColumn(name = "root_task_id", referencedColumnName = "id")
@@ -38,21 +40,28 @@ public class Task {
     @Column(name = "name", nullable = false)
     String name;
 
-    @Column(name = "description", nullable = false)
+    @Lob
+    @Column(name = "description", nullable = false, columnDefinition = "TEXT")
     String description;
 
-    @Column(name = "level", nullable = false, columnDefinition = "DEFAULT 1")
-    @Min(1)
-    @Max(3)
-    int level;
+    @Lob
+    @Column(name = "report_format", columnDefinition = "TEXT")
+    String reportFormat;
+
+    @Column(name = "level", nullable = false)
+    @Enumerated(EnumType.STRING)
+    TaskLevel level;
 
     @Column(name = "task_type", nullable = false)
     @Enumerated(EnumType.STRING)
     TaskType taskType;
 
-    @Column(name = "priority", nullable = false, columnDefinition = "DEFAULT 1")
-    @Min(1)
-    int priority;
+    @Column(name = "priority", nullable = false)
+    @Enumerated(EnumType.STRING)
+    TaskPriority priority;
+
+    @Column(name = "is_locked", nullable = false, columnDefinition = "BIT DEFAULT 0")
+    boolean isLocked;
 
     @Column(name = "start_date", nullable = false, columnDefinition = "DATE DEFAULT NOW()")
     LocalDate startDate;

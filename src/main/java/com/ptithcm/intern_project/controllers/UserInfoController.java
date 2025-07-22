@@ -1,8 +1,8 @@
 package com.ptithcm.intern_project.controllers;
 
-import com.ptithcm.intern_project.common.wrappers.ApiResponseObject;
+import com.ptithcm.intern_project.common.wrappers.RestApiResponse;
 import com.ptithcm.intern_project.dataJpa.entities.UserInfo;
-import com.ptithcm.intern_project.dto.request.UpdateUserInfoDTO;
+import com.ptithcm.intern_project.dto.request.UpdatedUserInfoRequest;
 import com.ptithcm.intern_project.services.UserInfoService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -23,16 +23,16 @@ public class UserInfoController {
 
     @ResponseBody
     @GetMapping({"/user/user-info/v1/get-user-info", "/admin/user-info/v1/get-user-info"})
-    public ResponseEntity<ApiResponseObject<UserInfo>> getUserInfo(@RequestHeader("Authorization") String token) {
-        return ApiResponseObject.fromScs(GET_USER_INFO, userInfoService.getUserInfo(token));
+    public ResponseEntity<RestApiResponse<UserInfo>> getUserInfo(@RequestHeader("Authorization") String token) {
+        return RestApiResponse.fromScs(GET_USER_INFO, userInfoService.getUserInfo(token));
     }
 
     @ResponseBody
     @PutMapping({"/user/user-info/v1/update-user-info", "/admin/user-info/v1/update-user-info"})
-    public ResponseEntity<ApiResponseObject<Void>> updateUserInfo(
+    public ResponseEntity<RestApiResponse<Void>> updateUserInfo(
         @RequestHeader("Authorization") String token,
-        @Valid @RequestBody UpdateUserInfoDTO dto) {
+        @Valid @RequestBody UpdatedUserInfoRequest dto) {
         userInfoService.updateUserInfo(token, dto);
-        return ApiResponseObject.fromScs(UPDATE_USER_INFO);
+        return RestApiResponse.fromScs(UPDATE_USER_INFO);
     }
 }

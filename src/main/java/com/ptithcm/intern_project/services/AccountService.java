@@ -34,10 +34,10 @@ import java.util.*;
 @EnableAspectJAutoProxy(exposeProxy = true)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AccountService {
-    AuthorityRepository authorityRepository;
-    InvalidTokenCrud invalidTokenCrud;
     @Getter
     AccountRepository accountRepository;
+    AuthorityService authorityService;
+    InvalidTokenCrud invalidTokenCrud;
     RefreshTokenCrud refreshTokenCrud;
     JwtService jwtService;
     PasswordEncoder userPasswordEncoder;
@@ -48,7 +48,7 @@ public class AccountService {
     UserInfoRepository userInfoRepository;
     DepartmentRepository departmentRepository;
 
-    public AuthResponse authenticate(AuthRequestDTO dto) {
+    public AuthResponse authenticate(AuthRequest dto) {
         Account authAccount = accountRepository.findByUsername(dto.getUsername())
             .orElseThrow(() -> new ApplicationException(ErrorCodes.INVALID_CREDENTIALS));
 
@@ -139,7 +139,7 @@ public class AccountService {
         return VerifyEmailResponse.builder().otpAgeInSeconds(ChangePassOtp.OTP_AGE).build();
     }
 
-    public VerifyEmailResponse verifyEmailByOtp(VerifyEmailRequestDTO dto) {
+    public VerifyEmailResponse verifyEmailByOtp(VerifyEmailRequest dto) {
         Map<String, String> emailCustom = emailService.getEmailCustom();
         String otp = OtpGenerator.randOTP();
         switch (OtpTypes.valueOf(dto.getOtpType())) {
@@ -179,13 +179,10 @@ public class AccountService {
     }
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
-    public void registerNewAccount(RegisterRequestDTO dto) {
+    public void registerNewAccount(RegisterRequest dto) {
         var department = departmentRepository.findById(dto.getDepartmentId())
             .orElseThrow(() -> new ApplicationException(ErrorCodes.INVALID_ID));
-        var authorities = List.of(
-            authorityRepository.findByEnumStr(AuthorityEnum.ROLE_PM.toString())
-                .orElseThrow(() -> new ApplicationException(ErrorCodes.UNAWARE_ERROR))
-        );
+        var authorities = List.of(authorityService.findByEnumStr(AuthorityEnum.ROLE_PM));
         var savedAccount = accountRepository.save(Account.builder()
             .authorities(authorities)
             .username(dto.getUsername())
@@ -204,7 +201,7 @@ public class AccountService {
             .build());
     }
 
-    public void lostPassword(LostPassRequestDTO dto) {
+    public void lostPassword(LostPassRequest dto) {
         Map<String, String> emailCustom = emailService.getEmailCustom();
         var account = accountRepository.findByUsername(dto.getEmail())
             .orElseThrow(() -> new ApplicationException(ErrorCodes.EMAIL_NOT_FOUND));
@@ -224,7 +221,7 @@ public class AccountService {
             String.format(emailCustom.get("msg"), dto.getEmail(), newPassword));
     }
 
-    public void changePassword(String token, ChangePassRequestDTO dto) {
+    public void changePassword(String token, ChangePassRequest dto) {
         String email = jwtService.readPayload(token).getOrDefault("sub", "");
         Account account = accountRepository.findByUsername(email)
             .orElseThrow(() -> new ApplicationException(ErrorCodes.INVALID_TOKEN));

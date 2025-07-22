@@ -14,15 +14,15 @@ import java.time.LocalDateTime;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "task_list")
+@Table(name = "collection")
 public class Collection {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_info_id", referencedColumnName = "id", nullable = false)
-    UserInfo userInfo;
+    @JoinColumn(name = "created_by_id", referencedColumnName = "id", nullable = false)
+    UserInfo userInfoCreated;
 
     @ManyToOne
     @JoinColumn(name = "phase_id", referencedColumnName = "id", nullable = false)
