@@ -2,8 +2,8 @@ package com.ptithcm.intern_project.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ptithcm.intern_project.common.enums.ErrorCodes;
-import com.ptithcm.intern_project.common.filters.JWTAuthFilter;
-import com.ptithcm.intern_project.common.wrappers.RestApiResponse;
+import com.ptithcm.intern_project.common.filter.JWTAuthFilter;
+import com.ptithcm.intern_project.common.wrapper.RestApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

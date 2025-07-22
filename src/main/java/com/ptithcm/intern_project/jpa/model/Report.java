@@ -1,0 +1,49 @@
+package com.ptithcm.intern_project.jpa.model;
+
+import com.ptithcm.intern_project.jpa.model.enums.ReportStatus;
+import jakarta.persistence.*;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+
+import java.time.LocalDateTime;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@Entity
+@Table(name = "report")
+public class Report {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "created_by_id", referencedColumnName = "id", nullable = false)
+    TaskForUsers userTaskCreated;
+
+    @Column(name = "title", nullable = false)
+    String title;
+
+    @Lob
+    @Column(name = "content", nullable = false)
+    String content;
+
+    @Column(name = "rejected_reason")
+    String rejectedReason;
+
+    @Column(name = "report_status")
+    @Enumerated(EnumType.STRING)
+    ReportStatus reportStatus;
+
+    @Column(name = "reviewed_time", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
+    LocalDateTime reviewedTime;
+
+    @Column(name = "created_time", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
+    LocalDateTime createdTime;
+
+    @Column(name = "updated_time", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
+    LocalDateTime updatedTime;
+}

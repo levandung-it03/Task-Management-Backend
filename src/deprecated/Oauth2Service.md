@@ -1,5 +1,5 @@
 ```java
-package com.ptithcm.intern_project.services;
+package com.ptithcm.intern_project.service;
 
 import com.ptithcm.intern_project.common.enums.AuthorityEnum;
 import com.ptithcm.intern_project.common.enums.ErrorCodes;

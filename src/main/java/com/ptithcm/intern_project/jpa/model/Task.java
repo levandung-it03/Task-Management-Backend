@@ -1,0 +1,78 @@
+package com.ptithcm.intern_project.jpa.model;
+
+import com.ptithcm.intern_project.jpa.model.enums.TaskLevel;
+import com.ptithcm.intern_project.jpa.model.enums.TaskPriority;
+import com.ptithcm.intern_project.jpa.model.enums.TaskType;
+import jakarta.persistence.*;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@Entity
+@Table(name = "task")
+public class Task {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "collection_id", referencedColumnName = "id", nullable = false)
+    Collection collection;
+
+    @ManyToOne
+    @JoinColumn(name = "created_by_id", referencedColumnName = "id", nullable = false)
+    UserInfo userInfoCreated;
+
+    @ManyToOne
+    @JoinColumn(name = "root_task_id", referencedColumnName = "id")
+    Task rootTask;
+
+    @Column(name = "name", nullable = false)
+    String name;
+
+    @Lob
+    @Column(name = "description", nullable = false, columnDefinition = "TEXT")
+    String description;
+
+    @Lob
+    @Column(name = "report_format", columnDefinition = "TEXT")
+    String reportFormat;
+
+    @Column(name = "level", nullable = false)
+    @Enumerated(EnumType.STRING)
+    TaskLevel level;
+
+    @Column(name = "task_type", nullable = false)
+    @Enumerated(EnumType.STRING)
+    TaskType taskType;
+
+    @Column(name = "priority", nullable = false)
+    @Enumerated(EnumType.STRING)
+    TaskPriority priority;
+
+    @Column(name = "is_locked", nullable = false, columnDefinition = "BIT DEFAULT 0")
+    boolean isLocked;
+
+    @Column(name = "start_date", nullable = false, columnDefinition = "DATE DEFAULT NOW()")
+    LocalDate startDate;
+
+    @Column(name = "end_date")
+    LocalDate endDate;
+
+    @Column(name = "deadline", nullable = false)
+    LocalDate deadline;
+
+    @Column(name = "created_time", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
+    LocalDateTime createdTime;
+
+    @Column(name = "updated_time", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
+    LocalDateTime updatedTime;
+}

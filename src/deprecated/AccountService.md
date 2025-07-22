@@ -1,20 +1,20 @@
 ```java
-package com.ptithcm.intern_project.services;
+package com.ptithcm.intern_project.service;
 
 import com.ptithcm.intern_project.common.enums.*;
 import com.ptithcm.intern_project.common.exception.ApplicationException;
-import com.ptithcm.intern_project.common.wrappers.GeneralTokenClaims;
-import com.ptithcm.intern_project.common.wrappers.TokenInfo;
-import com.ptithcm.intern_project.dataJpa.entities.Account;
-import com.ptithcm.intern_project.dataJpa.entities.UserInfo;
-import com.ptithcm.intern_project.dataJpa.repositories.AccountRepository;
-import com.ptithcm.intern_project.dataJpa.repositories.AuthorityRepository;
-import com.ptithcm.intern_project.dataJpa.repositories.UserInfoRepository;
+import com.ptithcm.intern_project.common.wrapper.GeneralTokenClaims;
+import com.ptithcm.intern_project.common.wrapper.TokenInfo;
+import com.ptithcm.intern_project.jpa.model.Account;
+import com.ptithcm.intern_project.jpa.model.UserInfo;
+import com.ptithcm.intern_project.jpa.repository.AccountRepository;
+import com.ptithcm.intern_project.jpa.repository.AuthorityRepository;
+import com.ptithcm.intern_project.jpa.repository.UserInfoRepository;
 import com.ptithcm.intern_project.dto.request.*;
 import com.ptithcm.intern_project.dto.response.AuthResponse;
 import com.ptithcm.intern_project.dto.response.VerifyEmailResponse;
-import com.ptithcm.intern_project.redis.redis_cruds.*;
-import com.ptithcm.intern_project.redis.redis_tables.*;
+import com.ptithcm.intern_project.redis.crud.*;
+import com.ptithcm.intern_project.redis.model.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
