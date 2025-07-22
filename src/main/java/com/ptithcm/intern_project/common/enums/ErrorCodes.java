@@ -31,6 +31,9 @@ public enum ErrorCodes {
     OTP_NOT_FOUND(11008, "OTP not found or is expired", BAD_REQUEST),
     OTP_NOT_CORRECT(11009, "OTP is not correct", BAD_REQUEST),
     OAUTH2_PERMISSION(11010, "Third Party Account prevents many required info", BAD_REQUEST),
+    //--Department(12)
+    DEPARTMENT_NOT_FOUND(12000, "Department not found", BAD_REQUEST),
+    DEPARTMENT_ALREADY_EXISTS(12001, "Department already exists", BAD_REQUEST),
     ;
     int code;
     String msg;

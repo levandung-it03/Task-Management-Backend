@@ -9,6 +9,11 @@ import lombok.experimental.FieldDefaults;
 public enum SuccessCodes {
     //--General(20)
     GET_ENUMS(20000, "Get Enums successfully"),
+    CREATED(20001, "Created successfully"),
+    UPDATED(20002, "Updated successfully"),
+    DELETED(20003, "Deleted successfully"),
+    GET_DETAIL(20004, "Get data successfully"),
+    GET_LIST(20005, "Get the list successfully"),
     //--Account(21)
     AUTHENTICATE(21000, "Login successfully"),
     REGISTER(21001, "Register successfully"),
