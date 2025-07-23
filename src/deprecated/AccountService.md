@@ -2,7 +2,7 @@
 package com.ptithcm.intern_project.service;
 
 import com.ptithcm.intern_project.common.enums.*;
-import com.ptithcm.intern_project.common.exception.ApplicationException;
+import com.ptithcm.intern_project.common.exception.AppExc;
 import com.ptithcm.intern_project.common.wrapper.GeneralTokenClaims;
 import com.ptithcm.intern_project.common.wrapper.TokenInfo;
 import com.ptithcm.intern_project.jpa.model.Account;
@@ -46,16 +46,16 @@ public class AccountService {
 
     public AuthResponse authenticate(AuthRequest dto) {
         Account authAccount = accountRepository.findByUsername(dto.getEmail())
-            .orElseThrow(() -> new ApplicationException(ErrorCodes.INVALID_CREDENTIALS));
+            .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_CREDENTIALS));
 
         if (!userPasswordEncoder.matches(dto.getPassword(), authAccount.getPassword()))
-            throw new ApplicationException(ErrorCodes.INVALID_CREDENTIALS);
+            throw new AppExc(ErrorCodes.INVALID_CREDENTIALS);
 
         if (!authAccount.isStatus() || Objects.nonNull(authAccount.getOauth2ServiceEnum()))
-            throw new ApplicationException(ErrorCodes.FORBIDDEN_USER);
+            throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
         UserInfo userInfo = userInfoRepository.findByAccountId(authAccount.getId())
-            .orElseThrow(() -> new ApplicationException(ErrorCodes.FORBIDDEN_USER));
+            .orElseThrow(() -> new AppExc(ErrorCodes.FORBIDDEN_USER));
         TokenInfo accessTokenInfo = jwtService.generateToken(GeneralTokenClaims.builder()
             .subject(authAccount.getUsername())
             .owner(userInfo.getFullName())
@@ -82,13 +82,13 @@ public class AccountService {
         HashMap<String, String> refreshClaims = jwtService.readPayload(refreshToken);
         HashMap<String, String> accessClaims = jwtService.readPayload(accessToken);
         Account authAccount = accountRepository.findByUsername(accessClaims.get("sub"))
-            .orElseThrow(() -> new ApplicationException(ErrorCodes.INVALID_TOKEN));
+            .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_TOKEN));
 
         if (!authAccount.isStatus())
-            throw new ApplicationException(ErrorCodes.FORBIDDEN_USER);
+            throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
         UserInfo userInfo = userInfoRepository.findByAccountId(authAccount.getId())
-            .orElseThrow(() -> new ApplicationException(ErrorCodes.FORBIDDEN_USER));
+            .orElseThrow(() -> new AppExc(ErrorCodes.FORBIDDEN_USER));
         TokenInfo accessTokenInfo = jwtService.generateToken(GeneralTokenClaims.builder()
             .subject(authAccount.getUsername())
             .owner(userInfo.getFullName())
@@ -118,12 +118,12 @@ public class AccountService {
         Map<String, String> emailCustom = emailService.getEmailCustom();
         String email = jwtService.readPayload(token).getOrDefault("sub", "");
         Account account = accountRepository.findByUsername(email)
-            .orElseThrow(() -> new ApplicationException(ErrorCodes.WEIRD_TOKEN_SUBJECT));
+            .orElseThrow(() -> new AppExc(ErrorCodes.WEIRD_TOKEN_SUBJECT));
 
         if (Objects.nonNull(account.getOauth2ServiceEnum()))
-            throw new ApplicationException(ErrorCodes.FORBIDDEN_USER);
+            throw new AppExc(ErrorCodes.FORBIDDEN_USER);
         if (changePassOtpCrud.existsById(email))
-            throw new ApplicationException(ErrorCodes.OTP_HAS_NOT_EXPIRED);
+            throw new AppExc(ErrorCodes.OTP_HAS_NOT_EXPIRED);
 
         String otp = OtpGenerator.randOTP();
         changePassOtpCrud.save(ChangePassOtp.builder()
@@ -143,9 +143,9 @@ public class AccountService {
         switch (OtpTypes.valueOf(dto.getOtpType())) {
             case OtpTypes.REGISTER:
                 if (accountRepository.existsByUsername(dto.getEmail()))
-                    throw new ApplicationException(ErrorCodes.DUPLICATED_EMAIL);
+                    throw new AppExc(ErrorCodes.DUPLICATED_EMAIL);
                 if (registerOtpCrud.existsById(dto.getEmail()))
-                    throw new ApplicationException(ErrorCodes.OTP_HAS_NOT_EXPIRED);
+                    throw new AppExc(ErrorCodes.OTP_HAS_NOT_EXPIRED);
                 registerOtpCrud.save(RegisterOtp.builder()
                     .email(dto.getEmail())
                     .otp(otp)
@@ -158,11 +158,11 @@ public class AccountService {
 
             case OtpTypes.LOST_PASSWORD:
                 Account account = accountRepository.findByUsername(dto.getEmail())
-                    .orElseThrow(() -> new ApplicationException(ErrorCodes.EMAIL_NOT_FOUND));
+                    .orElseThrow(() -> new AppExc(ErrorCodes.EMAIL_NOT_FOUND));
                 if (Objects.nonNull(account.getOauth2ServiceEnum()))
-                    throw new ApplicationException(ErrorCodes.FORBIDDEN_USER);
+                    throw new AppExc(ErrorCodes.FORBIDDEN_USER);
                 if (lostPassOtpCrud.existsById(dto.getEmail()))
-                    throw new ApplicationException(ErrorCodes.OTP_HAS_NOT_EXPIRED);
+                    throw new AppExc(ErrorCodes.OTP_HAS_NOT_EXPIRED);
                 lostPassOtpCrud.save(LostPassOtp.builder()
                     .email(dto.getEmail())
                     .otp(otp)
@@ -174,19 +174,19 @@ public class AccountService {
                 return VerifyEmailResponse.builder().otpAgeInSeconds(LostPassOtp.OTP_AGE).build();
 
             default:
-                throw new ApplicationException(ErrorCodes.OTP_TYPE_NOT_FOUND);
+                throw new AppExc(ErrorCodes.OTP_TYPE_NOT_FOUND);
         }
     }
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void register(RegisterRequest dto) {
         if (accountRepository.existsByUsername(dto.getEmail()))
-            throw new ApplicationException(ErrorCodes.DUPLICATED_EMAIL);
+            throw new AppExc(ErrorCodes.DUPLICATED_EMAIL);
 
         RegisterOtp otp = registerOtpCrud.findById(dto.getEmail())
-            .orElseThrow(() -> new ApplicationException(ErrorCodes.OTP_NOT_FOUND));
+            .orElseThrow(() -> new AppExc(ErrorCodes.OTP_NOT_FOUND));
         if (!otp.getOtp().equals(dto.getOtp()))
-            throw new ApplicationException(ErrorCodes.OTP_NOT_CORRECT);
+            throw new AppExc(ErrorCodes.OTP_NOT_CORRECT);
 
         this.registerUserCore(dto);
     }
@@ -195,7 +195,7 @@ public class AccountService {
     public void registerUserCore(RegisterRequest dto) {
         var authorities = List.of(
             authorityRepository.findByEnumStr(AuthorityEnum.ROLE_USER.toString())
-                .orElseThrow(() -> new ApplicationException(ErrorCodes.UNAWARE_ERROR))
+                .orElseThrow(() -> new AppExc(ErrorCodes.UNAWARE_ERROR))
         );
         var oauth2Enum = (dto.getOauth2Service() == null) ? null : Oauth2ServiceEnum.valueOf(dto.getOauth2Service());
         var savedAccount = accountRepository.save(Account.builder()
@@ -258,15 +258,15 @@ public class AccountService {
     public void lostPassword(LostPassRequest dto) {
         Map<String, String> emailCustom = emailService.getEmailCustom();
         var account = accountRepository.findByUsername(dto.getEmail())
-            .orElseThrow(() -> new ApplicationException(ErrorCodes.EMAIL_NOT_FOUND));
+            .orElseThrow(() -> new AppExc(ErrorCodes.EMAIL_NOT_FOUND));
 
         LostPassOtp otp = lostPassOtpCrud.findById(dto.getEmail())
-            .orElseThrow(() -> new ApplicationException(ErrorCodes.OTP_NOT_FOUND));
+            .orElseThrow(() -> new AppExc(ErrorCodes.OTP_NOT_FOUND));
         if (!otp.getOtp().equals(dto.getOtp()))
-            throw new ApplicationException(ErrorCodes.OTP_NOT_CORRECT);
+            throw new AppExc(ErrorCodes.OTP_NOT_CORRECT);
 
         if (!account.isStatus() || Objects.nonNull(account.getOauth2ServiceEnum()))
-            throw new ApplicationException(ErrorCodes.FORBIDDEN_USER);
+            throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
         String newPassword = OtpGenerator.randOTP();
         account.setPassword(userPasswordEncoder.encode(newPassword));
@@ -281,10 +281,10 @@ public class AccountService {
     public void changePassword(String token, ChangePassRequest dto) {
         String email = jwtService.readPayload(token).getOrDefault("sub", "");
         Account account = accountRepository.findByUsername(email)
-            .orElseThrow(() -> new ApplicationException(ErrorCodes.INVALID_TOKEN));
+            .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_TOKEN));
 
         if (Objects.nonNull(account.getOauth2ServiceEnum()))
-            throw new ApplicationException(ErrorCodes.FORBIDDEN_USER);
+            throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
         account.setPassword(userPasswordEncoder.encode(dto.getPassword()));
         accountRepository.save(account);

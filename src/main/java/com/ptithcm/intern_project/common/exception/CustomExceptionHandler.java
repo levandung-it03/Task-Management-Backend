@@ -48,10 +48,10 @@ public class CustomExceptionHandler {
         return response;
     }
 
-    @ExceptionHandler(ApplicationException.class)
-    public ResponseEntity<RestApiResponse<Void>> handleApplicationException(ApplicationException e) {
+    @ExceptionHandler(AppExc.class)
+    public ResponseEntity<RestApiResponse<Void>> handleAppExc(AppExc e) {
         ErrorCodes err = e.getErrorEnum();
-        log.info("[HANDLER]_ApplicationException: {}", err);
+        log.info("[HANDLER]_AppExc: {}", err);
         return RestApiResponse.fromErr(err);
     }
 

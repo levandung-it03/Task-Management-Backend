@@ -4,7 +4,7 @@ package com.ptithcm.intern_project.service;
 import com.ptithcm.intern_project.common.enums.AuthorityEnum;
 import com.ptithcm.intern_project.common.enums.ErrorCodes;
 import com.ptithcm.intern_project.common.enums.Oauth2ServiceEnum;
-import com.ptithcm.intern_project.common.exception.ApplicationException;
+import com.ptithcm.intern_project.common.exception.AppExc;
 import com.ptithcm.intern_project.dto.request.DTO_Oauth2Authenticate;
 import com.ptithcm.intern_project.dto.response.DTO_Oauth2GoogleUserResponse;
 import lombok.RequiredArgsConstructor;
@@ -85,7 +85,7 @@ public class Oauth2Service {
                 authorizer.append("&scope=").append(String.join("%20", GITHUB_OAUTH2_SCOPES));
                 break;
             default:
-                throw new ApplicationException(ErrorCodes.UNAWARE_ERROR);
+                throw new AppExc(ErrorCodes.UNAWARE_ERROR);
         }
         return authorizer.toString();
     }
@@ -113,7 +113,7 @@ public class Oauth2Service {
                 if (Objects.isNull(userInfoResponse)
                     || Objects.isNull(userInfoResponse.getEmailAddresses())
                     || Objects.isNull(userInfoResponse.getNames())) {
-                    throw new ApplicationException(ErrorCodes.OAUTH2_PERMISSION);
+                    throw new AppExc(ErrorCodes.OAUTH2_PERMISSION);
                 }
                 if (Objects.nonNull(userInfoResponse.getBirthdays())) {
                     Map<String, Integer> birthdaysMap = (Map) userInfoResponse.getBirthdays().getLast().get("date");
@@ -150,7 +150,7 @@ public class Oauth2Service {
                 if (Objects.isNull(userInfoResponse)
                     || Objects.isNull(userInfoResponse.get("login"))
                     || Objects.isNull(userInfoResponse.get("name"))) {
-                    throw new ApplicationException(ErrorCodes.OAUTH2_PERMISSION);
+                    throw new AppExc(ErrorCodes.OAUTH2_PERMISSION);
                 }
                 oauth2UserInfo.put("sub", userInfoResponse.get("login"));
                 oauth2UserInfo.put("owner", userInfoResponse.get("name"));
@@ -159,7 +159,7 @@ public class Oauth2Service {
                 break;
             }
             default:
-                throw new ApplicationException(ErrorCodes.UNAWARE_ERROR);
+                throw new AppExc(ErrorCodes.UNAWARE_ERROR);
         }
         return oauth2UserInfo;
     }
@@ -179,7 +179,7 @@ public class Oauth2Service {
         if (Objects.isNull(getTokenResponse)
             || Objects.isNull(getTokenResponse.get("access_token"))
             || getTokenResponse.get("access_token").toString().isBlank())
-            throw new ApplicationException(ErrorCodes.INVALID_TOKEN);
+            throw new AppExc(ErrorCodes.INVALID_TOKEN);
 
         return getTokenResponse.get("access_token").toString();
     }

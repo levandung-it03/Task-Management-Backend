@@ -3,14 +3,15 @@ package com.ptithcm.intern_project.dto.response;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ShortUserInfoResponse {
-    String email;
-    String fullName;
-    String role;
+public class PaginationResponse <T> {
+    int totalPages;
+    List<T> dataList;
 }

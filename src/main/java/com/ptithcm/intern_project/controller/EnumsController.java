@@ -1,5 +1,6 @@
 package com.ptithcm.intern_project.controller;
 
+import com.ptithcm.intern_project.common.enums.GroupRole;
 import com.ptithcm.intern_project.common.enums.SuccessCodes;
 import com.ptithcm.intern_project.common.wrapper.RestApiResponse;
 import com.ptithcm.intern_project.jpa.model.enums.*;
@@ -54,6 +55,11 @@ public class EnumsController {
     @GetMapping("/user-task-status")
     public ResponseEntity<RestApiResponse<HashMap<String, String>>> getUserTaskStatus() {
         return RestApiResponse.fromScs(SuccessCodes.GET_ENUMS, enumService.buildEnum(UserTaskStatus.class));
+    }
+
+    @GetMapping("/group-role")
+    public ResponseEntity<RestApiResponse<HashMap<String, String>>> getGroupRole() {
+        return RestApiResponse.fromScs(SuccessCodes.GET_ENUMS, enumService.buildEnum(GroupRole.class));
     }
 
 }

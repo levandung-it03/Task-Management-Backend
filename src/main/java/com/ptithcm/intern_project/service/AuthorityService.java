@@ -2,7 +2,7 @@ package com.ptithcm.intern_project.service;
 
 import com.ptithcm.intern_project.common.enums.AuthorityEnum;
 import com.ptithcm.intern_project.common.enums.ErrorCodes;
-import com.ptithcm.intern_project.common.exception.ApplicationException;
+import com.ptithcm.intern_project.common.exception.AppExc;
 import com.ptithcm.intern_project.jpa.model.Authority;
 import com.ptithcm.intern_project.jpa.repository.AuthorityRepository;
 import lombok.AccessLevel;
@@ -18,6 +18,6 @@ public class AuthorityService {
 
     public Authority findByEnumStr(AuthorityEnum authorityEnum) {
         return authorityRepository.findByEnumStr(authorityEnum.toString())
-            .orElseThrow(() -> new ApplicationException(ErrorCodes.UNAWARE_ERROR));
+            .orElseThrow(() -> new AppExc(ErrorCodes.UNAWARE_ERROR));
     }
 }

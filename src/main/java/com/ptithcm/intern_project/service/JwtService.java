@@ -8,7 +8,7 @@ import com.nimbusds.jwt.SignedJWT;
 import com.ptithcm.intern_project.common.enums.ErrorCodes;
 import com.ptithcm.intern_project.common.enums.TokenClaimNames;
 import com.ptithcm.intern_project.common.enums.TokenTypes;
-import com.ptithcm.intern_project.common.exception.ApplicationException;
+import com.ptithcm.intern_project.common.exception.AppExc;
 import com.ptithcm.intern_project.common.wrapper.GeneralTokenClaims;
 import com.ptithcm.intern_project.common.wrapper.TokenInfo;
 import lombok.*;
@@ -54,11 +54,11 @@ public class JwtService {
 
             return TokenInfo.builder().jti(tokenId).token(jwsObject.serialize()).build();
         } catch (JOSEException e) {
-            throw new ApplicationException(ErrorCodes.INVALID_TOKEN);
+            throw new AppExc(ErrorCodes.INVALID_TOKEN);
         }
     }
 
-    public JWTClaimsSet verifyTokenOrElseThrow(String token, boolean isIgnoreExpiry) throws ApplicationException {
+    public JWTClaimsSet verifyTokenOrElseThrow(String token, boolean isIgnoreExpiry) throws AppExc {
         try {
             //--Handle token Bearer type or not.
             var plainToken = token.contains("Bearer ") ? token.split("Bearer ")[1] : token;
@@ -67,16 +67,16 @@ public class JwtService {
             var macVerifier = new MACVerifier(customKeySpec);
             //--Verify with built Secret Key Spec.
             if (!signedJWT.verify(macVerifier))
-                throw new ApplicationException(ErrorCodes.INVALID_TOKEN);
+                throw new AppExc(ErrorCodes.INVALID_TOKEN);
             //--Parse token to proactively check expiry time.
             var jwtClaimsSet = signedJWT.getJWTClaimsSet();
             if (new Date().after(jwtClaimsSet.getExpirationTime())) {
                 if (isIgnoreExpiry)    return jwtClaimsSet;    //--Return claimsSet to work with.
-                throw new ApplicationException(ErrorCodes.EXPIRED_TOKEN);   //--Throw error to client to login again.
+                throw new AppExc(ErrorCodes.EXPIRED_TOKEN);   //--Throw error to client to login again.
             }
             return jwtClaimsSet;    //--Return claimsSet to work with.
         } catch (JOSEException | ParseException e) {
-            throw new ApplicationException(ErrorCodes.INVALID_TOKEN);
+            throw new AppExc(ErrorCodes.INVALID_TOKEN);
         }
     }
 

@@ -53,7 +53,7 @@ public class Account {
         inverseJoinColumns = @JoinColumn(name = "authority_id")
     )
     @JsonIgnore
-    Collection<Authority> authorities;
+    List<Authority> authorities;
 
     public static String buildScope(Collection<Authority> authorities) {
         return String.join(

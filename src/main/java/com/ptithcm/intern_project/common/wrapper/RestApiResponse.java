@@ -1,7 +1,7 @@
 package com.ptithcm.intern_project.common.wrapper;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.ptithcm.intern_project.common.annotation.Overloads;
+import com.ptithcm.intern_project.common.annotation.general.Overloads;
 import com.ptithcm.intern_project.common.enums.ErrorCodes;
 import com.ptithcm.intern_project.common.enums.SuccessCodes;
 import lombok.*;

@@ -1,7 +1,7 @@
 ```java
 package com.ptithcm.intern_project.common.annotation;
 
-import com.ptithcm.intern_project.common.annotation.validators.GenderValidator;
+import com.ptithcm.intern_project.common.annotation.validator.GenderValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 

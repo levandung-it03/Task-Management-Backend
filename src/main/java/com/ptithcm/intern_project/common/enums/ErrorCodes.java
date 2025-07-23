@@ -19,6 +19,7 @@ public enum ErrorCodes {
     EXPIRED_SESSION(10006, "Session is expired, please login again", UNAUTHORIZED),
     WEIRD_ENUM(10007, "Enum value is invalid", BAD_REQUEST),
     INVALID_ID(10008, "Id is not existed in Database", BAD_REQUEST),
+    INVALID_IDS(10009, "Some Id in list is not existed in Database", BAD_REQUEST),
     //--Account(11)
     FORBIDDEN_USER(11000, "User not found or access denied", FORBIDDEN),
     INVALID_CREDENTIALS(11001, "Invalid Credentials", BAD_REQUEST),
@@ -34,6 +35,10 @@ public enum ErrorCodes {
     //--Department(12)
     DEPARTMENT_NOT_FOUND(12000, "Department not found", BAD_REQUEST),
     DEPARTMENT_ALREADY_EXISTS(12001, "Department already exists", BAD_REQUEST),
+    //--Group(13)
+    EMP_CANT_BE_ADMIN(13000, "Employee cannot be an Admin", BAD_REQUEST),
+    AT_LEAST_ONE_ADMIN(13001, "Group must has at least one admin", BAD_REQUEST),
+    CANT_KICK_YOURSELF(13002, "Cannot kick yourself", BAD_REQUEST),
     ;
     int code;
     String msg;

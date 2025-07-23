@@ -1,23 +1,26 @@
 package com.ptithcm.intern_project.dto.request;
 
-import com.ptithcm.intern_project.common.annotation.constraint.OtpConstraint;
+import com.ptithcm.intern_project.common.annotation.constraint.ListTypeConstraint;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-@Data
+import java.util.List;
+
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ChangePassRequest {
+public class UpdatedGroupRequest {
     @NotNull
     @NotEmpty
-    String password;
+    String name;
 
     @NotNull
     @NotEmpty
-    @OtpConstraint
-    String otp;
+    @ListTypeConstraint(type = String.class)
+    List<String> addedEmails;
 }

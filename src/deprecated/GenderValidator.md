@@ -1,5 +1,5 @@
 ```java
-package com.ptithcm.intern_project.common.annotation.validators;
+package com.ptithcm.intern_project.common.annotation.validator;
 
 import com.ptithcm.intern_project.common.annotation.GenderConstraint;
 import com.ptithcm.intern_project.jpa.model.UserInfo;

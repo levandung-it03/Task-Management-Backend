@@ -1,5 +1,6 @@
 package com.ptithcm.intern_project.dto.response;
 
+import com.ptithcm.intern_project.common.enums.GroupRole;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -11,12 +12,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class GroupResponse {
+public class GroupUserResponse {
     Long id;
-    ShortUserInfoResponse createdByUser;    //--Equivalent: `DTO_FastUserInfo`
-    String name;
-    boolean isActive;
-    int userQuantity;
-    LocalDateTime createdTime;
-    LocalDateTime updatedTime;
+    GroupRole role;
+    ShortUserInfoResponse joinedUser;
+    LocalDateTime involvedTime;
 }

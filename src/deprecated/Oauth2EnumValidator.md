@@ -1,5 +1,5 @@
 ```java
-package com.ptithcm.intern_project.common.annotation.validators;
+package com.ptithcm.intern_project.common.annotation.validator;
 
 import com.ptithcm.intern_project.common.annotation.Oauth2EnumConstraint;
 import com.ptithcm.intern_project.common.enums.Oauth2ServiceEnum;

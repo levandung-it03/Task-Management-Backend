@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 @Getter
 @Setter
@@ -20,8 +21,8 @@ public class Group {
     Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_created_id", referencedColumnName = "id", nullable = false)
-    UserInfo userInfo;
+    @JoinColumn(name = "created_by_id", referencedColumnName = "id", nullable = false)
+    UserInfo userInfoCreated;
 
     @Column(name = "name", nullable = false)
     String name;
@@ -34,4 +35,7 @@ public class Group {
 
     @Column(name = "updated_time", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
     LocalDateTime updatedTime;
+
+    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    ArrayList<GroupHasUsers> groupUsers = new ArrayList<>();
 }

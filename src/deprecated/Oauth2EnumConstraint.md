@@ -1,7 +1,7 @@
 ```java
 package com.ptithcm.intern_project.common.annotation;
 
-import com.ptithcm.intern_project.common.annotation.validators.Oauth2EnumValidator;
+import com.ptithcm.intern_project.common.annotation.validator.Oauth2EnumValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 

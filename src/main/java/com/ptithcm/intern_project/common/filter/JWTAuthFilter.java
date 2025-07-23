@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ptithcm.intern_project.common.enums.ErrorCodes;
 import com.ptithcm.intern_project.common.enums.TokenClaimNames;
 import com.ptithcm.intern_project.common.enums.TokenTypes;
-import com.ptithcm.intern_project.common.exception.ApplicationException;
+import com.ptithcm.intern_project.common.exception.AppExc;
 import com.ptithcm.intern_project.common.wrapper.RestApiResponse;
 import com.ptithcm.intern_project.jpa.model.Account;
 import com.ptithcm.intern_project.redis.crud.InvalidTokenCrud;
@@ -51,7 +51,7 @@ public class JWTAuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain)
-        throws ServletException, IOException, ApplicationException {
+        throws ServletException, IOException, AppExc {
         try {
             if (isBypassToken(request)) {
                 filterChain.doFilter(request, response);
@@ -60,31 +60,31 @@ public class JWTAuthFilter extends OncePerRequestFilter {
             final String token = request.getHeader("Authorization");
             if (token == null || !token.startsWith("Bearer ")) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                throw new ApplicationException(ErrorCodes.INVALID_TOKEN);
+                throw new AppExc(ErrorCodes.INVALID_TOKEN);
             }
             var jwtClaimSet = jwtService.verifyTokenOrElseThrow(token, true);
             switch (TokenTypes.valueOf(jwtClaimSet.getClaim(TokenClaimNames.TOKEN_TYPE.getStr()).toString())) {
                 case ACCESS, OAUTH2_ACCESS:
                     if (invalidTokenCrud.existsById(jwtClaimSet.getJWTID())) {
-                        throw new ApplicationException(ErrorCodes.INVALID_TOKEN);
+                        throw new AppExc(ErrorCodes.INVALID_TOKEN);
                     }
                     if (new Date().after(jwtClaimSet.getExpirationTime())) {
-                        throw new ApplicationException(ErrorCodes.EXPIRED_TOKEN);
+                        throw new AppExc(ErrorCodes.EXPIRED_TOKEN);
                     }
                     break;
                 case REFRESH, OAUTH2_REFRESH:
                     if (!request.getRequestURI().contains("/auth/private/")) {
-                        throw new ApplicationException(ErrorCodes.INVALID_TOKEN);
+                        throw new AppExc(ErrorCodes.INVALID_TOKEN);
                     }
                     if (!refreshTokenCrud.existsById(jwtClaimSet.getJWTID())) {
-                        throw new ApplicationException(ErrorCodes.EXPIRED_SESSION);
+                        throw new AppExc(ErrorCodes.EXPIRED_SESSION);
                     }
                     if (new Date().after(jwtClaimSet.getExpirationTime())) {
-                        throw new ApplicationException(ErrorCodes.EXPIRED_SESSION);
+                        throw new AppExc(ErrorCodes.EXPIRED_SESSION);
                     }
                     break;
                 default:
-                    throw new ApplicationException(ErrorCodes.INVALID_TOKEN);
+                    throw new AppExc(ErrorCodes.INVALID_TOKEN);
             }
             var authoritiesProvider = new UsernamePasswordAuthenticationToken(
                 jwtClaimSet.getSubject(), null,
@@ -92,12 +92,12 @@ public class JWTAuthFilter extends OncePerRequestFilter {
             authoritiesProvider.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authoritiesProvider);
             filterChain.doFilter(request, response);
-        } catch (ApplicationException e) {
+        } catch (AppExc e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             this.catchFilterException(response, e);
         } catch (RuntimeException e) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            this.catchFilterException(response, new ApplicationException(ErrorCodes.UNAWARE_ERROR));
+            this.catchFilterException(response, new AppExc(ErrorCodes.UNAWARE_ERROR));
         }
     }
 
@@ -106,7 +106,7 @@ public class JWTAuthFilter extends OncePerRequestFilter {
             || Arrays.stream(byPassedPrefix).anyMatch(pref -> request.getRequestURI().contains(pref));
     }
 
-    private void catchFilterException(HttpServletResponse response, ApplicationException e) throws IOException {
+    private void catchFilterException(HttpServletResponse response, AppExc e) throws IOException {
         var errorEnum = e.getErrorEnum();
         response.setContentType("application/json;charset=UTF-8");
         var writer = response.getWriter();

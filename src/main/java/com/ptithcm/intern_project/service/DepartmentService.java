@@ -1,7 +1,7 @@
 package com.ptithcm.intern_project.service;
 
 import com.ptithcm.intern_project.common.enums.ErrorCodes;
-import com.ptithcm.intern_project.common.exception.ApplicationException;
+import com.ptithcm.intern_project.common.exception.AppExc;
 import com.ptithcm.intern_project.jpa.model.Department;
 import com.ptithcm.intern_project.jpa.repository.DepartmentRepository;
 import com.ptithcm.intern_project.dto.request.DepartmentRequest;
@@ -22,7 +22,7 @@ public class DepartmentService {
 
     public IdResponse create(DepartmentRequest request) {
         if (departmentRepository.existsByName(request.getName())) {
-            throw new ApplicationException(ErrorCodes.DEPARTMENT_ALREADY_EXISTS);
+            throw new AppExc(ErrorCodes.DEPARTMENT_ALREADY_EXISTS);
         }
         var department = Department.builder()
             .name(request.getName())
@@ -34,21 +34,21 @@ public class DepartmentService {
 
     public void update(Long id, DepartmentRequest request) {
         Department department = departmentRepository.findById(id)
-            .orElseThrow(() -> new ApplicationException(ErrorCodes.DEPARTMENT_NOT_FOUND));
+            .orElseThrow(() -> new AppExc(ErrorCodes.DEPARTMENT_NOT_FOUND));
         department.setName(request.getName());
         departmentRepository.save(department);
     }
 
     public void delete(Long id) {
         if (!departmentRepository.existsById(id)) {
-            throw new ApplicationException(ErrorCodes.DEPARTMENT_NOT_FOUND);
+            throw new AppExc(ErrorCodes.DEPARTMENT_NOT_FOUND);
         }
         departmentRepository.deleteById(id);
     }
 
     public Department get(Long id) {
         return departmentRepository.findById(id)
-            .orElseThrow(() -> new ApplicationException(ErrorCodes.DEPARTMENT_NOT_FOUND));
+            .orElseThrow(() -> new AppExc(ErrorCodes.DEPARTMENT_NOT_FOUND));
     }
 
     public List<Department> getAll() {

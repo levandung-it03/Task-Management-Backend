@@ -21,7 +21,7 @@
 
             return TokenInfo.builder().jti(tokenId).token(jwsObject.serialize()).build();
         } catch (JOSEException e) {
-            throw new ApplicationException(ErrorCodes.INVALID_TOKEN);
+            throw new AppExc(ErrorCodes.INVALID_TOKEN);
         }
     }
 

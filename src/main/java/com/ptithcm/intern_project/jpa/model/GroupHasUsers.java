@@ -1,6 +1,6 @@
 package com.ptithcm.intern_project.jpa.model;
 
-import com.ptithcm.intern_project.jpa.model.enums.RoleOnEntity;
+import com.ptithcm.intern_project.common.enums.GroupRole;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -24,14 +24,17 @@ public class GroupHasUsers {
     @JoinColumn(name = "joined_user_info_id", referencedColumnName = "id", nullable = false)
     UserInfo joinedUserInfo;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_id", referencedColumnName = "id", nullable = false)
     Group group;
 
     @Column(name = "role", nullable = false)
     @Enumerated(EnumType.STRING)
-    RoleOnEntity role;
+    GroupRole role;
 
     @Column(name = "involved_time", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
     LocalDateTime involvedTime;
+
+    @Column(name = "active", columnDefinition = "BIT", nullable = false)
+    boolean active;
 }

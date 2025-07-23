@@ -10,7 +10,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class PaginationRequest<T> {
+public class PaginationRequest {
     String searchVal;
 
     String filterField;
@@ -21,6 +21,4 @@ public class PaginationRequest<T> {
 
     @Min(1)
     int page;
-
-    T data;
 }

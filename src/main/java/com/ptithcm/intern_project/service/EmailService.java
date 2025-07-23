@@ -1,7 +1,7 @@
 package com.ptithcm.intern_project.service;
 
 import com.ptithcm.intern_project.common.enums.ErrorCodes;
-import com.ptithcm.intern_project.common.exception.ApplicationException;
+import com.ptithcm.intern_project.common.exception.AppExc;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,7 +24,7 @@ public class EmailService {
     private String mailSender;
 
     @Async("taskExecutor")
-    public void sendSimpleEmail(String to, String subject, String text) throws ApplicationException {
+    public void sendSimpleEmail(String to, String subject, String text) throws AppExc {
         try {
             MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message, true);
@@ -36,7 +36,7 @@ public class EmailService {
 
             javaMailSender.send(message);
         } catch (Exception e) {
-            throw new ApplicationException(ErrorCodes.SENDING_EMAIL);
+            throw new AppExc(ErrorCodes.SENDING_EMAIL);
         }
     }
 
