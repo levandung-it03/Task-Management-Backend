@@ -246,5 +246,4 @@ public class TaskService {
             .stream().map(taskForUsersMapper::shortenTaskUserResponse)
             .toList();
     }
-
 }

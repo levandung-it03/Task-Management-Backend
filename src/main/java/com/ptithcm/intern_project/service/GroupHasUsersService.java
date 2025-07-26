@@ -52,19 +52,12 @@ public class GroupHasUsersService {
         groupUserRepository.save(changedGroupUser);
     }
 
-    @Transactional(rollbackFor = RuntimeException.class)
     public void kickUser(Long id, String token) {
-        var curUser = userInfoService.getUserInfo(token);
-        var kickedGroupUser = groupUserRepository.findById(id)
-            .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
+        this.updateGroupUserStatus(id, token, false);
+    }
 
-        if (this.isNotAdminOnGroup(curUser.getEmail()))
-            throw new AppExc(ErrorCodes.FORBIDDEN_USER);
-
-        if (kickedGroupUser.getJoinedUserInfo().getEmail().equals(curUser.getEmail()))
-            throw new AppExc(ErrorCodes.CANT_KICK_YOURSELF);
-
-        kickedGroupUser.setActive(false);
+    public void reAddUser(Long id, String token) {
+        this.updateGroupUserStatus(id, token, true);
     }
 
     public boolean isNotAdminOnGroup(String userEmailOnGroup) {
@@ -79,5 +72,20 @@ public class GroupHasUsersService {
 
     public List<UserInfo> getUsersGroupToAssign(String id, String username) {
         return groupUserRepository.findAllUsersGroupToAssign(id, username);
+    }
+
+    public void updateGroupUserStatus(Long groupId, String token, boolean status) {
+        var curUser = userInfoService.getUserInfo(token);
+        var kickedGroupUser = groupUserRepository.findById(groupId)
+            .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
+
+        if (this.isNotAdminOnGroup(curUser.getEmail()))
+            throw new AppExc(ErrorCodes.FORBIDDEN_USER);
+
+        if (kickedGroupUser.getJoinedUserInfo().getEmail().equals(curUser.getEmail()))
+            throw new AppExc(ErrorCodes.CANT_KICK_YOURSELF);
+
+        kickedGroupUser.setActive(status);
+        groupUserRepository.save(kickedGroupUser);
     }
 }
