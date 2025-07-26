@@ -6,6 +6,7 @@ import com.ptithcm.intern_project.common.enums.GroupRole;
 import com.ptithcm.intern_project.common.exception.AppExc;
 import com.ptithcm.intern_project.jpa.model.Group;
 import com.ptithcm.intern_project.jpa.model.GroupHasUsers;
+import com.ptithcm.intern_project.jpa.model.UserInfo;
 import com.ptithcm.intern_project.jpa.repository.GroupHasUsersRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -70,5 +71,13 @@ public class GroupHasUsersService {
         var currentUserInGroup = groupUserRepository.findByJoinedUserInfoEmail(userEmailOnGroup)
             .orElseThrow(() -> new AppExc(ErrorCodes.FORBIDDEN_USER));
         return !currentUserInGroup.getRole().equals(GroupRole.ADMIN);
+    }
+
+    public List<Group> findAllRelatedToUser(String username) {
+        return groupUserRepository.findAllRelatedToUser(username);
+    }
+
+    public List<UserInfo> getUsersGroupToAssign(String id, String username) {
+        return groupUserRepository.findAllUsersGroupToAssign(id, username);
     }
 }

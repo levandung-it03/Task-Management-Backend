@@ -4,15 +4,14 @@ import com.ptithcm.intern_project.common.enums.ErrorCodes;
 import com.ptithcm.intern_project.common.exception.AppExc;
 import com.ptithcm.intern_project.common.mapper.GroupHasUserMapper;
 import com.ptithcm.intern_project.common.mapper.GroupMapper;
+import com.ptithcm.intern_project.common.mapper.UserInfoMapper;
 import com.ptithcm.intern_project.common.util.PaginationUtil;
+import com.ptithcm.intern_project.dto.general.ShortUserInfoDTO;
 import com.ptithcm.intern_project.dto.request.ChangeGroupStatusRequest;
 import com.ptithcm.intern_project.dto.request.GroupRequest;
 import com.ptithcm.intern_project.dto.request.PaginationRequest;
 import com.ptithcm.intern_project.dto.request.UpdatedGroupRequest;
-import com.ptithcm.intern_project.dto.response.DetailGroupResponse;
-import com.ptithcm.intern_project.dto.response.GroupResponse;
-import com.ptithcm.intern_project.dto.response.IdResponse;
-import com.ptithcm.intern_project.dto.response.PaginationResponse;
+import com.ptithcm.intern_project.dto.response.*;
 import com.ptithcm.intern_project.jpa.model.Group;
 import com.ptithcm.intern_project.jpa.model.GroupHasUsers;
 import com.ptithcm.intern_project.jpa.repository.GroupRepository;
@@ -24,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +34,9 @@ public class GroupService {
     UserInfoService userInfoService;
     GroupMapper groupMapper;
     GroupHasUserMapper groupHasUserMapper;
+    JwtService jwtService;
+    GroupHasUsersService groupHasUsersService;
+    UserInfoMapper userInfoMapper;
 
     public PaginationResponse<GroupResponse> getPaginatedGroups(PaginationRequest request, String token) {
         var curUser = userInfoService.getUserInfo(token);
@@ -121,5 +124,17 @@ public class GroupService {
             groupUser.getJoinedUserInfo().getEmail().equals(email)
         );
         return userCreatedGroup || userRelatedToGroup;
+    }
+
+    public List<Group> getRelatedGroups(String token) {
+        var username = jwtService.readPayload(token).get("sub");
+        return groupHasUsersService.findAllRelatedToUser(username);
+    }
+
+    public List<ShortUserInfoDTO> getUsersGroupToAssign(String id, String token) {
+        var username = jwtService.readPayload(token).get("sub");
+        return groupUsersService.getUsersGroupToAssign(id, username)
+            .stream().map(userInfoMapper::shortenUserInfo)
+            .toList();
     }
 }

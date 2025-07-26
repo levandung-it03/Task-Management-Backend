@@ -1,76 +1,162 @@
--- === Step 1: Insert authorities ===
+-- Reset tất cả table (nếu có dữ liệu cũ)
+SET FOREIGN_KEY_CHECKS = 0;
+TRUNCATE TABLE `authority`;
+TRUNCATE TABLE `account`;
+TRUNCATE TABLE `user_info`;
+TRUNCATE TABLE `department`;
+TRUNCATE TABLE `project`;
+TRUNCATE TABLE `project_role`;
+TRUNCATE TABLE `collection`;
+TRUNCATE TABLE `phase`;
+TRUNCATE TABLE `task`;
+TRUNCATE TABLE `task_for_users`;
+-- Nếu còn bảng phụ thì tương tự
+SET FOREIGN_KEY_CHECKS = 1;
+
+-- 1. Tạo Departments
+INSERT INTO department (name)
+VALUES ('IT'),
+       ('HR'),
+       ('Sales');
+
+-- 2. Tạo Authority dựa theo AuthorityEnum (ROLE_ADMIN, ROLE_PM, ROLE_LEAD, ROLE_EMP)
 INSERT INTO authority (name)
 VALUES ('ROLE_ADMIN'),
        ('ROLE_PM'),
        ('ROLE_LEAD'),
        ('ROLE_EMP');
 
--- === Step 2: Insert accounts ===
--- {ENCODED_PASSWORD} = 123123
+-- Lấy ID Authority để tạo AccountRole nếu cần (nếu dùng bảng join riêng) - ở đây bạn không có bảng Role riêng nên dùng List<Authority> trong Account
+
+-- 3. Tạo 10 Account ROLE_EMPLOYEE
 INSERT INTO account (username, password, status, created_time, updated_time)
-VALUES ('admin@gmail.com', '$2a$08$fU4tZF/pE.xyWDidbmkGOO7lqvFABd5rqOyIOvTWQxSUnhx.v3J9K', 1, NOW(), NOW()),
-       ('pm@gmail.com', '$2a$08$fU4tZF/pE.xyWDidbmkGOO7lqvFABd5rqOyIOvTWQxSUnhx.v3J9K', 1, NOW(), NOW()),
-       ('lead@gmail.com', '$2a$08$fU4tZF/pE.xyWDidbmkGOO7lqvFABd5rqOyIOvTWQxSUnhx.v3J9K', 1, NOW(), NOW()),
-       ('emp@gmail.com', '$2a$08$fU4tZF/pE.xyWDidbmkGOO7lqvFABd5rqOyIOvTWQxSUnhx.v3J9K', 1, NOW(), NOW()),
-       ('thanhlongphong647@gmail.com', '$2a$08$fU4tZF/pE.xyWDidbmkGOO7lqvFABd5rqOyIOvTWQxSUnhx.v3J9K', 1, NOW(), NOW());
+VALUES ('employee1', 'pass1', 1, NOW(), NOW()),
+       ('employee2', 'pass2', 1, NOW(), NOW()),
+       ('employee3', 'pass3', 1, NOW(), NOW()),
+       ('employee4', 'pass4', 1, NOW(), NOW()),
+       ('employee5', 'pass5', 1, NOW(), NOW()),
+       ('employee6', 'pass6', 1, NOW(), NOW()),
+       ('employee7', 'pass7', 1, NOW(), NOW()),
+       ('employee8', 'pass8', 1, NOW(), NOW()),
+       ('employee9', 'pass9', 1, NOW(), NOW()),
+       ('employee10', 'pass10', 1, NOW(), NOW());
 
--- === Step 3: Insert account-authority mapping ===
-INSERT INTO account_authorities (account_id, authority_id)
-SELECT a.id, au.id
-FROM account a,
-     authority au
-WHERE a.username = 'admin@gmail.com'
-  AND au.name = 'ROLE_ADMIN';
+-- 4. Tạo 3 Account ROLE_LEAD
+INSERT INTO account (username, password, status, created_time, updated_time)
+VALUES ('lead1', 'passlead1', 1, NOW(), NOW()),
+       ('lead2', 'passlead2', 1, NOW(), NOW()),
+       ('lead3', 'passlead3', 1, NOW(), NOW());
 
-INSERT INTO account_authorities (account_id, authority_id)
-SELECT a.id, au.id
-FROM account a,
-     authority au
-WHERE a.username = 'pm@gmail.com'
-  AND au.name = 'ROLE_PM';
+-- 5. Tạo 1 Account ROLE_PM (Owner project)
+INSERT INTO account (username, password, status, created_time, updated_time)
+VALUES ('pm1', 'passpm1', 1, NOW(), NOW());
 
-INSERT INTO account_authorities (account_id, authority_id)
-SELECT a.id, au.id
-FROM account a,
-     authority au
-WHERE a.username = 'lead@gmail.com'
-  AND au.name = 'ROLE_LEAD';
+-- 6. Tạo UserInfo liên kết Account, 10 employee + 3 lead + 1 pm, phòng ban assign đơn giản
+INSERT INTO user_info (full_name, email, phone, identity, department_id, account_id, date_of_birth)
+VALUES ('Employee 1', 'employee1@example.com', '0900000001', 'ID001', 1, 1, '1990-01-01'),
+       ('Employee 2', 'employee2@example.com', '0900000002', 'ID002', 1, 2, '1990-02-01'),
+       ('Employee 3', 'employee3@example.com', '0900000003', 'ID003', 1, 3, '1990-03-01'),
+       ('Employee 4', 'employee4@example.com', '0900000004', 'ID004', 1, 4, '1990-04-01'),
+       ('Employee 5', 'employee5@example.com', '0900000005', 'ID005', 1, 5, '1990-05-01'),
+       ('Employee 6', 'employee6@example.com', '0900000006', 'ID006', 1, 6, '1990-06-01'),
+       ('Employee 7', 'employee7@example.com', '0900000007', 'ID007', 1, 7, '1990-07-01'),
+       ('Employee 8', 'employee8@example.com', '0900000008', 'ID008', 1, 8, '1990-08-01'),
+       ('Employee 9', 'employee9@example.com', '0900000009', 'ID009', 1, 9, '1990-09-01'),
+       ('Employee 10', 'employee10@example.com', '0900000010', 'ID010', 1, 10, '1990-10-01'),
+       ('Lead 1', 'lead1@example.com', '0910000001', 'ID011', 2, 11, '1985-01-01'),
+       ('Lead 2', 'lead2@example.com', '0910000002', 'ID012', 2, 12, '1985-02-01'),
+       ('Lead 3', 'lead3@example.com', '0910000003', 'ID013', 2, 13, '1985-03-01'),
+       ('PM 1', 'pm1@example.com', '0920000001', 'ID014', 3, 14, '1980-01-01');
 
-INSERT INTO account_authorities (account_id, authority_id)
-SELECT a.id, au.id
-FROM account a,
-     authority au
-WHERE a.username IN ('emp@gmail.com', 'thanhlongphong647@gmail.com')
-  AND au.name = 'ROLE_EMP';
+-- 7. Gán ROLE_EMP cho 10 Employee (Account id 1~10), ROLE_LEAD cho 11~13, ROLE_PM cho 14
+-- Tạm bỏ qua vì không có bảng join riêng giữa Account - Authority
 
--- === Step 4: Insert departments ===
-INSERT INTO department (name)
-VALUES ('IT Department'),
-       ('HR Department');
+-- 8. Tạo Project do PM tạo (Owner)
+INSERT INTO project
+(created_by_id, name, description, start_date, due_date, status, created_time, updated_time)
+VALUES (14, 'Project 1', 'Sample Project', CURDATE(), DATE_ADD(CURDATE(), INTERVAL 30 DAY), 1, NOW(), NOW());
 
--- === Step 5: Insert user_info with full data ===
-INSERT INTO user_info (full_name, email, phone, department_id, account_id, date_of_birth)
-VALUES ('IT Admin', 'admin@gmail.com', '0123456789',
-        (SELECT id FROM department WHERE name = 'IT Department'),
-        (SELECT id FROM account WHERE username = 'admin@gmail.com'),
-        NULL),
+-- Lấy ID Project mới tạo giả sử là 1
 
-       ('Hải PM', 'pm@gmail.com', '0123456790',
-        (SELECT id FROM department WHERE name = 'IT Department'),
-        (SELECT id FROM account WHERE username = 'pm@gmail.com'),
-        NULL),
+-- 9. Tạo ProjectRole: PM là OWNER, 2 LEAD là MEMBER trên project 1
+INSERT INTO project_role (user_info_id, project_id, role)
+VALUES (14, 1, 'OWNER'),
+       (11, 1, 'MEMBER'),
+       (12, 1, 'MEMBER');
 
-       ('Le Van Dung', 'lead@gmail.com', '0987654321',
-        (SELECT id FROM department WHERE name = 'IT Department'),
-        (SELECT id FROM account WHERE username = 'lead@gmail.com'),
-        '2003-12-11'),
+-- 10. Tạo Collection thuộc project (cần userInfoCreated chỉ là LEAD hoặc PM đã thuộc project)
+INSERT INTO collection
+(user_info_created_id, phase_id, name, description, start_date, due_date, created_time, updated_time)
+VALUES (11, 1, 'Collection 1', 'Description collection', CURDATE(), DATE_ADD(CURDATE(), INTERVAL 15 DAY), NOW(), NOW());
 
-       ('Lê Văn Dũng', 'emp@gmail.com', '0987654322',
-        (SELECT id FROM department WHERE name = 'IT Department'),
-        (SELECT id FROM account WHERE username = 'emp@gmail.com'),
-        '2003-12-11'),
+-- Tuy nhiên Collection cần reference Phase - tạo Phase trước
 
-       ('Dũng Lê Văn', 'thanhlongphong647@gmail.com', '0987654323',
-        (SELECT id FROM department WHERE name = 'IT Department'),
-        (SELECT id FROM account WHERE username = 'thanhlongphong647@gmail.com'),
-        '2003-12-11');
+-- 11. Tạo Phase thuộc project 1, do LEAD tạo
+INSERT INTO phase
+(created_by_id, project_id, name, description, start_date, due_date, created_time, updated_time)
+VALUES (11, 1, 'Phase 1', 'Phase description', CURDATE(), DATE_ADD(CURDATE(), INTERVAL 10 DAY), NOW(), NOW());
+
+-- Giả sử Phase id = 1
+
+-- 12. Update Collection để assign phase_id
+UPDATE collection
+SET phase_id = 1
+WHERE id = 1;
+
+-- 13. Tạo Root Task trong Collection, do LEAD tạo (owner)
+INSERT INTO task
+(collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked,
+ start_date, deadline, created_time, updated_time)
+VALUES (1, 11, NULL, 'Root Task 1', 'Root task description', 'Format 1', 'NORMAL', 'BACKEND', 'HIGH', 0, CURDATE(),
+        DATE_ADD(CURDATE(), INTERVAL 7 DAY), NOW(), NOW());
+
+-- Giả sử Task id = 1 (Root Task)
+
+-- 14. Tạo 2 Sub-Tasks (con của Root Task)
+INSERT INTO task
+(collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked,
+ start_date, deadline, created_time, updated_time)
+VALUES (1, 11, 1, 'Sub Task 1', 'Sub task 1 desc', 'Format Sub1', 'NORMAL', 'BACKEND', 'HIGH', 0, CURDATE(),
+        DATE_ADD(CURDATE(), INTERVAL 3 DAY), NOW(), NOW()),
+       (1, 12, 1, 'Sub Task 2', 'Sub task 2 desc', 'Format Sub2', 'ADVANCED', 'FRONTEND', 'NORMAL', 0, CURDATE(),
+        DATE_ADD(CURDATE(), INTERVAL 4 DAY), NOW(), NOW());
+
+-- Sub Task id giả sử là 2 và 3
+
+-- 15. Tạo TaskForUsers cho Sub-Task 1: gán 2 nhân viên
+INSERT INTO task_for_users (assigned_to_id, task_id, user_task_status, updated_time)
+VALUES (1, 2, 'JOINED', NOW()), -- Employee 1
+       (2, 2, 'JOINED', NOW());
+-- Employee 2
+
+-- Tạo TaskForUsers cho Sub-Task 2: gán 2 nhân viên khác
+INSERT INTO task_for_users (assigned_to_id, task_id, user_task_status, updated_time)
+VALUES (3, 3, 'JOINED', NOW()), -- Employee 3
+       (4, 3, 'JOINED', NOW());
+-- Employee 4
+
+-- 16. Đảm bảo Root Task (task_id=1) không có TaskForUsers (đã rỗng theo nghiệp vụ)
+
+-- Kiểm tra lại AUTO_INCREMENT các bảng để tránh lỗi
+ALTER TABLE authority
+    AUTO_INCREMENT = 5;
+ALTER TABLE account
+    AUTO_INCREMENT = 15;
+ALTER TABLE user_info
+    AUTO_INCREMENT = 15;
+ALTER TABLE department
+    AUTO_INCREMENT = 4;
+ALTER TABLE project
+    AUTO_INCREMENT = 2;
+ALTER TABLE project_role
+    AUTO_INCREMENT = 4;
+ALTER TABLE collection
+    AUTO_INCREMENT = 2;
+ALTER TABLE phase
+    AUTO_INCREMENT = 2;
+ALTER TABLE task
+    AUTO_INCREMENT = 4;
+ALTER TABLE task_for_users
+    AUTO_INCREMENT = 5;
+
+-- COMMIT nếu cần

@@ -5,6 +5,7 @@ import com.ptithcm.intern_project.common.enums.*;
 import com.ptithcm.intern_project.common.exception.AppExc;
 import com.ptithcm.intern_project.common.wrapper.GeneralTokenClaims;
 import com.ptithcm.intern_project.common.wrapper.TokenInfo;
+import com.ptithcm.intern_project.dto.general.TokenDTO;
 import com.ptithcm.intern_project.jpa.model.Account;
 import com.ptithcm.intern_project.jpa.model.UserInfo;
 import com.ptithcm.intern_project.jpa.repository.AccountRepository;

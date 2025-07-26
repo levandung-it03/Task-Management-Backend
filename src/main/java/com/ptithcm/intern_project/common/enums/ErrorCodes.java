@@ -39,6 +39,12 @@ public enum ErrorCodes {
     EMP_CANT_BE_ADMIN(13000, "Employee cannot be an Admin", BAD_REQUEST),
     AT_LEAST_ONE_ADMIN(13001, "Group must has at least one admin", BAD_REQUEST),
     CANT_KICK_YOURSELF(13002, "Cannot kick yourself", BAD_REQUEST),
+    //--Task(14)
+    INVALID_TASK_START_DATE(14000, "Invalid task start date", BAD_REQUEST),
+    INVALID_TASK_DEADLINE(14001, "Invalid task deadline", BAD_REQUEST),
+    INVALID_SUB_TASK_START_DATE(14002, "Start date on Sub Task cannot be after Root Task", BAD_REQUEST),
+    INVALID_SUB_TASK_DEADLINE(14003, "Deadline on Sub Task cannot be after Root Task", BAD_REQUEST),
+    TASK_ENDED(14004, "Cannot change an ended Task", BAD_REQUEST),
     ;
     int code;
     String msg;

@@ -27,8 +27,8 @@ public class Group {
     @Column(name = "name", nullable = false)
     String name;
 
-    @Column(name = "is_active", nullable = false, columnDefinition = "BIT DEFAULT 1")
-    boolean isActive;
+    @Column(name = "active", nullable = false, columnDefinition = "BIT DEFAULT 1")
+    boolean active;
 
     @Column(name = "created_time", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
     LocalDateTime createdTime;
