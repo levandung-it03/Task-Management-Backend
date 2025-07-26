@@ -9,6 +9,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 @Getter
 @Setter
@@ -75,4 +76,7 @@ public class Task {
 
     @Column(name = "updated_time", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
     LocalDateTime updatedTime;
+
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    ArrayList<TaskForUsers> taskForUsers = new ArrayList<>();
 }

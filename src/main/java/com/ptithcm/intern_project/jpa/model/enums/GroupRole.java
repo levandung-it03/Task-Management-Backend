@@ -1,7 +1,7 @@
 package com.ptithcm.intern_project.jpa.model.enums;
 
-public enum UserTaskStatus {
-    JOINED,
-    KICKED_OUT,
+public enum GroupRole {
+    ADMIN,
+    MEMBER,
     ;
 }

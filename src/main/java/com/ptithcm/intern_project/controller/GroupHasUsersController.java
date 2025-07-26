@@ -4,6 +4,7 @@ import com.ptithcm.intern_project.common.enums.SuccessCodes;
 import com.ptithcm.intern_project.common.wrapper.RestApiResponse;
 import com.ptithcm.intern_project.dto.request.ChangeGroupRoleRequest;
 import com.ptithcm.intern_project.service.GroupHasUsersService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import static com.ptithcm.intern_project.common.constvalues.AuthorityValues.*;
 public class GroupHasUsersController {
     GroupHasUsersService groupHasUsersService;
 
+    @Operation(description = "Update Group-Role of joined User by Group-User-Id")
     @PutMapping({ROLE_PM + "/group-user/{id}", ROLE_LEAD + "/group-user/{id}"})
     public ResponseEntity<RestApiResponse<Void>> update(
         @PathVariable("id") Long id,
@@ -29,6 +31,7 @@ public class GroupHasUsersController {
         return RestApiResponse.fromScs(SuccessCodes.GET_DETAIL);
     }
 
+    @Operation(description = "Kick joined User by Group-User-Id")
     @PutMapping({ROLE_PM + "/group-user/{id}/kick-user", ROLE_LEAD + "/group-user/{id}/kick-user"})
     public ResponseEntity<RestApiResponse<Void>> kickUser(
         @PathVariable("id") Long id,
@@ -36,4 +39,5 @@ public class GroupHasUsersController {
         groupHasUsersService.kickUser(id, token);
         return RestApiResponse.fromScs(SuccessCodes.GET_DETAIL);
     }
+
 }

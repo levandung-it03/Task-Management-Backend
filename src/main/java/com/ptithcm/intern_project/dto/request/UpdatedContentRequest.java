@@ -5,13 +5,14 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class TokenDTO {
-    @NotNull
+public class UpdatedContentRequest {
     @NotEmpty
-    String accessToken;
+    @NotNull
+    String content;
 }

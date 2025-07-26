@@ -1,7 +1,7 @@
 package com.ptithcm.intern_project.common.mapper;
 
 import com.ptithcm.intern_project.dto.response.GroupResponse;
-import com.ptithcm.intern_project.dto.response.ShortUserInfoResponse;
+import com.ptithcm.intern_project.dto.general.ShortUserInfoDTO;
 import com.ptithcm.intern_project.jpa.model.Group;
 import com.ptithcm.intern_project.jpa.model.UserInfo;
 import org.springframework.stereotype.Component;
@@ -15,7 +15,7 @@ public class GroupMapper {
         var userCreatedRole = group
             .getUserInfoCreated()
             .getAccount().getAuthorities().getFirst().getAuthority();
-        var shortUserInfo = ShortUserInfoResponse.builder()
+        var shortUserInfo = ShortUserInfoDTO.builder()
             .email(group.getUserInfoCreated().getEmail())
             .fullName(group.getUserInfoCreated().getFullName())
             .role(userCreatedRole)
@@ -37,7 +37,7 @@ public class GroupMapper {
             .userInfoCreated(userCreated)
             .createdTime(LocalDateTime.now())
             .updatedTime(LocalDateTime.now())
-            .isActive(true)
+            .active(true)
             .build();
     }
 }

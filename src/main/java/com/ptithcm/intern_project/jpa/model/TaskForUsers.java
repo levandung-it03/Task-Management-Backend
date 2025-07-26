@@ -14,7 +14,10 @@ import java.time.LocalDateTime;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "task_for_users")
+@Table(
+    name = "task_for_users",
+    uniqueConstraints = {@UniqueConstraint(columnNames = {"task_id", "assigned_to_id"})}
+)
 public class TaskForUsers {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

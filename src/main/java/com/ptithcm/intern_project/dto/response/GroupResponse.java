@@ -1,5 +1,6 @@
 package com.ptithcm.intern_project.dto.response;
 
+import com.ptithcm.intern_project.dto.general.ShortUserInfoDTO;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class GroupResponse {
     Long id;
-    ShortUserInfoResponse createdByUser;    //--Equivalent: `DTO_FastUserInfo`
+    ShortUserInfoDTO createdByUser;    //--Equivalent: `DTO_FastUserInfo`
     String name;
     boolean isActive;
     int userQuantity;

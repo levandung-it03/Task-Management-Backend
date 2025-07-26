@@ -1,4 +1,4 @@
-package com.ptithcm.intern_project.dto.response;
+package com.ptithcm.intern_project.dto.general;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -9,7 +9,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ShortUserInfoResponse {
+public class ShortUserInfoDTO {
     String email;
     String fullName;
     String role;

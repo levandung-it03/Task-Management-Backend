@@ -1,6 +1,7 @@
 package com.ptithcm.intern_project.controller;
 
 import com.ptithcm.intern_project.common.wrapper.RestApiResponse;
+import com.ptithcm.intern_project.dto.general.TokenDTO;
 import com.ptithcm.intern_project.dto.request.*;
 import com.ptithcm.intern_project.dto.response.AuthResponse;
 import com.ptithcm.intern_project.dto.response.VerifyEmailResponse;
