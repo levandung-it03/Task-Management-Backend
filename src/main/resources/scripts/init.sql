@@ -84,17 +84,16 @@ VALUES (14, 1, 'OWNER'),
        (11, 1, 'MEMBER'),
        (12, 1, 'MEMBER');
 
--- 10. Tạo Collection thuộc project (cần userInfoCreated chỉ là LEAD hoặc PM đã thuộc project)
-INSERT INTO collection
-(user_info_created_id, phase_id, name, description, start_date, due_date, created_time, updated_time)
-VALUES (11, 1, 'Collection 1', 'Description collection', CURDATE(), DATE_ADD(CURDATE(), INTERVAL 15 DAY), NOW(), NOW());
-
--- Tuy nhiên Collection cần reference Phase - tạo Phase trước
-
 -- 11. Tạo Phase thuộc project 1, do LEAD tạo
 INSERT INTO phase
 (created_by_id, project_id, name, description, start_date, due_date, created_time, updated_time)
 VALUES (11, 1, 'Phase 1', 'Phase description', CURDATE(), DATE_ADD(CURDATE(), INTERVAL 10 DAY), NOW(), NOW());
+
+
+-- 10. Tạo Collection thuộc project (cần userInfoCreated chỉ là LEAD hoặc PM đã thuộc project)
+INSERT INTO collection
+(created_by_id, phase_id, name, description, start_date, due_date, created_time, updated_time)
+VALUES (11, 1, 'Collection 1', 'Description collection', CURDATE(), DATE_ADD(CURDATE(), INTERVAL 15 DAY), NOW(), NOW());
 
 -- Giả sử Phase id = 1
 

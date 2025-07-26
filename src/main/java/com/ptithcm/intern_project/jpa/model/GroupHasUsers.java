@@ -32,8 +32,8 @@ public class GroupHasUsers {
     @Enumerated(EnumType.STRING)
     GroupRole role;
 
-    @Column(name = "involved_time", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
-    LocalDateTime involvedTime;
+    @Column(name = "involved_time", nullable = false)
+    LocalDateTime involvedTime = LocalDateTime.now();
 
     @Column(name = "active", columnDefinition = "BIT", nullable = false)
     boolean active;

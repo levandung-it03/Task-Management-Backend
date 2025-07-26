@@ -1,5 +1,6 @@
 package com.ptithcm.intern_project.jpa.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ptithcm.intern_project.jpa.model.enums.TaskLevel;
 import com.ptithcm.intern_project.jpa.model.enums.TaskPriority;
 import com.ptithcm.intern_project.jpa.model.enums.TaskType;
@@ -62,8 +63,8 @@ public class Task {
     @Column(name = "is_locked", nullable = false, columnDefinition = "BIT DEFAULT 0")
     boolean isLocked;
 
-    @Column(name = "start_date", nullable = false, columnDefinition = "DATE DEFAULT NOW()")
-    LocalDate startDate;
+    @Column(name = "start_date", nullable = false)
+    LocalDate startDate = LocalDate.now();
 
     @Column(name = "end_date")
     LocalDate endDate;
@@ -71,12 +72,13 @@ public class Task {
     @Column(name = "deadline", nullable = false)
     LocalDate deadline;
 
-    @Column(name = "created_time", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
-    LocalDateTime createdTime;
+    @Column(name = "created_time", nullable = false)
+    LocalDateTime createdTime = LocalDateTime.now();
 
-    @Column(name = "updated_time", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
-    LocalDateTime updatedTime;
+    @Column(name = "updated_time", nullable = false)
+    LocalDateTime updatedTime = LocalDateTime.now();
 
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     ArrayList<TaskForUsers> taskForUsers = new ArrayList<>();
 }

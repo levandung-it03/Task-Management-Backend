@@ -1,5 +1,6 @@
 package com.ptithcm.intern_project.jpa.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -30,12 +31,13 @@ public class Group {
     @Column(name = "active", nullable = false, columnDefinition = "BIT DEFAULT 1")
     boolean active;
 
-    @Column(name = "created_time", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
-    LocalDateTime createdTime;
+    @Column(name = "created_time", nullable = false)
+    LocalDateTime createdTime = LocalDateTime.now();
 
-    @Column(name = "updated_time", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
-    LocalDateTime updatedTime;
+    @Column(name = "updated_time", nullable = false)
+    LocalDateTime updatedTime = LocalDateTime.now();
 
     @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     ArrayList<GroupHasUsers> groupUsers = new ArrayList<>();
 }

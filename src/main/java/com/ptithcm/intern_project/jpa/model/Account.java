@@ -40,11 +40,11 @@ public class Account {
     @Column(name = "status", columnDefinition = "BIT", nullable = false)
     boolean status;
 
-    @Column(name = "created_time", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
-    LocalDateTime createdTime;
+    @Column(name = "created_time", nullable = false)
+    LocalDateTime createdTime = LocalDateTime.now();
 
-    @Column(name = "updated_time", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
-    LocalDateTime updatedTime;
+    @Column(name = "updated_time")
+    LocalDateTime updatedTime = LocalDateTime.now();
 
     @ManyToMany(fetch = FetchType.EAGER, targetEntity = Authority.class)
     @JoinTable(

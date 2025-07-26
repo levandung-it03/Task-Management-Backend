@@ -34,7 +34,7 @@ public class CommentOfReport {
     @Column(name = "comment", nullable = false)
     String comment;
 
-    @Column(name = "created_time", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
-    LocalDateTime createdTime;
+    @Column(name = "created_time", nullable = false)
+    LocalDateTime createdTime = LocalDateTime.now();
 
 }

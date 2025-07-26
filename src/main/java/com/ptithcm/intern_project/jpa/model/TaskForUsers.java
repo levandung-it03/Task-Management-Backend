@@ -35,6 +35,6 @@ public class TaskForUsers {
     @Enumerated(EnumType.STRING)
     UserTaskStatus userTaskStatus;
 
-    @Column(name = "updated_time", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
-    LocalDateTime updatedTime;
+    @Column(name = "updated_time", nullable = false)
+    LocalDateTime updatedTime = LocalDateTime.now();
 }

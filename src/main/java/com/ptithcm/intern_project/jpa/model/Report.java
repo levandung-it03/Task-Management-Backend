@@ -38,12 +38,12 @@ public class Report {
     @Enumerated(EnumType.STRING)
     ReportStatus reportStatus;
 
-    @Column(name = "reviewed_time", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
-    LocalDateTime reviewedTime;
+    @Column(name = "reviewed_time", nullable = false)
+    LocalDateTime reviewedTime = LocalDateTime.now();
 
-    @Column(name = "created_time", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
-    LocalDateTime createdTime;
+    @Column(name = "created_time", nullable = false)
+    LocalDateTime createdTime = LocalDateTime.now();
 
-    @Column(name = "updated_time", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
-    LocalDateTime updatedTime;
+    @Column(name = "updated_time", nullable = false)
+    LocalDateTime updatedTime = LocalDateTime.now();
 }

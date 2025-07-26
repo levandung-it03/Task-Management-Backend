@@ -34,8 +34,8 @@ public class Collection {
     @Column(name = "description", nullable = false)
     String description;
 
-    @Column(name = "start_date", nullable = false, columnDefinition = "DATE DEFAULT NOW()")
-    LocalDate startDate;
+    @Column(name = "start_date", nullable = false)
+    LocalDate startDate = LocalDate.now();
 
     @Column(name = "end_date")
     LocalDate endDate;
@@ -43,9 +43,9 @@ public class Collection {
     @Column(name = "due_date", nullable = false)
     LocalDate dueDate;
 
-    @Column(name = "created_time", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
-    LocalDateTime createdTime;
+    @Column(name = "created_time", nullable = false)
+    LocalDateTime createdTime = LocalDateTime.now();
 
-    @Column(name = "updated_time", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
-    LocalDateTime updatedTime;
+    @Column(name = "updated_time", nullable = false)
+    LocalDateTime updatedTime = LocalDateTime.now();
 }

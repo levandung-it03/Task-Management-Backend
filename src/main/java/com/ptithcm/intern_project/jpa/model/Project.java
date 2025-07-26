@@ -1,5 +1,6 @@
 package com.ptithcm.intern_project.jpa.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -31,8 +32,8 @@ public class Project {
     @Column(name = "description", nullable = false)
     String description;
 
-    @Column(name = "start_date", nullable = false, columnDefinition = "DATE DEFAULT NOW()")
-    LocalDate startDate;
+    @Column(name = "start_date", nullable = false)
+    LocalDate startDate = LocalDate.now();
 
     @Column(name = "end_date")
     LocalDate endDate;
@@ -43,12 +44,13 @@ public class Project {
     @Column(name = "status", columnDefinition = "BIT", nullable = false)
     boolean status;
 
-    @Column(name = "created_time", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
-    LocalDateTime createdTime;
+    @Column(name = "created_time", nullable = false)
+    LocalDateTime createdTime = LocalDateTime.now();
 
-    @Column(name = "updated_time", nullable = false, columnDefinition = "DATETIME DEFAULT NOW()")
-    LocalDateTime updatedTime;
+    @Column(name = "updated_time", nullable = false)
+    LocalDateTime updatedTime = LocalDateTime.now();
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     ArrayList<ProjectRole> projectUsers = new ArrayList<>();
 }
