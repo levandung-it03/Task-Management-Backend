@@ -40,4 +40,13 @@ public class GroupHasUsersController {
         return RestApiResponse.fromScs(SuccessCodes.GET_DETAIL);
     }
 
+    @Operation(description = "Re-add User by Group-User-Id")
+    @PutMapping({ROLE_PM + "/group-user/{id}/re-add-user", ROLE_LEAD + "/group-user/{id}/re-add-user"})
+    public ResponseEntity<RestApiResponse<Void>> reAddUser(
+        @PathVariable("id") Long id,
+        @RequestHeader("Authorization") String token) {
+        groupHasUsersService.reAddUser(id, token);
+        return RestApiResponse.fromScs(SuccessCodes.GET_DETAIL);
+    }
+
 }

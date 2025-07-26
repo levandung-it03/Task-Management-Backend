@@ -35,4 +35,25 @@ public class TaskForUsersController {
             taskForUsersService.searchUsersOfRootToCreateSubTask(taskId, query, token));
     }
 
+    @Operation(description = "Kick User out of specified Task")
+    @GetMapping({
+        ROLE_PM + "/task-user/{taskUserId}/kick-user",
+        ROLE_LEAD + "/task-user/{taskUserId}/kick-user"})
+    public ResponseEntity<RestApiResponse<Void>> kickUser(
+        @PathVariable("taskUserId") Long taskUserId,
+        @RequestHeader("Authorization") String token) {
+        taskForUsersService.kickUser(taskUserId, token);
+        return RestApiResponse.fromScs(SuccessCodes.GET_LIST);
+    }
+
+    @Operation(description = "Re-add User of specified Task")
+    @GetMapping({
+        ROLE_PM + "/task-user/{taskUserId}/re-add-user",
+        ROLE_LEAD + "/task-user/{taskUserId}/re-add-user"})
+    public ResponseEntity<RestApiResponse<Void>> reAddUser(
+        @PathVariable("taskUserId") Long taskUserId,
+        @RequestHeader("Authorization") String token) {
+        taskForUsersService.reAddUser(taskUserId, token);
+        return RestApiResponse.fromScs(SuccessCodes.GET_LIST);
+    }
 }

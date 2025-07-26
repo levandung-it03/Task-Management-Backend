@@ -99,9 +99,9 @@ public class TaskController {
 
     @Operation(description = "Get all Users by Task-Id to render on Task-Detail")
     @GetMapping({
-        ROLE_PM + "/task/{id}",
-        ROLE_LEAD + "/task/{id}",
-        ROLE_EMP + "/task/{id}"})
+        ROLE_PM + "/task/{id}/get-assigned-users",
+        ROLE_LEAD + "/task/{id}/get-assigned-users",
+        ROLE_EMP + "/task/{id}/get-assigned-users"})
     public ResponseEntity<RestApiResponse<List<ShortUserInfoDTO>>> getUsersOfTask(
         @PathVariable("id") Long id,
         @RequestHeader("Authorization") String token) {

@@ -6,6 +6,7 @@ import com.ptithcm.intern_project.jpa.model.Task;
 import com.ptithcm.intern_project.jpa.model.TaskForUsers;
 import com.ptithcm.intern_project.jpa.model.enums.UserTaskStatus;
 import com.ptithcm.intern_project.jpa.repository.TaskForUsersRepository;
+import com.ptithcm.intern_project.service.trans.TaskForUsersTransService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -25,6 +26,7 @@ public class TaskForUsersService {
     TaskForUsersRepository taskForUsersRepository;
     UserInfoMapper userInfoMapper;
     UserInfoService userInfoService;
+    TaskForUsersTransService taskForUsersTransService;
     JwtService jwtService;
 
     @Transactional(rollbackFor = RuntimeException.class)
@@ -79,5 +81,17 @@ public class TaskForUsersService {
 
     public List<TaskForUsers> searchRootTaskUsers(Long rootId, String query, String username) {
         return taskForUsersRepository.searchTheRestUsersOnRoot(rootId, query, username);
+    }
+
+    public Optional<TaskForUsers> findById(Long userTaskId) {
+        return taskForUsersRepository.findById(userTaskId);
+    }
+
+    public void kickUser(Long taskUserId, String token) {
+        taskForUsersTransService.updateTaskUserStatus(taskUserId, token, UserTaskStatus.KICKED_OUT);
+    }
+
+    public void reAddUser(Long taskUserId, String token) {
+        taskForUsersTransService.updateTaskUserStatus(taskUserId, token, UserTaskStatus.JOINED);
     }
 }
