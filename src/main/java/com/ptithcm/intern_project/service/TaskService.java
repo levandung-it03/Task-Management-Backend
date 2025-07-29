@@ -6,12 +6,14 @@ import com.ptithcm.intern_project.common.exception.AppExc;
 import com.ptithcm.intern_project.common.mapper.TaskForUsersMapper;
 import com.ptithcm.intern_project.common.mapper.TaskMapper;
 import com.ptithcm.intern_project.common.mapper.UserInfoMapper;
+import com.ptithcm.intern_project.dto.general.TaskCreationDTO;
 import com.ptithcm.intern_project.dto.request.TaskRequest;
 import com.ptithcm.intern_project.dto.request.UpdatedTaskRequest;
 import com.ptithcm.intern_project.dto.response.IdResponse;
 import com.ptithcm.intern_project.dto.general.ShortUserInfoDTO;
 import com.ptithcm.intern_project.dto.response.ShortTaskResponse;
 import com.ptithcm.intern_project.dto.response.TaskResponse;
+import com.ptithcm.intern_project.jpa.model.Collection;
 import com.ptithcm.intern_project.jpa.model.Task;
 import com.ptithcm.intern_project.jpa.model.TaskForUsers;
 import com.ptithcm.intern_project.jpa.model.enums.UserTaskStatus;
@@ -43,15 +45,27 @@ public class TaskService {
     TaskMapper taskMapper;
     TaskForUsersMapper taskForUsersMapper;
     JwtService jwtService;
+    ProjectService projectService;
 
     @Transactional(rollbackFor = RuntimeException.class)
-    public IdResponse create(TaskRequest request, String token) {
+    public IdResponse create(Collection collection, TaskRequest request, String token) {
         var userCreated = userInfoService.getUserInfo(token);
-        var rootTask = taskMapper.newModel(request, userCreated, null);
+        var rootTask = taskMapper.newModel(TaskCreationDTO.builder()
+            .collectionOfTask(collection)
+            .request(request)
+            .userInfo(userCreated)
+            .rootTask(null)
+            .build());
         this.validateTask(rootTask);
 
         var savedRootTask = taskRepository.save(rootTask);
         taskForUsersService.saveAllByEmails(request.getAssignedEmails(), savedRootTask);
+
+        var isKickedLeaderProject = collection.getPhase().getProject()
+            .getProjectUsers()
+            .stream().filter(projectRole -> projectRole.getUserInfo().getEmail().equals(userCreated.getEmail()))
+            .findFirst().orElse(null) == null;
+        if (isKickedLeaderProject)  throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
         return IdResponse.builder().id(savedRootTask.getId()).build();
     }
@@ -62,13 +76,21 @@ public class TaskService {
         var rootTask = taskRepository.findById(rootId)
             .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
 
-        if (rootTask.getEndDate() != null) {
-            throw new AppExc(ErrorCodes.TASK_ENDED);
-        }
-        if (!rootTask.getUserInfoCreated().getEmail().equals(userCreated.getEmail())) {
-            throw new AppExc(ErrorCodes.FORBIDDEN_USER);
-        }
-        var subTask = taskMapper.newModel(request, userCreated, rootTask);
+        var taskWasEnded = rootTask.getEndDate() != null;
+        if (taskWasEnded)   throw new AppExc(ErrorCodes.TASK_ENDED);
+
+        var isRootTaskOwner = rootTask.getUserInfoCreated().getEmail().equals(userCreated.getEmail());
+        if (!isRootTaskOwner)   throw new AppExc(ErrorCodes.FORBIDDEN_USER);
+
+        var isKickedLeaderProject = projectService.isKickedLeader(rootTask, userCreated.getAccount().getUsername());
+        if (isKickedLeaderProject)  throw new AppExc(ErrorCodes.FORBIDDEN_USER);
+
+        var subTask = taskMapper.newModel(TaskCreationDTO.builder()
+            .collectionOfTask(rootTask.getCollection())
+            .request(request)
+            .userInfo(userCreated)
+            .rootTask(rootTask)
+            .build());
         this.validateTask(subTask);
         this.validateSubTask(subTask);
 
@@ -115,61 +137,58 @@ public class TaskService {
         var foundTask = taskRepository.findById(id)
             .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
 
-        var isOwner = foundTask.getUserInfoCreated().getAccount().getUsername().equals(currentUsername);
-        var canSeeTask = foundTask.getTaskForUsers().stream()
-            .anyMatch(rel -> {
-                var isAssigned = rel.getAssignedUser().getAccount().getUsername().equals(currentUsername);
-                var isValid = !rel.getUserTaskStatus().equals(UserTaskStatus.KICKED_OUT);
-                return isAssigned && isValid;
-            });
-        if (!isOwner || !canSeeTask)
+        if (!this.taskTransService.canSeeTask(foundTask, currentUsername))
             throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
         var hasAtLeastOneReport = reportService.hasAtLeastOneReport(id);
-
         return taskMapper.toResponse(foundTask, hasAtLeastOneReport);
     }
 
     public void updateDescription(Long id, String description, String token) {
-        Task foundTask = taskTransService.findUpdatableTask(id, token);
+        Task foundTask = taskTransService.findUpdatableTaskByOwner(id, token);
 
         foundTask.setDescription(description);
+        foundTask.setUpdatedTime(LocalDateTime.now());
         taskRepository.save(foundTask);
     }
 
     public void updateReportFormat(Long id, String reportFormat, String token) {
-        Task foundTask = taskTransService.findUpdatableTask(id, token);
+        Task foundTask = taskTransService.findUpdatableTaskByOwner(id, token);
 
         foundTask.setReportFormat(reportFormat);
+        foundTask.setUpdatedTime(LocalDateTime.now());
         taskRepository.save(foundTask);
     }
 
     @Transactional(rollbackFor = RuntimeException.class)
     public void update(Long id, UpdatedTaskRequest request, String token) {
         var username = jwtService.readPayload(token).get("sub");
-        var updatedTask = taskRepository.findById(id)
-            .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
-
-        if (!updatedTask.getUserInfoCreated().getAccount().getUsername().equals(username))
-            throw new AppExc(ErrorCodes.FORBIDDEN_USER);
+        var foundTask = taskTransService.findTaskByOwner(id, token);
 
         var addedUser = userInfoService.findByAccountUsername(username)
             .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_TOKEN));
 
-        taskMapper.mappingBaseInfo(updatedTask, request);
+        var isRootTaskOwner = foundTask.getUserInfoCreated().getAccount().getUsername().equals(username);
+        if (!isRootTaskOwner)   throw new AppExc(ErrorCodes.FORBIDDEN_USER);
+
+        var isKickedLeaderProject = projectService.isKickedLeader(foundTask, username);
+        if (isKickedLeaderProject)  throw new AppExc(ErrorCodes.FORBIDDEN_USER);
+
+        taskMapper.mappingBaseInfo(foundTask, request);
 
         var newUserTask = TaskForUsers.builder()
-            .task(updatedTask)
+            .task(foundTask)
             .assignedUser(addedUser)
             .updatedTime(LocalDateTime.now())
             .userTaskStatus(UserTaskStatus.JOINED)
             .build();
-        updatedTask.getTaskForUsers().add(newUserTask);
+        foundTask.getTaskForUsers().add(newUserTask);
+        foundTask.setUpdatedTime(LocalDateTime.now());
         taskForUsersService.save(newUserTask);
     }
 
     public List<ShortUserInfoDTO> getUsersOfTask(Long id, String token) {
-        var username = jwtService.readPayload(token).get("sub");
+        String username = jwtService.readPayload(token).get("sub");
         var task = taskRepository.findById(id).orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
 
         if (!taskTransService.canSeeTask(task, username))
@@ -177,25 +196,30 @@ public class TaskService {
 
         var userInfo = userInfoService.findByAccountUsername(username)
             .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_TOKEN));
-        if (userInfoService.isEmployee(token))
-            return List.of(ShortUserInfoDTO.builder()
+
+        var currentAuthority = userInfo.getAccount().getAuthorities().getFirst().getAuthority();
+        if (currentAuthority.equals(AuthorityEnum.ROLE_EMP.toString())) {
+            var justAssignedEmployee = ShortUserInfoDTO.builder()
                 .email(userInfo.getEmail())
                 .fullName(userInfo.getFullName())
-                .role(userInfo.getAccount().getAuthorities().getFirst().getAuthority())
-                .build());
+                .role(currentAuthority)
+                .build();
+            return List.of(justAssignedEmployee);
+        }
 
         return taskForUsersService.getAllUsersOfTask(id);
     }
 
     public void updateDoneTask(Long id, String token) {
-        Task updatedTask = taskTransService.findUpdatableTask(id, token);
+        Task updatedTask = taskTransService.findUpdatableTaskByOwner(id, token);
 
         updatedTask.setEndDate(LocalDate.now());
+        updatedTask.setUpdatedTime(LocalDateTime.now());
         taskRepository.save(updatedTask);
     }
 
     public void lockTask(Long id, String token) {
-        Task lockedTask = taskTransService.findUpdatableTask(id, token);
+        Task lockedTask = taskTransService.findUpdatableTaskByOwner(id, token);
 
         lockedTask.setLocked(true);
         taskRepository.save(lockedTask);
@@ -210,6 +234,9 @@ public class TaskService {
 
         if (!taskTransService.canSeeTask(rootTask, token))
             throw new AppExc(ErrorCodes.FORBIDDEN_USER);
+
+        var isRootTaskOwner = rootTask.getUserInfoCreated().getEmail().equals(userInfo.getEmail());
+        if (!isRootTaskOwner)   throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
         var isEmployee = userInfo.getAccount()
             .getAuthorities().getFirst()
@@ -228,7 +255,7 @@ public class TaskService {
 
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public List<ShortUserInfoDTO> searchNewAddedUsersForRootTask(Long rootTaskId, String query, String token) {
-        var username = jwtService.readPayload(token).get("sub");
+        String username = jwtService.readPayload(token).get("sub");
         var isRootTaskOwner = taskRepository.existsByUserInfoCreatedAccountUsername(username);
 
         if (!isRootTaskOwner)
@@ -241,7 +268,7 @@ public class TaskService {
 
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public List<ShortUserInfoDTO> searchRootTaskUsers(Long rootId, String query, String token) {
-        var username = jwtService.readPayload(token).get("sub");
+        String username = jwtService.readPayload(token).get("sub");
         return taskForUsersService.searchRootTaskUsers(rootId, query, username)
             .stream().map(taskForUsersMapper::shortenTaskUserResponse)
             .toList();

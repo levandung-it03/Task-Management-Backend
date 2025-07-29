@@ -35,6 +35,7 @@ public enum ErrorCodes {
     //--Department(12)
     DEPARTMENT_NOT_FOUND(12000, "Department not found", BAD_REQUEST),
     DEPARTMENT_ALREADY_EXISTS(12001, "Department already exists", BAD_REQUEST),
+    DEPARTMENT_WAS_USED(12002, "Department was used, can not perform action", BAD_REQUEST),
     //--Group(13)
     EMP_CANT_BE_ADMIN(13000, "Employee cannot be an Admin", BAD_REQUEST),
     AT_LEAST_ONE_ADMIN(13001, "Group must has at least one admin", BAD_REQUEST),
@@ -45,6 +46,10 @@ public enum ErrorCodes {
     INVALID_SUB_TASK_START_DATE(14002, "Start date on Sub Task cannot be after Root Task", BAD_REQUEST),
     INVALID_SUB_TASK_DEADLINE(14003, "Deadline on Sub Task cannot be after Root Task", BAD_REQUEST),
     TASK_ENDED(14004, "Cannot change an ended Task", BAD_REQUEST),
+    //--Report(15)
+    REPORT_REVIEWED(15000, "Report has been reviewed, cannot perform action", BAD_REQUEST),
+    //--Project(16)
+    PROJECT_WAS_CLOSED(16000, "Project was closed, cannot perform action", BAD_REQUEST),
     ;
     int code;
     String msg;

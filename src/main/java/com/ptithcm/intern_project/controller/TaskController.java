@@ -29,16 +29,6 @@ import static com.ptithcm.intern_project.common.constvalues.AuthorityValues.*;
 public class TaskController {
     TaskService taskService;
 
-    @Operation(description = "Create Task")
-    @PostMapping({
-        ROLE_PM + "/task",
-        ROLE_LEAD + "/task"})
-    public ResponseEntity<RestApiResponse<IdResponse>> create(
-        @Valid @RequestBody TaskRequest request,
-        @RequestHeader("Authorization") String token) {
-        return RestApiResponse.fromScs(SuccessCodes.CREATED, taskService.create(request, token));
-    }
-
     @Operation(description = "Create Sub-Task of a Root-Task")
     @PostMapping({
         ROLE_PM + "/task/{id}/create-sub-task",
@@ -143,7 +133,7 @@ public class TaskController {
         return RestApiResponse.fromScs(SuccessCodes.GET_LIST, taskService.getSubTasksOfRootTask(id, token));
     }
 
-    @Operation(description = "Search Users by `query` to create ")
+    @Operation(description = "Search Users by `query` to add into an existing Task (only Owner can use this)")
     @GetMapping({
         ROLE_PM + "/task/{id}/search-new-users/{query}",
         ROLE_LEAD + "/task/{id}/search-new-users/{query}"})
@@ -155,11 +145,11 @@ public class TaskController {
             taskService.searchNewAddedUsersForRootTask(id, query, token));
     }
 
-    @Operation(description = "Search Users by `query` to create ")
+    @Operation(description = "Search Users by `query` of a root Task to created Sub-Task (only Owner can use this)")
     @GetMapping({
         ROLE_PM + "/task/{rootId}/search-users/{query}",
         ROLE_LEAD + "/task/{rootId}/search-users/{query}"})
-    public ResponseEntity<RestApiResponse<List<ShortUserInfoDTO>>> setRootTaskUsers(
+    public ResponseEntity<RestApiResponse<List<ShortUserInfoDTO>>> searchRootTaskUsers(
         @PathVariable("rootId") Long rootId,
         @PathVariable("query") String query,
         @RequestHeader("Authorization") String token) {

@@ -38,7 +38,7 @@ public class Collection {
     LocalDate startDate = LocalDate.now();
 
     @Column(name = "end_date")
-    LocalDate endDate;
+    LocalDate endDate = null;
 
     @Column(name = "due_date", nullable = false)
     LocalDate dueDate;

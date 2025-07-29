@@ -6,6 +6,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 @Getter
 @Setter
@@ -32,18 +33,21 @@ public class Report {
     String content;
 
     @Column(name = "rejected_reason")
-    String rejectedReason;
+    String rejectedReason = null;
 
-    @Column(name = "report_status")
+    @Column(name = "report_status", nullable = false)
     @Enumerated(EnumType.STRING)
-    ReportStatus reportStatus;
+    ReportStatus reportStatus = ReportStatus.WAITING;
 
-    @Column(name = "reviewed_time", nullable = false)
-    LocalDateTime reviewedTime = LocalDateTime.now();
+    @Column(name = "reviewed_time")
+    LocalDateTime reviewedTime = null;
 
     @Column(name = "created_time", nullable = false)
     LocalDateTime createdTime = LocalDateTime.now();
 
     @Column(name = "updated_time", nullable = false)
     LocalDateTime updatedTime = LocalDateTime.now();
+
+    @OneToMany(mappedBy = "report", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    ArrayList<CommentOfReport> commentOfReports = new ArrayList<>();
 }

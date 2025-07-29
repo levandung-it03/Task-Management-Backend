@@ -3,8 +3,12 @@ package com.ptithcm.intern_project.controller;
 import com.ptithcm.intern_project.common.enums.SuccessCodes;
 import com.ptithcm.intern_project.common.wrapper.RestApiResponse;
 import com.ptithcm.intern_project.dto.general.ShortUserInfoDTO;
+import com.ptithcm.intern_project.dto.request.ReportRequest;
+import com.ptithcm.intern_project.dto.response.IdResponse;
+import com.ptithcm.intern_project.dto.response.ReportCommentsResponse;
 import com.ptithcm.intern_project.service.TaskForUsersService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -36,7 +40,7 @@ public class TaskForUsersController {
     }
 
     @Operation(description = "Kick User out of specified Task")
-    @GetMapping({
+    @PutMapping({
         ROLE_PM + "/task-user/{taskUserId}/kick-user",
         ROLE_LEAD + "/task-user/{taskUserId}/kick-user"})
     public ResponseEntity<RestApiResponse<Void>> kickUser(
@@ -47,7 +51,7 @@ public class TaskForUsersController {
     }
 
     @Operation(description = "Re-add User of specified Task")
-    @GetMapping({
+    @PutMapping({
         ROLE_PM + "/task-user/{taskUserId}/re-add-user",
         ROLE_LEAD + "/task-user/{taskUserId}/re-add-user"})
     public ResponseEntity<RestApiResponse<Void>> reAddUser(
@@ -55,5 +59,32 @@ public class TaskForUsersController {
         @RequestHeader("Authorization") String token) {
         taskForUsersService.reAddUser(taskUserId, token);
         return RestApiResponse.fromScs(SuccessCodes.GET_LIST);
+    }
+
+    @Operation(description = "Create Report by assigned-User")
+    @PostMapping({
+        ROLE_EMP + "/task-user/{taskUserId}/create-report",
+        ROLE_LEAD + "/task-user/{taskUserId}/create-report",
+        ROLE_PM + "/task-user/{taskUserId}/create-report"
+    })
+    public ResponseEntity<RestApiResponse<IdResponse>> createReport(
+        @PathVariable("taskUserId") Long taskUserId,
+        @Valid @RequestBody ReportRequest request,
+        @RequestHeader("Authorization") String token) {
+        return RestApiResponse.fromScs(SuccessCodes.CREATED,
+            taskForUsersService.createReport(taskUserId, request, token));
+    }
+
+    @Operation(description = "Get Reports to see by PM created Project, User created Task, or not kicked Assigned User")
+    @GetMapping({
+        ROLE_EMP + "/task-user/{taskUserId}/all-reports",
+        ROLE_LEAD + "/task-user/{taskUserId}/all-reports",
+        ROLE_PM + "/task-user/{taskUserId}/all-reports"
+    })
+    public ResponseEntity<RestApiResponse<List<ReportCommentsResponse>>> getReportsAndComments(
+        @PathVariable("taskUserId") Long taskUserId,
+        @RequestHeader("Authorization") String token) {
+        return RestApiResponse.fromScs(SuccessCodes.GET_LIST,
+            taskForUsersService.getReportsAndComments(taskUserId, token));
     }
 }

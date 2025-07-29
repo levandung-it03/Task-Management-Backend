@@ -22,6 +22,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -104,6 +105,7 @@ public class GroupService {
             .map(user -> groupHasUserMapper.newMemberModel(changedGroup, user))
             .toList();
         changedGroup.getGroupUsers().addAll(newGroupUsers); //--Update Hibernate OneToMany cache
+        changedGroup.setUpdatedTime(LocalDateTime.now());
         groupUsersService.saveAll(newGroupUsers);
     }
 
@@ -115,6 +117,7 @@ public class GroupService {
             throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
         changedGroup.setActive(request.getNewStatus());
+        changedGroup.setUpdatedTime(LocalDateTime.now());
         groupRepository.save(changedGroup);
     }
 
@@ -127,12 +130,12 @@ public class GroupService {
     }
 
     public List<Group> getRelatedGroups(String token) {
-        var username = jwtService.readPayload(token).get("sub");
+        String username = jwtService.readPayload(token).get("sub");
         return groupHasUsersService.findAllRelatedToUser(username);
     }
 
     public List<ShortUserInfoDTO> getUsersGroupToAssign(String id, String token) {
-        var username = jwtService.readPayload(token).get("sub");
+        String username = jwtService.readPayload(token).get("sub");
         return groupUsersService.getUsersGroupToAssign(id, username)
             .stream().map(userInfoMapper::shortenUserInfo)
             .toList();

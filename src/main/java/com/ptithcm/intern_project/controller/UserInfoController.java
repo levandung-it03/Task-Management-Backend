@@ -51,15 +51,45 @@ public class UserInfoController {
         return RestApiResponse.fromScs(UPDATE_USER_INFO);
     }
 
-    @Operation(description = "Searching Users by email, or full-name")
+    @Operation(description = "Searching Users by email, or full-name (used for Create-Group)")
     @GetMapping({
-        ROLE_PM + "/user-info/fast-search/{query}",
-        ROLE_LEAD + "/user-info/fast-search/{query}",
-        ROLE_ADMIN + "/user-info/fast-search/{query}"})
+        ROLE_PM + "/user-info/search/{query}",
+        ROLE_LEAD + "/user-info/search/{query}",
+        ROLE_ADMIN + "/user-info/search/{query}"})
     public ResponseEntity<RestApiResponse<List<ShortUserInfoDTO>>> fastSearchUsers(
         @PathVariable("query") String query,
         @RequestHeader("Authorization") String token
     ) {
         return RestApiResponse.fromScs(SuccessCodes.GET_LIST, userInfoService.fastSearchUsers(query, token));
     }
+
+    @Operation(description = "Search ALL Users by email, or full-name (used for Create-Task by PM)")
+    @GetMapping(ROLE_PM + "/user-info/search-for-new-task/{query}")
+    public ResponseEntity<RestApiResponse<List<ShortUserInfoDTO>>> pmFastSearchUsersForNewTask(
+        @PathVariable("query") String query,
+        @RequestHeader("Authorization") String token
+    ) {
+        return RestApiResponse.fromScs(SuccessCodes.GET_LIST, userInfoService.fastSearchUsers(query, token));
+    }
+
+    @Operation(description = "Search LEAD, EMP Users by email, or full-name (used for Create-Task by LEAD)")
+    @GetMapping(ROLE_LEAD + "/user-info/search-for-new-task/{query}")
+    public ResponseEntity<RestApiResponse<List<ShortUserInfoDTO>>> leadFastSearchUsersForNewTask(
+        @PathVariable("query") String query,
+        @RequestHeader("Authorization") String token
+    ) {
+        return RestApiResponse.fromScs(SuccessCodes.GET_LIST,
+            userInfoService.leadFastSearchUsersForNewTask(query, token));
+    }
+
+    @Operation(description = "Search LEAD Users by email, or full-name (used for Create-Project by PM)")
+    @GetMapping(ROLE_LEAD + "/user-info/search-for-new-project/{query}")
+    public ResponseEntity<RestApiResponse<List<ShortUserInfoDTO>>> pmFastSearchUsersForNewProject(
+        @PathVariable("query") String query,
+        @RequestHeader("Authorization") String token
+    ) {
+        return RestApiResponse.fromScs(SuccessCodes.GET_LIST,
+            userInfoService.pmFastSearchUsersForNewProject(query, token));
+    }
+
 }

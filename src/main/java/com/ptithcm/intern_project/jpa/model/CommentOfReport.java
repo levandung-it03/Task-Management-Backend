@@ -29,7 +29,7 @@ public class CommentOfReport {
 
     @ManyToOne
     @JoinColumn(name = "replied_comment_id", referencedColumnName = "id", nullable = false)
-    CommentOfReport commentOfReport;
+    CommentOfReport repliedComment;
 
     @Column(name = "comment", nullable = false)
     String comment;

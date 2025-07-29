@@ -17,7 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class DepartmentService {
-
+    UserInfoService userInfoService;
     DepartmentRepository departmentRepository;
 
     public IdResponse create(DepartmentRequest request) {
@@ -35,6 +35,9 @@ public class DepartmentService {
     public void update(Long id, DepartmentRequest request) {
         Department department = departmentRepository.findById(id)
             .orElseThrow(() -> new AppExc(ErrorCodes.DEPARTMENT_NOT_FOUND));
+        if (userInfoService.existsByDepartmentId(id)) {
+            throw new AppExc(ErrorCodes.DEPARTMENT_WAS_USED);
+        }
         department.setName(request.getName());
         departmentRepository.save(department);
     }
@@ -42,6 +45,9 @@ public class DepartmentService {
     public void delete(Long id) {
         if (!departmentRepository.existsById(id)) {
             throw new AppExc(ErrorCodes.DEPARTMENT_NOT_FOUND);
+        }
+        if (userInfoService.existsByDepartmentId(id)) {
+            throw new AppExc(ErrorCodes.DEPARTMENT_WAS_USED);
         }
         departmentRepository.deleteById(id);
     }

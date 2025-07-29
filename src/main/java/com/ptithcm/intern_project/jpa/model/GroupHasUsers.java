@@ -14,7 +14,10 @@ import java.time.LocalDateTime;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "group_has_users")
+@Table(
+    name = "group_has_users",
+    uniqueConstraints = {@UniqueConstraint(columnNames = {"joined_user_info_id", "group_id"})}
+)
 public class GroupHasUsers {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

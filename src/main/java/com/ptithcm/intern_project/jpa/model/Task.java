@@ -60,8 +60,8 @@ public class Task {
     @Enumerated(EnumType.STRING)
     TaskPriority priority;
 
-    @Column(name = "is_locked", nullable = false, columnDefinition = "BIT DEFAULT 0")
-    boolean isLocked;
+    @Column(name = "is_locked", nullable = false, columnDefinition = "BIT")
+    boolean isLocked = true;
 
     @Column(name = "start_date", nullable = false)
     LocalDate startDate = LocalDate.now();

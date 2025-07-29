@@ -6,7 +6,7 @@ import com.ptithcm.intern_project.jpa.model.Task;
 import com.ptithcm.intern_project.jpa.model.enums.UserTaskStatus;
 import com.ptithcm.intern_project.jpa.repository.TaskRepository;
 import com.ptithcm.intern_project.service.JwtService;
-import com.ptithcm.intern_project.service.TaskForUsersService;
+import com.ptithcm.intern_project.service.ProjectService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -19,19 +19,33 @@ import org.springframework.transaction.annotation.Transactional;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class TaskTransService {
     TaskRepository taskRepository;
+    ProjectService projectService;
     JwtService jwtService;
 
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
-    public Task findUpdatableTask(Long id, String tokenOwner) {
-        var username = jwtService.readPayload(tokenOwner).get("sub");
+    public Task findUpdatableTaskByOwner(Long id, String tokenOwner) {
+        String username = jwtService.readPayload(tokenOwner).get("sub");
+        var foundTask = this.findTaskByOwner(id, username);
+        if (foundTask.getEndDate() != null)
+            throw new AppExc(ErrorCodes.TASK_ENDED);
+
+        var isRootTaskOwner = foundTask.getUserInfoCreated().getAccount().getUsername().equals(username);
+        if (!isRootTaskOwner)   throw new AppExc(ErrorCodes.FORBIDDEN_USER);
+
+        var isKickedLeaderProject = projectService.isKickedLeader(foundTask, username);
+        if (isKickedLeaderProject) throw new AppExc(ErrorCodes.FORBIDDEN_USER);
+
+        return foundTask;
+    }
+
+    @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
+    public Task findTaskByOwner(Long id, String username) {
         var foundTask = taskRepository.findById(id)
             .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
 
-        if (!foundTask.getUserInfoCreated().getAccount().getUsername().equals(username))
+        var isTaskOwner = foundTask.getUserInfoCreated().getAccount().getUsername().equals(username);
+        if (!isTaskOwner)
             throw new AppExc(ErrorCodes.FORBIDDEN_USER);
-
-        if (foundTask.getEndDate() != null)
-            throw new AppExc(ErrorCodes.TASK_ENDED);
 
         return foundTask;
     }
@@ -39,25 +53,19 @@ public class TaskTransService {
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public boolean canSeeTask(Task task, String username) {
         var isTaskOwner = task.getUserInfoCreated().getAccount().getUsername().equals(username);
-        var isTaskAssigned = task.getTaskForUsers().stream()
+        var isTaskAssigned = task.getTaskForUsers().stream()    //--Task Owner, will own the collection.
             .anyMatch(rel -> {
                 var isAssigned = rel.getAssignedUser().getAccount().getUsername().equals(username);
                 var isNotKicked = !rel.getUserTaskStatus().equals(UserTaskStatus.KICKED_OUT);
                 return isAssigned && isNotKicked;
             });
-        var isCollectionOwner = task.getCollection()
-            .getUserInfoCreated().getAccount().getUsername().equals(username);
-        var isPhaseOwner = task.getCollection().getPhase()
-            .getUserInfoCreated().getAccount().getUsername().equals(username);
-        var isProjectOwner = task.getCollection().getPhase().getProject()
+        var isProjectOwner = task.getCollection().getPhase().getProject()   //--Project Owner, will own the Phase.
             .getUserInfoCreated().getAccount().getUsername().equals(username);
         var isProjectMember = task.getCollection().getPhase().getProject()
             .getProjectUsers().stream()
             .anyMatch(projectUser -> projectUser.getUserInfo().getAccount().getUsername().equals(username));
         return isTaskOwner
             || isTaskAssigned
-            || isCollectionOwner
-            || isPhaseOwner
             || isProjectOwner
             || isProjectMember;
     }

@@ -24,6 +24,7 @@ public class Project {
 
     @ManyToOne
     @JoinColumn(name = "created_by_id", referencedColumnName = "id", nullable = false)
+    @JsonIgnore
     UserInfo userInfoCreated;
 
     @Column(name = "name", nullable = false)
@@ -41,8 +42,8 @@ public class Project {
     @Column(name = "due_date", nullable = false)
     LocalDate dueDate;
 
-    @Column(name = "status", columnDefinition = "BIT", nullable = false)
-    boolean status;
+    @Column(name = "active", columnDefinition = "BIT", nullable = false)
+    boolean active = true;
 
     @Column(name = "created_time", nullable = false)
     LocalDateTime createdTime = LocalDateTime.now();

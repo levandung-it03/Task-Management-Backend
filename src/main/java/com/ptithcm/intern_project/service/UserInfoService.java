@@ -14,7 +14,6 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -49,7 +48,7 @@ public class UserInfoService {
 
     @Transactional(rollbackFor = RuntimeException.class)
     public List<ShortUserInfoDTO> fastSearchUsers(String query, String token) {
-        if (!this.isEmployee(token))
+        if (this.isAuthority(token, AuthorityEnum.ROLE_EMP))
             throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
         return userInfoRepository.findAllByEmailOrFullName(query, query)
@@ -57,11 +56,22 @@ public class UserInfoService {
             .toList();
     }
 
-    public boolean isEmployee(String token) {
+    @Transactional(rollbackFor = RuntimeException.class)
+    public List<ShortUserInfoDTO> leadFastSearchUsersForNewTask(String query, String token) {
+        if (!this.isAuthority(token, AuthorityEnum.ROLE_PM))
+            throw new AppExc(ErrorCodes.FORBIDDEN_USER);
+
+        return userInfoRepository.findAllByEmailOrFullName(query, query).stream()
+            .map(userInfoMapper::shortenUserInfo)
+            .filter(user -> !user.getRole().equals(AuthorityEnum.ROLE_PM.toString()))
+            .toList();
+    }
+
+    public boolean isAuthority(String token, AuthorityEnum authority) {
         var userInfo = this.getUserInfo(token);
         return userInfo.getAccount()
             .getAuthorities().getFirst()
-            .getAuthority().equals(AuthorityEnum.ROLE_EMP.toString());
+            .getAuthority().equals(authority.toString());
     }
 
     public Optional<UserInfo> findByAccountUsername(String username) {
@@ -70,5 +80,19 @@ public class UserInfoService {
 
     public List<UserInfo> fastSearchUsersIgnoreInRootTask(Long rootTaskId, String query) {
         return userInfoRepository.fastSearchUsersIgnoreInRootTask(rootTaskId, query);
+    }
+
+    public boolean existsByDepartmentId(Long id) {
+        return userInfoRepository.existsByDepartmentId(id);
+    }
+
+    public List<ShortUserInfoDTO> pmFastSearchUsersForNewProject(String query, String token) {
+        if (!this.isAuthority(token, AuthorityEnum.ROLE_PM))
+            throw new AppExc(ErrorCodes.FORBIDDEN_USER);
+
+        return userInfoRepository.findAllByEmailOrFullName(query, query).stream()
+            .map(userInfoMapper::shortenUserInfo)
+            .filter(user -> user.getRole().equals(AuthorityEnum.ROLE_LEAD.toString()))
+            .toList();
     }
 }

@@ -35,4 +35,6 @@ public interface UserInfoRepository extends JpaRepository<UserInfo, Long> {
         OR LOWER(u.email) LIKE LOWER(CONCAT('%', :query, '%')))
     """)
     List<UserInfo> fastSearchUsersIgnoreInRootTask(@Param("taskId") Long rootTaskId, @Param("query") String query);
+
+    boolean existsByDepartmentId(Long id);
 }

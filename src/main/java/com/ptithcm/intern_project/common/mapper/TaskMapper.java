@@ -1,5 +1,6 @@
 package com.ptithcm.intern_project.common.mapper;
 
+import com.ptithcm.intern_project.dto.general.TaskCreationDTO;
 import com.ptithcm.intern_project.dto.request.TaskRequest;
 import com.ptithcm.intern_project.dto.request.UpdatedTaskRequest;
 import com.ptithcm.intern_project.dto.response.ShortTaskResponse;
@@ -15,20 +16,21 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class TaskMapper {
 
-    public Task newModel(TaskRequest request, UserInfo userInfo, Task rootTask) {
+    public Task newModel(TaskCreationDTO request) {
         return Task.builder()
-            .userInfoCreated(userInfo)
-            .rootTask(rootTask)
-            .name(request.getName())
-            .description(request.getDescription())
-            .reportFormat(request.getReportFormat())
-            .level(request.getLevel())
-            .taskType(request.getTaskType())
-            .priority(request.getPriority())
+            .collection(null)
+            .userInfoCreated(request.getUserInfo())
+            .rootTask(request.getRootTask())
+            .name(request.getRequest().getName())
+            .description(request.getRequest().getDescription())
+            .reportFormat(request.getRequest().getReportFormat())
+            .level(request.getRequest().getLevel())
+            .taskType(request.getRequest().getTaskType())
+            .priority(request.getRequest().getPriority())
             .isLocked(true) //--Locking a new Task (for any updating action)
-            .startDate(request.getStartDate())
+            .startDate(request.getRequest().getStartDate())
             .endDate(null)
-            .deadline(request.getDeadline())
+            .deadline(request.getRequest().getDeadline())
             .createdTime(LocalDateTime.now())
             .updatedTime(LocalDateTime.now())
             .build();
