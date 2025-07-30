@@ -51,9 +51,8 @@ public class ReportController {
 
     @Operation(description = "Approve specified Report by Task owner")
     @PutMapping({
-        ROLE_EMP + "/report/{reportId}/approve-report",
-        ROLE_LEAD + "/report/{reportId}/approve-report",
-        ROLE_PM + "/report/{reportId}/approve-report"})
+        ROLE_PM + "/report/{reportId}/approve-report",
+        ROLE_LEAD + "/report/{reportId}/approve-report"})
     public ResponseEntity<RestApiResponse<Void>> approveReport(
         @PathVariable("reportId") Long reportId,
         @RequestHeader("Authorization") String token) {
@@ -61,11 +60,10 @@ public class ReportController {
         return RestApiResponse.fromScs(SuccessCodes.UPDATED);
     }
 
-    @Operation(description = "Approve specified Report by Task owner")
+    @Operation(description = "Reject specified Report by Task owner")
     @PutMapping({
-        ROLE_EMP + "/report/{reportId}/reject-report",
-        ROLE_LEAD + "/report/{reportId}/reject-report",
-        ROLE_PM + "/report/{reportId}/reject-report"})
+        ROLE_PM + "/report/{reportId}/reject-report",
+        ROLE_LEAD + "/report/{reportId}/reject-report"})
     public ResponseEntity<RestApiResponse<Void>> rejectReport(
         @PathVariable("reportId") Long reportId,
         @Valid @RequestBody ReportRejectedRequest request,
