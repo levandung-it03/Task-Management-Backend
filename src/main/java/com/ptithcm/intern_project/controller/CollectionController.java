@@ -70,7 +70,7 @@ public class CollectionController {
     }
 
     @Operation(description = "Get all Tasks of specified Project")
-    @PostMapping(
+    @PostMapping({
         ROLE_PM + "/collection/{id}/get-all-related-tasks",
         ROLE_LEAD + "/collection/{id}/get-all-related-tasks",
         ROLE_EMP + "/collection/{id}/get-all-related-tasks"})
