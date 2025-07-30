@@ -70,7 +70,10 @@ public class CollectionController {
     }
 
     @Operation(description = "Get all Tasks of specified Project")
-    @PostMapping(ROLE_PM + "/collection/{id}/get-all-related-tasks")
+    @PostMapping(
+        ROLE_PM + "/collection/{id}/get-all-related-tasks",
+        ROLE_LEAD + "/collection/{id}/get-all-related-tasks",
+        ROLE_EMP + "/collection/{id}/get-all-related-tasks"})
     public ResponseEntity<RestApiResponse<List<Task>>> getAllRelatedTasks(
         @PathVariable("id") Long collectionId,
         @RequestHeader("Authorization") String token) {
