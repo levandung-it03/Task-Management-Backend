@@ -3,12 +3,15 @@ package com.ptithcm.intern_project.controller;
 import com.ptithcm.intern_project.common.enums.SuccessCodes;
 import com.ptithcm.intern_project.common.wrapper.RestApiResponse;
 import com.ptithcm.intern_project.dto.request.AddedLeaderRequest;
+import com.ptithcm.intern_project.dto.request.PhaseRequest;
 import com.ptithcm.intern_project.dto.request.ProjectRequest;
 import com.ptithcm.intern_project.dto.response.IdResponse;
 import com.ptithcm.intern_project.dto.response.ProjectRoleResponse;
+import com.ptithcm.intern_project.jpa.model.Phase;
 import com.ptithcm.intern_project.jpa.model.Project;
 import com.ptithcm.intern_project.service.KickedLeaderRequest;
 import com.ptithcm.intern_project.service.ProjectService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +30,7 @@ import static com.ptithcm.intern_project.common.constvalues.AuthorityValues.*;
 public class ProjectController {
     ProjectService projectService;
 
+    @Operation(description = "Create Project by PM")
     @PostMapping(ROLE_PM + "/project")
     public ResponseEntity<RestApiResponse<IdResponse>> create(
         @Valid @RequestBody ProjectRequest request,
@@ -34,15 +38,17 @@ public class ProjectController {
         return RestApiResponse.fromScs(SuccessCodes.CREATED, projectService.create(request, token));
     }
 
+    @Operation(description = "Add a list of LEAD that joining Project")
     @PutMapping(ROLE_PM + "/project/{id}")
-    public ResponseEntity<RestApiResponse<Void>> addLeader(
+    public ResponseEntity<RestApiResponse<Void>> addLeaders(
         @PathVariable("id") Long projectId,
         @Valid @RequestBody AddedLeaderRequest request,
         @RequestHeader("Authorization") String token) {
-        projectService.addLeader(projectId, request, token);
+        projectService.addLeaders(projectId, request, token);
         return RestApiResponse.fromScs(SuccessCodes.CREATED);
     }
 
+    @Operation(description = "Update basic information of Project")
     @PutMapping(ROLE_PM + "/project/{id}")
     public ResponseEntity<RestApiResponse<Void>> update(
         @PathVariable Long id,
@@ -52,6 +58,7 @@ public class ProjectController {
         return RestApiResponse.fromScs(SuccessCodes.UPDATED);
     }
 
+    @Operation(description = "Kick a LEAD out of Project")
     @PostMapping(ROLE_PM + "/project/{id}")
     public ResponseEntity<RestApiResponse<Void>> kickLeader(
         @PathVariable("id") Long id,
@@ -61,6 +68,7 @@ public class ProjectController {
         return RestApiResponse.fromScs(SuccessCodes.CREATED);
     }
 
+    @Operation(description = "Delete, or in-activate the specified Project by PM")
     @DeleteMapping(ROLE_LEAD + "/project/{id}")
     public ResponseEntity<RestApiResponse<Void>> delete(
         @PathVariable("id") Long id,
@@ -69,6 +77,7 @@ public class ProjectController {
         return RestApiResponse.fromScs(SuccessCodes.DELETED);
     }
 
+    @Operation(description = "Get related Projects to see")
     @GetMapping({
         ROLE_EMP + "/project/get-related-projects",
         ROLE_LEAD + "/project/get-related-projects",
@@ -78,10 +87,41 @@ public class ProjectController {
         return RestApiResponse.fromScs(SuccessCodes.GET_LIST, projectService.getRelatedProjects(token));
     }
 
+    @Operation(description = "Get all joined LEAD of Project by PM")
     @GetMapping(ROLE_PM + "/project/{id}/get-leaders")
     public ResponseEntity<RestApiResponse<List<ProjectRoleResponse>>> getLeaders(
-        @PathVariable String id,
+        @PathVariable Long id,
         @RequestHeader("Authorization") String token) {
         return RestApiResponse.fromScs(SuccessCodes.GET_LIST, projectService.getLeaders(token, id));
+    }
+
+    @Operation(description = "Mark the Project the has been completed")
+    @PutMapping(ROLE_PM + "/project/{id}/complete")
+    public ResponseEntity<RestApiResponse<Void>> complete(
+        @PathVariable("id") Long id,
+        @RequestHeader("Authorization") String token) {
+        projectService.complete(token, id);
+        return RestApiResponse.fromScs(SuccessCodes.UPDATED);
+    }
+
+    @Operation(description = "Create a Phase of specified Project")
+    @PostMapping(ROLE_PM + "/project/{id}/create-phase")
+    public ResponseEntity<RestApiResponse<IdResponse>> createPhase(
+        @PathVariable("id") Long projectId,
+        @Valid @RequestBody PhaseRequest request,
+        @RequestHeader("Authorization") String token) {
+        return RestApiResponse.fromScs(SuccessCodes.CREATED, projectService.createPhase(projectId, request, token));
+    }
+
+    @Operation(description = "Get all Phases of specified Project")
+    @PostMapping({
+        ROLE_PM + "/project/{id}/get-all-related-phase",
+        ROLE_LEAD + "/project/{id}/get-all-related-phase",
+        ROLE_EMP + "/project/{id}/get-all-related-phase",
+    })
+    public ResponseEntity<RestApiResponse<List<Phase>>> getAllRelatedPhases(
+        @PathVariable("id") Long projectId,
+        @RequestHeader("Authorization") String token) {
+        return RestApiResponse.fromScs(SuccessCodes.GET_LIST, projectService.getAllRelatedPhases(projectId, token));
     }
 }

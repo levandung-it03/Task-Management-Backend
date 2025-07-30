@@ -14,6 +14,7 @@ import com.ptithcm.intern_project.dto.general.ShortUserInfoDTO;
 import com.ptithcm.intern_project.dto.response.ShortTaskResponse;
 import com.ptithcm.intern_project.dto.response.TaskResponse;
 import com.ptithcm.intern_project.jpa.model.Collection;
+import com.ptithcm.intern_project.jpa.model.Project;
 import com.ptithcm.intern_project.jpa.model.Task;
 import com.ptithcm.intern_project.jpa.model.TaskForUsers;
 import com.ptithcm.intern_project.jpa.model.enums.UserTaskStatus;
@@ -49,7 +50,17 @@ public class TaskService {
 
     @Transactional(rollbackFor = RuntimeException.class)
     public IdResponse create(Collection collection, TaskRequest request, String token) {
+        var isProjectActive = collection.getPhase().getProject().isActive();
+        if (!isProjectActive)   throw new AppExc(ErrorCodes.PROJECT_WAS_CLOSED);
+        
         var userCreated = userInfoService.getUserInfo(token);
+        var isProjectMemberOrAdmin = collection.getPhase().getProject()
+            .getProjectUsers()
+            .stream().anyMatch(projectRole -> 
+                projectRole.getUserInfo().getEmail().equals(userCreated.getEmail())
+            );
+        if (!isProjectMemberOrAdmin)  throw new AppExc(ErrorCodes.FORBIDDEN_USER);
+        
         var rootTask = taskMapper.newModel(TaskCreationDTO.builder()
             .collectionOfTask(collection)
             .request(request)
@@ -57,16 +68,9 @@ public class TaskService {
             .rootTask(null)
             .build());
         this.validateTask(rootTask);
-
         var savedRootTask = taskRepository.save(rootTask);
         taskForUsersService.saveAllByEmails(request.getAssignedEmails(), savedRootTask);
-
-        var isKickedLeaderProject = collection.getPhase().getProject()
-            .getProjectUsers()
-            .stream().filter(projectRole -> projectRole.getUserInfo().getEmail().equals(userCreated.getEmail()))
-            .findFirst().orElse(null) == null;
-        if (isKickedLeaderProject)  throw new AppExc(ErrorCodes.FORBIDDEN_USER);
-
+        
         return IdResponse.builder().id(savedRootTask.getId()).build();
     }
 
@@ -162,7 +166,7 @@ public class TaskService {
 
     @Transactional(rollbackFor = RuntimeException.class)
     public void update(Long id, UpdatedTaskRequest request, String token) {
-        var username = jwtService.readPayload(token).get("sub");
+        String username = jwtService.readPayload(token).get("sub");
         var foundTask = taskTransService.findTaskByOwner(id, token);
 
         var addedUser = userInfoService.findByAccountUsername(username)
@@ -272,5 +276,20 @@ public class TaskService {
         return taskForUsersService.searchRootTaskUsers(rootId, query, username)
             .stream().map(taskForUsersMapper::shortenTaskUserResponse)
             .toList();
+    }
+
+    public boolean existsCollectionId(Long id) {
+        return taskRepository.existsCollectionId(id);
+    }
+
+    public List<Task> getAllRelatedTasks(Collection collection, String token) {
+        String username = jwtService.readPayload(token).get("sub");
+
+        var hasHighRoleOnProject = collection.getPhase().getProject().getProjectUsers().stream()
+            .anyMatch(projectRole -> projectRole.getUserInfo().getAccount().getUsername().equals(username));
+        if (hasHighRoleOnProject)
+            return taskRepository.findAllByCollectionId(collection.getId());
+
+        return taskRepository.findAllByAssignedUsernameAndCollectionId(collection.getId(), username);
     }
 }

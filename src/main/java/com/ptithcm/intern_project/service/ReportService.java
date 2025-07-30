@@ -84,7 +84,7 @@ public class ReportService {
 
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public Report findUpdatableReport(Long reportId, String token) {
-        var username = jwtService.readPayload(token).get("sub");
+        String username = jwtService.readPayload(token).get("sub");
         var report = reportTransService.findReviewableReport(reportId, username);
 
         if (report.getReviewedTime() != null)

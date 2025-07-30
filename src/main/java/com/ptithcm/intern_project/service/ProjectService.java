@@ -5,9 +5,11 @@ import com.ptithcm.intern_project.common.exception.AppExc;
 import com.ptithcm.intern_project.common.mapper.ProjectMapper;
 import com.ptithcm.intern_project.common.mapper.ProjectRoleMapper;
 import com.ptithcm.intern_project.dto.request.AddedLeaderRequest;
+import com.ptithcm.intern_project.dto.request.PhaseRequest;
 import com.ptithcm.intern_project.dto.request.ProjectRequest;
 import com.ptithcm.intern_project.dto.response.IdResponse;
 import com.ptithcm.intern_project.dto.response.ProjectRoleResponse;
+import com.ptithcm.intern_project.jpa.model.Phase;
 import com.ptithcm.intern_project.jpa.model.Project;
 import com.ptithcm.intern_project.jpa.model.ProjectRole;
 import com.ptithcm.intern_project.jpa.model.Task;
@@ -20,8 +22,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +39,7 @@ public class ProjectService {
     UserInfoService userInfoService;
     JwtService jwtService;
     ProjectRoleMapper projectRoleMapper;
+    PhaseService phaseService;
 
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public IdResponse create(ProjectRequest request, String token) {
@@ -53,7 +60,7 @@ public class ProjectService {
     }
 
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
-    public void addLeader(Long id, AddedLeaderRequest request, String token) {
+    public void addLeaders(Long id, AddedLeaderRequest request, String token) {
         var project = this.getUpdatableProject(id, token);
 
         var newLeadersInfo = userInfoService.findAllByEmailIn(request.getAssignedEmails());
@@ -79,13 +86,15 @@ public class ProjectService {
 
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public Project getUpdatableProject(Long id, String token) {
-        var username = jwtService.readPayload(token).get("sub");
+        String username = jwtService.readPayload(token).get("sub");
         var project = projectRepository.findById(id)
             .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_TOKEN));
 
         var isProjectOwner = project.getUserInfoCreated().getAccount().getUsername().equals(username);
-        if (!isProjectOwner)
-            throw new AppExc(ErrorCodes.FORBIDDEN_USER);
+        if (!isProjectOwner)    throw new AppExc(ErrorCodes.FORBIDDEN_USER);
+
+        var isEndedProject = project.getEndDate() != null;
+        if (isEndedProject)     throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
         return project;
     }
@@ -124,15 +133,25 @@ public class ProjectService {
     }
 
     public List<Project> getRelatedProjects(String token) {
-        var username = jwtService.readPayload(token).get("sub");
-        var projectRoles = projectRoleService.findByUserInfoAccountUsername(username);
-        return projectRoles.stream().map(ProjectRole::getProject).toList();
+        HashMap<Long, Project> projects;
+        String username = jwtService.readPayload(token).get("sub");
+        //--PM, LEAD can see Projects as ProjectRole.MEMBER/ADMIN
+        var relatedProjectsWithHighRole = projectRepository.findAllByUsernameHighRole(username);
+        projects = new HashMap<>(relatedProjectsWithHighRole.stream().collect(
+            Collectors.toMap(Project::getId, proj -> proj)
+        ));
+        //--LEAD, EMP can see Projects as an assigned User on Tasks
+        var relatedProjectsWithLowRole = projectRepository.findAllByUsernameLowRole(username);
+        projects.putAll(relatedProjectsWithLowRole.stream().collect(
+            Collectors.toMap(Project::getId, proj -> proj)
+        ));
+        return new ArrayList<>(projects.values());
     }
 
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
-    public List<ProjectRoleResponse> getLeaders(String token, String id) {
-        var username = jwtService.readPayload(token).get("sub");
-        var project = projectRepository.findById(Long.parseLong(id))
+    public List<ProjectRoleResponse> getLeaders(String token, Long id) {
+        String username = jwtService.readPayload(token).get("sub");
+        var project = projectRepository.findById(id)
             .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
 
         var isProjectOwner = project.getUserInfoCreated().getAccount().getUsername().equals(username);
@@ -141,5 +160,25 @@ public class ProjectService {
         return project.getProjectUsers().stream()
             .map(projectRoleMapper::toResponse)
             .toList();
+    }
+
+    @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
+    public void complete(String token, Long id) {
+        var updatedProject = this.getUpdatableProject(id, token);
+
+        updatedProject.setEndDate(LocalDate.now());
+        projectRepository.save(updatedProject);
+    }
+
+    @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
+    public IdResponse createPhase(Long projectId, PhaseRequest request, String token) {
+        var project = this.getUpdatableProject(projectId, token);
+        return phaseService.create(project, request, token);
+    }
+
+    public List<Phase> getAllRelatedPhases(Long projectId, String token) {
+        var project = projectRepository.findById(projectId)
+            .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
+        return phaseService.getAllRelatedPhases(project, token);
     }
 }

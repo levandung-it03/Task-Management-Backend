@@ -36,9 +36,8 @@ public interface TaskForUsersRepository extends JpaRepository<TaskForUsers, Long
     Optional<Task> findByRootIdAndAssignedUsername(@Param("rootId") Long rootId, @Param("assignedUsername") String username);
 
     @Query("""
-        SELECT t.task FROM TaskForUsers t
+        SELECT DISTINCT t.task FROM TaskForUsers t
         WHERE t.task.id = :rootId
-        GROUP BY t.task
     """)
     List<Task> findAllByRootTaskId(Long rootTaskId);
 
@@ -53,4 +52,15 @@ public interface TaskForUsersRepository extends JpaRepository<TaskForUsers, Long
         @Param("rootId") Long rootId,
         @Param("query") String query,
         @Param("username") String username);
+
+    @Query("""
+        SELECT COUNT(tfu) > 0 FROM TaskForUsers tfu
+        JOIN tfu.task t
+        JOIN t.collection c
+        JOIN c.phase p
+        JOIN p.project pj
+        WHERE pj.id = :projectId
+        AND tfu.assignedUser.account.username = :username
+    """)
+    boolean existsByProjectIdAndAssignedUsername(@Param("projectId") Long projectId, @Param("username") String username);
 }

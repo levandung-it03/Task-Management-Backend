@@ -17,10 +17,9 @@ import java.util.Optional;
 public interface GroupHasUsersRepository extends JpaRepository<GroupHasUsers, Long> {
 
     @Query("""
-        SELECT ghu.group FROM GroupHasUsers ghu
+        SELECT DISTINCT ghu.group FROM GroupHasUsers ghu
         WHERE LOWER(ghu.group.name) LIKE LOWER(CONCAT('%', :query, '%'))
           AND (ghu.group.userInfoCreated.email = :email OR ghu.joinedUserInfo.email = :email)
-        GROUP BY ghu.group
     """)
     Page<Group> findAllRelatedGroups(
         @Param("email") String email,
@@ -30,11 +29,10 @@ public interface GroupHasUsersRepository extends JpaRepository<GroupHasUsers, Lo
     Optional<GroupHasUsers> findByJoinedUserInfoEmail(String email);
 
     @Query("""
-        SELECT ghu.group FROM GroupHasUsers ghu
+        SELECT DISTINCT ghu.group FROM GroupHasUsers ghu
         WHERE (ghu.joinedUserInfo.account.username = :username
         OR ghu.group.userInfoCreated.account.username = :username)
         AND ghu.group.active = TRUE
-        GROUP BY ghu.group
     """)
     List<Group> findAllRelatedToUser(@Param("username") String username);
 

@@ -59,14 +59,12 @@ public class TaskTransService {
                 var isNotKicked = !rel.getUserTaskStatus().equals(UserTaskStatus.KICKED_OUT);
                 return isAssigned && isNotKicked;
             });
-        var isProjectOwner = task.getCollection().getPhase().getProject()   //--Project Owner, will own the Phase.
-            .getUserInfoCreated().getAccount().getUsername().equals(username);
+        //--Project Member absolutely has ProjectRole.ADMIN for PM, and he/she owns Phase, Collection too.
         var isProjectMember = task.getCollection().getPhase().getProject()
             .getProjectUsers().stream()
             .anyMatch(projectUser -> projectUser.getUserInfo().getAccount().getUsername().equals(username));
         return isTaskOwner
             || isTaskAssigned
-            || isProjectOwner
             || isProjectMember;
     }
 }

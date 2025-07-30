@@ -157,4 +157,8 @@ public class TaskForUsersService {
             .map(reportMapper::toReportComments)
             .toList();
     }
+
+    public boolean existsByProjectIdAndAssignedUsername(Long projectId, String username) {
+        return taskForUsersRepository.existsByProjectIdAndAssignedUsername(projectId, username);
+    }
 }

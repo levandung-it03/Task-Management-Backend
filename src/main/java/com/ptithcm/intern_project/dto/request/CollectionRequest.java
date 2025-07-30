@@ -13,7 +13,8 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ProjectRequest {
+public class CollectionRequest {
+
     @NotNull
     @NotEmpty
     String name;

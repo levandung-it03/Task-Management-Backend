@@ -50,6 +50,12 @@ public enum ErrorCodes {
     REPORT_REVIEWED(15000, "Report has been reviewed, cannot perform action", BAD_REQUEST),
     //--Project(16)
     PROJECT_WAS_CLOSED(16000, "Project was closed, cannot perform action", BAD_REQUEST),
+    START_BEFORE_PROJECT(16001, "Cannot start before Project", BAD_REQUEST),
+    END_AFTER_PROJECT(16002, "Cannot end after Project", BAD_REQUEST),
+    //--Phase(17)
+    CANT_DELETE_PHASE(17000, "Phase has already had Collection, cannot perform action", BAD_REQUEST),
+    START_BEFORE_PHASE(16001, "Cannot start before Phase", BAD_REQUEST),
+    END_AFTER_PHASE(16002, "Cannot end after Phase", BAD_REQUEST),
     ;
     int code;
     String msg;

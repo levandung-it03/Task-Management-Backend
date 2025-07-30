@@ -27,8 +27,4 @@ public class ProjectRoleService {
     public void delete(ProjectRole kickedLeader) {
         projectRoleRepository.delete(kickedLeader);
     }
-
-    public List<ProjectRole> findByUserInfoAccountUsername(String username) {
-        return projectRoleRepository.findByUserInfoAccountUsername(username);
-    }
 }
