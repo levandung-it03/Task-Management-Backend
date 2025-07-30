@@ -1,4 +1,4 @@
-package com.ptithcm.intern_project.controller;
+kpackage com.ptithcm.intern_project.controller;
 
 import com.ptithcm.intern_project.common.enums.SuccessCodes;
 import com.ptithcm.intern_project.common.wrapper.RestApiResponse;
@@ -51,7 +51,7 @@ public class CollectionController {
         return RestApiResponse.fromScs(SuccessCodes.GET_DETAIL, collectionService.get(id, token));
     }
 
-    @Operation(description = "Create a Collection by PM")
+    @Operation(description = "Update a Collection by PM")
     @PutMapping(ROLE_PM + "/collection/{id}")
     public ResponseEntity<RestApiResponse<Void>> update(
         @PathVariable("id") Long id,
@@ -61,6 +61,7 @@ public class CollectionController {
         return RestApiResponse.fromScs(SuccessCodes.UPDATED);
     }
 
+    @Operation(description = "Delete specified Collection")
     @DeleteMapping(ROLE_PM + "/collection/{id}")
     public ResponseEntity<RestApiResponse<Void>> delete(
         @PathVariable("id") Long id,
