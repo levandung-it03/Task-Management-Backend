@@ -1,4 +1,4 @@
-kpackage com.ptithcm.intern_project.controller;
+package com.ptithcm.intern_project.controller;
 
 import com.ptithcm.intern_project.common.enums.SuccessCodes;
 import com.ptithcm.intern_project.common.wrapper.RestApiResponse;
