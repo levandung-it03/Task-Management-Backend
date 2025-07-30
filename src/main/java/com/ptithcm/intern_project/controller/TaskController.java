@@ -75,7 +75,7 @@ public class TaskController {
         return RestApiResponse.fromScs(SuccessCodes.UPDATED);
     }
 
-    @Operation(description = "Update Task Report Format")
+    @Operation(description = "Update Task base information")
     @PutMapping({
         ROLE_PM + "/task/{id}",
         ROLE_LEAD + "/task/{id}"})
@@ -90,8 +90,7 @@ public class TaskController {
     @Operation(description = "Get all Users by Task-Id to render on Task-Detail")
     @GetMapping({
         ROLE_PM + "/task/{id}/get-assigned-users",
-        ROLE_LEAD + "/task/{id}/get-assigned-users",
-        ROLE_EMP + "/task/{id}/get-assigned-users"})
+        ROLE_LEAD + "/task/{id}/get-assigned-users"})
     public ResponseEntity<RestApiResponse<List<ShortUserInfoDTO>>> getUsersOfTask(
         @PathVariable("id") Long id,
         @RequestHeader("Authorization") String token) {
@@ -101,8 +100,7 @@ public class TaskController {
     @Operation(description = "Update specified Task that it's done")
     @PutMapping({
         ROLE_PM + "/task/{id}/done",
-        ROLE_LEAD + "/task/{id}/done",
-        ROLE_EMP + "/task/{id}/done"})
+        ROLE_LEAD + "/task/{id}/done"})
     public ResponseEntity<RestApiResponse<Void>> updateDoneTask(
         @PathVariable("id") Long id,
         @RequestHeader("Authorization") String token) {
@@ -113,8 +111,7 @@ public class TaskController {
     @Operation(description = "Lock the specified Task")
     @PutMapping({
         ROLE_PM + "/task/{id}/lock",
-        ROLE_LEAD + "/task/{id}/lock",
-        ROLE_EMP + "/task/{id}/lock"})
+        ROLE_LEAD + "/task/{id}/lock"})
     public ResponseEntity<RestApiResponse<Void>> lockTask(
         @PathVariable("id") Long id,
         @RequestHeader("Authorization") String token) {
