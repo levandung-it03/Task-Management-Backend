@@ -39,7 +39,7 @@ public class ProjectController {
     }
 
     @Operation(description = "Add a list of LEAD that joining Project")
-    @PutMapping(ROLE_PM + "/project/{id}")
+    @PutMapping(ROLE_PM + "/project/{id}/add-leaders")
     public ResponseEntity<RestApiResponse<Void>> addLeaders(
         @PathVariable("id") Long projectId,
         @Valid @RequestBody AddedLeaderRequest request,
@@ -59,7 +59,7 @@ public class ProjectController {
     }
 
     @Operation(description = "Kick a LEAD out of Project")
-    @PostMapping(ROLE_PM + "/project/{id}")
+    @PostMapping(ROLE_PM + "/project/{id}/kick-leader")
     public ResponseEntity<RestApiResponse<Void>> kickLeader(
         @PathVariable("id") Long id,
         @Valid @RequestBody KickedLeaderRequest request,

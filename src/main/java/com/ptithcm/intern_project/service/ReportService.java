@@ -26,7 +26,6 @@ public class ReportService {
     CommentOfReportService commentOfReportService;
     ReportTransService reportTransService;
     JwtService jwtService;
-    private final ProjectService projectService;
 
     public boolean hasAtLeastOneReport(Long taskId) {
         return reportRepository.existsByUserTaskCreatedTaskId(taskId);
@@ -93,7 +92,7 @@ public class ReportService {
         var isProjectActive = report.getUserTaskCreated().getTask().getCollection().getPhase().getProject().isActive();
         if (!isProjectActive) throw new AppExc(ErrorCodes.PROJECT_WAS_CLOSED);
 
-        var isKickedLeader = projectService.isKickedLeader(report.getUserTaskCreated().getTask(), username);
+        var isKickedLeader = ProjectService.isKickedLeader(report.getUserTaskCreated().getTask(), username);
         if (isKickedLeader) throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
         return report;

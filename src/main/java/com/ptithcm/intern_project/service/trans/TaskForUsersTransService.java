@@ -19,7 +19,6 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class TaskForUsersTransService {
     TaskForUsersRepository taskForUsersRepository;
-    ProjectService projectService;
     JwtService jwtService;
 
     @Transactional(rollbackFor = RuntimeException.class)
@@ -34,7 +33,7 @@ public class TaskForUsersTransService {
         var isProjectActive = foundUserTask.getTask().getCollection().getPhase().getProject().isActive();
         if (!isProjectActive)   throw new AppExc(ErrorCodes.PROJECT_WAS_CLOSED);
 
-        var isKickedLeaderProject = projectService.isKickedLeader(foundUserTask.getTask(), username);
+        var isKickedLeaderProject = ProjectService.isKickedLeader(foundUserTask.getTask(), username);
         if (isKickedLeaderProject)  throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
         foundUserTask.setUserTaskStatus(userTaskStatus);

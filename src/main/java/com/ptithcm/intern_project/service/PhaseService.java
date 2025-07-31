@@ -100,7 +100,7 @@ public class PhaseService {
         var isOwner = deletedPhase.getProject().getUserInfoCreated().getAccount().getUsername().equals(username);
         if (!isOwner)   throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
-        var hasRelatedData = collectionService.existsPhaseId(id);
+        var hasRelatedData = collectionService.existsByPhaseId(id);
         if (!hasRelatedData) throw new AppExc(ErrorCodes.CANT_DELETE_PHASE);
 
         phaseRepository.delete(deletedPhase);

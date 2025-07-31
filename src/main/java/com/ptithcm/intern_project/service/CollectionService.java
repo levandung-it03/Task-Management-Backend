@@ -8,11 +8,9 @@ import com.ptithcm.intern_project.dto.request.TaskRequest;
 import com.ptithcm.intern_project.dto.response.IdResponse;
 import com.ptithcm.intern_project.jpa.model.Collection;
 import com.ptithcm.intern_project.jpa.model.Phase;
-import com.ptithcm.intern_project.jpa.model.Project;
 import com.ptithcm.intern_project.jpa.model.Task;
 import com.ptithcm.intern_project.jpa.repository.CollectionRepository;
 import com.ptithcm.intern_project.service.trans.CollectionTransService;
-import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -40,8 +38,8 @@ public class CollectionService {
         return taskService.create(collectionHasTask, request, token);
     }
 
-    public boolean existsPhaseId(Long id) {
-        return collectionRepository.existsPhaseId(id);
+    public boolean existsByPhaseId(Long id) {
+        return collectionRepository.existsByPhaseId(id);
     }
 
     public IdResponse createCollection(Phase phase, CollectionRequest request, String token) {
@@ -113,7 +111,7 @@ public class CollectionService {
             .getUsername().equals(username);
         if (!isOwner)   throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
-        var hasRelatedData = taskService.existsCollectionId(id);
+        var hasRelatedData = taskService.existsByCollectionId(id);
         if (!hasRelatedData) throw new AppExc(ErrorCodes.CANT_DELETE_PHASE);
 
         collectionRepository.delete(deletedCollection);

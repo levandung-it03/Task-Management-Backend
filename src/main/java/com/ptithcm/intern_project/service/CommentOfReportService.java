@@ -7,7 +7,6 @@ import com.ptithcm.intern_project.dto.response.IdResponse;
 import com.ptithcm.intern_project.jpa.model.CommentOfReport;
 import com.ptithcm.intern_project.jpa.model.Report;
 import com.ptithcm.intern_project.jpa.repository.CommentOfRequestRepository;
-import com.ptithcm.intern_project.jpa.repository.ReportRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -16,7 +15,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -24,7 +22,6 @@ import java.util.List;
 public class CommentOfReportService {
     CommentOfRequestRepository commentOfRequestRepository;
     UserInfoService userInfoService;
-    ProjectService projectService;
 
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public IdResponse create(Report report, CommentCreationRequest request, String token) {
@@ -41,7 +38,7 @@ public class CommentOfReportService {
                 .getProject()
                 .getUserInfoCreated().getAccount().getUsername()
         );
-        var isKickedLeaderProject = projectService.isKickedLeader(
+        var isKickedLeaderProject = ProjectService.isKickedLeader(
             report.getUserTaskCreated().getTask(),
             userInfoCreating.getAccount().getUsername());
         var isTaskOwner = userInfoCreating.getAccount().getUsername().equals(

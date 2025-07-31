@@ -26,7 +26,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -109,8 +108,13 @@ public class ProjectService {
         projectRoleService.delete(kickedLeader);
     }
 
-    @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
-    public boolean isKickedLeader(Task task, String username) {
+    /**
+     * <b>WARNING</b>: This method requires to be called within an active
+     * {@code @Transactional} context.
+     * <p>
+     * Otherwise may throw {@code LazyInitializationException}
+     */
+    public static boolean isKickedLeader(Task task, String username) {
         return task
             .getCollection()
             .getPhase()

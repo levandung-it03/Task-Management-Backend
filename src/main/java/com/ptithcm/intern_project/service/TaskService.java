@@ -14,7 +14,6 @@ import com.ptithcm.intern_project.dto.general.ShortUserInfoDTO;
 import com.ptithcm.intern_project.dto.response.ShortTaskResponse;
 import com.ptithcm.intern_project.dto.response.TaskResponse;
 import com.ptithcm.intern_project.jpa.model.Collection;
-import com.ptithcm.intern_project.jpa.model.Project;
 import com.ptithcm.intern_project.jpa.model.Task;
 import com.ptithcm.intern_project.jpa.model.TaskForUsers;
 import com.ptithcm.intern_project.jpa.model.enums.UserTaskStatus;
@@ -46,7 +45,6 @@ public class TaskService {
     TaskMapper taskMapper;
     TaskForUsersMapper taskForUsersMapper;
     JwtService jwtService;
-    ProjectService projectService;
 
     @Transactional(rollbackFor = RuntimeException.class)
     public IdResponse create(Collection collection, TaskRequest request, String token) {
@@ -86,7 +84,7 @@ public class TaskService {
         var isRootTaskOwner = rootTask.getUserInfoCreated().getEmail().equals(userCreated.getEmail());
         if (!isRootTaskOwner)   throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
-        var isKickedLeaderProject = projectService.isKickedLeader(rootTask, userCreated.getAccount().getUsername());
+        var isKickedLeaderProject = ProjectService.isKickedLeader(rootTask, userCreated.getAccount().getUsername());
         if (isKickedLeaderProject)  throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
         var subTask = taskMapper.newModel(TaskCreationDTO.builder()
@@ -175,7 +173,7 @@ public class TaskService {
         var isRootTaskOwner = foundTask.getUserInfoCreated().getAccount().getUsername().equals(username);
         if (!isRootTaskOwner)   throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
-        var isKickedLeaderProject = projectService.isKickedLeader(foundTask, username);
+        var isKickedLeaderProject = ProjectService.isKickedLeader(foundTask, username);
         if (isKickedLeaderProject)  throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
         taskMapper.mappingBaseInfo(foundTask, request);
@@ -278,8 +276,8 @@ public class TaskService {
             .toList();
     }
 
-    public boolean existsCollectionId(Long id) {
-        return taskRepository.existsCollectionId(id);
+    public boolean existsByCollectionId(Long id) {
+        return taskRepository.existsByCollectionId(id);
     }
 
     public List<Task> getAllRelatedTasks(Collection collection, String token) {

@@ -1,7 +1,6 @@
 package com.ptithcm.intern_project.jpa.repository;
 
 import com.ptithcm.intern_project.jpa.model.Collection;
-import com.ptithcm.intern_project.jpa.model.Phase;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,7 +11,7 @@ import java.util.List;
 @Repository
 public interface CollectionRepository extends JpaRepository<Collection, Long> {
 
-    boolean existsPhaseId(Long id);
+    boolean existsByPhaseId(Long id);
 
     List<Collection> findAllByPhaseId(Long phaseId);
 

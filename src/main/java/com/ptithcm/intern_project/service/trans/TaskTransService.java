@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class TaskTransService {
     TaskRepository taskRepository;
-    ProjectService projectService;
     JwtService jwtService;
 
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
@@ -32,7 +31,7 @@ public class TaskTransService {
         var isRootTaskOwner = foundTask.getUserInfoCreated().getAccount().getUsername().equals(username);
         if (!isRootTaskOwner)   throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
-        var isKickedLeaderProject = projectService.isKickedLeader(foundTask, username);
+        var isKickedLeaderProject = ProjectService.isKickedLeader(foundTask, username);
         if (isKickedLeaderProject) throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
         return foundTask;
