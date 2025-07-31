@@ -15,14 +15,14 @@ public interface UserInfoRepository extends JpaRepository<UserInfo, Long> {
 
     Optional<UserInfo> findByAccountUsername(String sub);
 
-    List<UserInfo> findAllByEmailIn(@Param("emails") List<String> emails);
+    List<UserInfo> findAllByEmailIn(List<String> emails);
 
     @Query("""
         SELECT u FROM UserInfo u
         WHERE LOWER(u.email) LIKE LOWER(CONCAT('%', :email, '%'))
            OR LOWER(u.fullName) LIKE LOWER(CONCAT('%', :fullName, '%'))
     """)
-    List<UserInfo> findAllByEmailOrFullName(String email, String fullName);
+    List<UserInfo> findAllByEmailOrFullName(@Param("email") String email, @Param("fullName") String fullName);
 
     @Query("""
         SELECT u FROM UserInfo u
@@ -34,7 +34,7 @@ public interface UserInfoRepository extends JpaRepository<UserInfo, Long> {
         AND (LOWER(u.fullName) LIKE LOWER(CONCAT('%', :query, '%'))
         OR LOWER(u.email) LIKE LOWER(CONCAT('%', :query, '%')))
     """)
-    List<UserInfo> fastSearchUsersIgnoreInRootTask(@Param("taskId") Long rootTaskId, @Param("query") String query);
+    List<UserInfo> fastSearchUsersIgnoreInRootTask(@Param("rootTaskId") Long rootTaskId, @Param("query") String query);
 
     boolean existsByDepartmentId(Long id);
 }

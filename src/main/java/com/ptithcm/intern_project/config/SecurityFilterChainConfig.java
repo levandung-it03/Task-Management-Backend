@@ -22,6 +22,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
+import static com.ptithcm.intern_project.common.constvalues.AuthorityValues.*;
+
 @EnableWebSecurity
 @Configuration
 @RequiredArgsConstructor
@@ -40,10 +42,10 @@ public class SecurityFilterChainConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(request -> request
-                .requestMatchers("/api/private/admin/**").hasAuthority("ROLE_ADMIN")
-                .requestMatchers("/api/private/pm/**").hasAuthority("ROLE_PM")
-                .requestMatchers("/api/private/lead/**").hasAuthority("ROLE_LEAD")
-                .requestMatchers("/api/private/emp/**").hasAuthority("ROLE_EMP")
+                .requestMatchers("/api/private/" + ROLE_ADMIN + "/**").hasAuthority("ROLE_ADMIN")
+                .requestMatchers("/api/private/" + ROLE_PM + "/**").hasAuthority("ROLE_PM")
+                .requestMatchers("/api/private/" + ROLE_LEAD + "/**").hasAuthority("ROLE_LEAD")
+                .requestMatchers("/api/private/" + ROLE_EMP + "/**").hasAuthority("ROLE_EMP")
                 .requestMatchers("/api/private/auth/**")
                 .hasAnyAuthority("ROLE_ADMIN", "ROLE_PM", "ROLE_LEAD", "ROLE_EMP")
                 .requestMatchers("/api/public/**").permitAll()

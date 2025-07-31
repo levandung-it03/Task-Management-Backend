@@ -48,6 +48,7 @@ public class PhaseController {
         return RestApiResponse.fromScs(SuccessCodes.UPDATED);
     }
 
+    @Operation(description = "Delete specified Phase")
     @DeleteMapping(ROLE_PM + "/phase/{id}")
     public ResponseEntity<RestApiResponse<Void>> delete(
         @PathVariable("id") Long id,

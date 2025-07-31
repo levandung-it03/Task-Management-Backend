@@ -9,10 +9,6 @@ import com.ptithcm.intern_project.service.AccountService;
 import static com.ptithcm.intern_project.common.enums.SuccessCodes.*;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -21,51 +17,28 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/v1")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AccountController {
     AccountService accountService;
 
     @Operation(summary = "Authenticate Account credentials")
-    @ApiResponses(value = {
-        @ApiResponse(
-            responseCode = "200",
-            description = "code=23001; message=Create new Exercise successfully",
-            content = @Content(schema = @Schema(implementation = RestApiResponse.class))),
-        @ApiResponse(
-            responseCode = "400",
-            description = "code=[10001, 10002]; message=Invalid variable type or format of fields",
-            content = @Content(schema = @Schema(implementation = RestApiResponse.class))),
-        @ApiResponse(
-            responseCode = "400",
-            description = "code=11000, message=User not found or access denied",
-            content = @Content(schema = @Schema(implementation = RestApiResponse.class))),
-        @ApiResponse(
-            responseCode = "400",
-            description = "code=11001, message=Invalid Credentials",
-            content = @Content(schema = @Schema(implementation = RestApiResponse.class))),
-        @ApiResponse(
-            responseCode = "400",
-            description = "code=10000; message=Unaware exception's thrown from resource server",
-            content = @Content(schema = @Schema(implementation = RestApiResponse.class))),
-    })
-    @ResponseBody
-    @PostMapping("/public/auth/account/v1/authenticate")
+    @PostMapping("/public/auth/account/authenticate")
     public ResponseEntity<RestApiResponse<AuthResponse>> authenticate(@Valid @RequestBody AuthRequest dto) {
         return RestApiResponse.fromScs(AUTHENTICATE, accountService.authenticate(dto));
     }
 
-    @ResponseBody
-    @PostMapping("/private/auth/account/v1/refresh-token")
+    @Operation(summary = "Refresh JWT Token")
+    @PostMapping("/private/auth/account/refresh-token")
     public ResponseEntity<RestApiResponse<TokenDTO>> refreshToken(
         @RequestHeader("Authorization") String refreshToken,
         @Valid @RequestBody TokenDTO dto) {
         return RestApiResponse.fromScs(REFRESH_TOKEN, accountService.refreshToken(refreshToken, dto.getAccessToken()));
     }
 
-    @ResponseBody
-    @PostMapping("/private/auth/account/v1/log-out")
+    @Operation(summary = "Log-out by killing JWT Token")
+    @PostMapping("/private/auth/account/log-out")
     public ResponseEntity<RestApiResponse<Void>> logout(
         @RequestHeader("Authorization") String refreshToken,
         @Valid @RequestBody TokenDTO dto) {
@@ -73,36 +46,36 @@ public class AccountController {
         return RestApiResponse.fromScs(LOGOUT);
     }
 
-    @ResponseBody
-    @PostMapping("/public/auth/account/v1/verify-email")
+    @Operation(description = "Generally verify a valid email, by OTP")
+    @PostMapping("/public/auth/account/verify-email")
     public ResponseEntity<RestApiResponse<VerifyEmailResponse>> verifyEmailByOtp(
         @Valid @RequestBody VerifyEmailRequest dto) {
         return RestApiResponse.fromScs(GET_OTP, accountService.verifyEmailByOtp(dto));
     }
 
-    @ResponseBody
-    @PostMapping({"/private/user/account/v1/authorize-email", "/private/admin/account/v1/authorize-email"})
+    @Operation(description = "Generally authorize an existing email, by OTP")
+    @PostMapping("/private/auth/account/authorize-email")
     public ResponseEntity<RestApiResponse<VerifyEmailResponse>> authorizeEmailByOtp(
         @RequestHeader("Authorization") String token) {
         return RestApiResponse.fromScs(GET_OTP, accountService.authorizeEmailByOtp(token));
     }
 
-    @ResponseBody
-    @PostMapping("/public/auth/account/v1/register")
+    @Operation(description = "Register an Account (may be used for creating ADMIN)")
+    @PostMapping("/public/auth/account/register")
     public ResponseEntity<RestApiResponse<Void>> registerNewAccount(@Valid @RequestBody RegisterRequest dto) {
         accountService.registerNewAccount(dto);
         return RestApiResponse.fromScs(REGISTER);
     }
 
-    @ResponseBody
-    @PostMapping("/public/auth/account/v1/lost-password")
+    @Operation(description = "Generate a new random password for User (will be sent via email after)")
+    @PostMapping("/public/auth/account/lost-password")
     public ResponseEntity<RestApiResponse<Void>> lostPassword(@Valid @RequestBody LostPassRequest dto) {
         accountService.lostPassword(dto);
         return RestApiResponse.fromScs(LOST_PASSWORD);
     }
 
-    @ResponseBody
-    @PutMapping({"/private/user/account/v1/change-password", "/private/admin/account/v1/change-password"})
+    @Operation(description = "Pro-actively change password by user")
+    @PutMapping("/private/auth/account/change-password")
     public ResponseEntity<RestApiResponse<Void>> changePassword(
         @RequestHeader("Authorization") String token,
         @Valid @RequestBody ChangePassRequest dto) {

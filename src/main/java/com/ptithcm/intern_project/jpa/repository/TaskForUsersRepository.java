@@ -39,7 +39,7 @@ public interface TaskForUsersRepository extends JpaRepository<TaskForUsers, Long
         SELECT DISTINCT t.task FROM TaskForUsers t
         WHERE t.task.id = :rootId
     """)
-    List<Task> findAllByRootTaskId(Long rootTaskId);
+    List<Task> findAllByRootTaskId(@Param("rootId") Long rootTaskId);
 
     @Query("""
         SELECT tfu FROM TaskForUsers tfu
