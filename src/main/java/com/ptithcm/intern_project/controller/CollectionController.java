@@ -51,7 +51,7 @@ public class CollectionController {
         return RestApiResponse.fromScs(SuccessCodes.GET_DETAIL, collectionService.get(id, token));
     }
 
-    @Operation(description = "Create a Collection by PM")
+    @Operation(description = "Update a Collection by PM")
     @PutMapping(ROLE_PM + "/collection/{id}")
     public ResponseEntity<RestApiResponse<Void>> update(
         @PathVariable("id") Long id,
@@ -61,6 +61,7 @@ public class CollectionController {
         return RestApiResponse.fromScs(SuccessCodes.UPDATED);
     }
 
+    @Operation(description = "Delete specified Collection")
     @DeleteMapping(ROLE_PM + "/collection/{id}")
     public ResponseEntity<RestApiResponse<Void>> delete(
         @PathVariable("id") Long id,
@@ -70,7 +71,10 @@ public class CollectionController {
     }
 
     @Operation(description = "Get all Tasks of specified Project")
-    @PostMapping(ROLE_PM + "/collection/{id}/get-all-related-tasks")
+    @PostMapping({
+        ROLE_PM + "/collection/{id}/get-all-related-tasks",
+        ROLE_LEAD + "/collection/{id}/get-all-related-tasks",
+        ROLE_EMP + "/collection/{id}/get-all-related-tasks"})
     public ResponseEntity<RestApiResponse<List<Task>>> getAllRelatedTasks(
         @PathVariable("id") Long collectionId,
         @RequestHeader("Authorization") String token) {
