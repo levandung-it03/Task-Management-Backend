@@ -30,26 +30,26 @@ VALUES ('ROLE_ADMIN'),
 
 -- 3. Tạo 10 Account ROLE_EMPLOYEE
 INSERT INTO account (username, password, status, created_time, updated_time)
-VALUES ('employee1', 'pass1', 1, NOW(), NOW()),
-       ('employee2', 'pass2', 1, NOW(), NOW()),
-       ('employee3', 'pass3', 1, NOW(), NOW()),
-       ('employee4', 'pass4', 1, NOW(), NOW()),
-       ('employee5', 'pass5', 1, NOW(), NOW()),
-       ('employee6', 'pass6', 1, NOW(), NOW()),
-       ('employee7', 'pass7', 1, NOW(), NOW()),
-       ('employee8', 'pass8', 1, NOW(), NOW()),
-       ('employee9', 'pass9', 1, NOW(), NOW()),
-       ('employee10', 'pass10', 1, NOW(), NOW());
+VALUES ('employee1', '$2a$08$l11nU8s5XrHEmTRRvxjU1OyX1SAfEJ/Y0Juk8jQrO0.yiW85up0QG', 1, NOW(), NOW()),
+       ('employee2', '$2a$08$l11nU8s5XrHEmTRRvxjU1OyX1SAfEJ/Y0Juk8jQrO0.yiW85up0QG', 1, NOW(), NOW()),
+       ('employee3', '$2a$08$l11nU8s5XrHEmTRRvxjU1OyX1SAfEJ/Y0Juk8jQrO0.yiW85up0QG', 1, NOW(), NOW()),
+       ('employee4', '$2a$08$l11nU8s5XrHEmTRRvxjU1OyX1SAfEJ/Y0Juk8jQrO0.yiW85up0QG', 1, NOW(), NOW()),
+       ('employee5', '$2a$08$l11nU8s5XrHEmTRRvxjU1OyX1SAfEJ/Y0Juk8jQrO0.yiW85up0QG', 1, NOW(), NOW()),
+       ('employee6', '$2a$08$l11nU8s5XrHEmTRRvxjU1OyX1SAfEJ/Y0Juk8jQrO0.yiW85up0QG', 1, NOW(), NOW()),
+       ('employee7', '$2a$08$l11nU8s5XrHEmTRRvxjU1OyX1SAfEJ/Y0Juk8jQrO0.yiW85up0QG', 1, NOW(), NOW()),
+       ('employee8', '$2a$08$l11nU8s5XrHEmTRRvxjU1OyX1SAfEJ/Y0Juk8jQrO0.yiW85up0QG', 1, NOW(), NOW()),
+       ('employee9', '$2a$08$l11nU8s5XrHEmTRRvxjU1OyX1SAfEJ/Y0Juk8jQrO0.yiW85up0QG', 1, NOW(), NOW()),
+       ('employee10', '$2a$08$l11nU8s5XrHEmTRRvxjU1OyX1SAfEJ/Y0Juk8jQrO0.yiW85up0QG', 1, NOW(), NOW());
 
 -- 4. Tạo 3 Account ROLE_LEAD
 INSERT INTO account (username, password, status, created_time, updated_time)
-VALUES ('lead1', 'passlead1', 1, NOW(), NOW()),
-       ('lead2', 'passlead2', 1, NOW(), NOW()),
-       ('lead3', 'passlead3', 1, NOW(), NOW());
+VALUES ('lead1', '$2a$08$l11nU8s5XrHEmTRRvxjU1OyX1SAfEJ/Y0Juk8jQrO0.yiW85up0QG', 1, NOW(), NOW()),
+       ('lead2', '$2a$08$l11nU8s5XrHEmTRRvxjU1OyX1SAfEJ/Y0Juk8jQrO0.yiW85up0QG', 1, NOW(), NOW()),
+       ('lead3', '$2a$08$l11nU8s5XrHEmTRRvxjU1OyX1SAfEJ/Y0Juk8jQrO0.yiW85up0QG', 1, NOW(), NOW());
 
 -- 5. Tạo 1 Account ROLE_PM (Owner project)
 INSERT INTO account (username, password, status, created_time, updated_time)
-VALUES ('pm1', 'passpm1', 1, NOW(), NOW());
+VALUES ('pm1', '$2a$08$l11nU8s5XrHEmTRRvxjU1OyX1SAfEJ/Y0Juk8jQrO0.yiW85up0QG', 1, NOW(), NOW());
 
 -- 6. Tạo UserInfo liên kết Account, 10 employee + 3 lead + 1 pm, phòng ban assign đơn giản
 INSERT INTO user_info (full_name, email, phone, identity, department_id, account_id, date_of_birth)
@@ -73,7 +73,7 @@ VALUES ('Employee 1', 'employee1@example.com', '0900000001', 'ID001', 1, 1, '199
 
 -- 8. Tạo Project do PM tạo (Owner)
 INSERT INTO project
-(created_by_id, name, description, start_date, due_date, status, created_time, updated_time)
+(created_by_id, name, description, start_date, due_date, active, created_time, updated_time)
 VALUES (14, 'Project 1', 'Sample Project', CURDATE(), DATE_ADD(CURDATE(), INTERVAL 30 DAY), 1, NOW(), NOW());
 
 -- Lấy ID Project mới tạo giả sử là 1

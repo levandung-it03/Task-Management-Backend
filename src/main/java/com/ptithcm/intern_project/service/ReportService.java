@@ -1,12 +1,14 @@
 package com.ptithcm.intern_project.service;
 
-import com.ptithcm.intern_project.common.enums.ErrorCodes;
-import com.ptithcm.intern_project.common.exception.AppExc;
+import com.ptithcm.intern_project.exception.enums.ErrorCodes;
+import com.ptithcm.intern_project.exception.AppExc;
 import com.ptithcm.intern_project.dto.request.CommentCreationRequest;
 import com.ptithcm.intern_project.dto.response.IdResponse;
 import com.ptithcm.intern_project.jpa.model.Report;
 import com.ptithcm.intern_project.jpa.model.enums.ReportStatus;
 import com.ptithcm.intern_project.jpa.repository.ReportRepository;
+import com.ptithcm.intern_project.security.service.JwtService;
+import com.ptithcm.intern_project.service.interfaces.IReportService;
 import com.ptithcm.intern_project.service.trans.ReportTransService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -21,25 +23,13 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class ReportService {
+public class ReportService implements IReportService {
     ReportRepository reportRepository;
     CommentOfReportService commentOfReportService;
     ReportTransService reportTransService;
     JwtService jwtService;
 
-    public boolean hasAtLeastOneReport(Long taskId) {
-        return reportRepository.existsByUserTaskCreatedTaskId(taskId);
-    }
-
-    public Report save(Report report) {
-        return reportRepository.save(report);
-    }
-
-    @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
-    public List<Report> findAllByUserTaskCreatedId(Long id) {
-        return reportRepository.findAllByUserTaskCreatedId(id);
-    }
-
+    @Override
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public void update(Long reportId, String newContent, String token) {
         String username = jwtService.readPayload(token).get("sub");
@@ -54,6 +44,7 @@ public class ReportService {
         reportRepository.save(report);
     }
 
+    @Override
     public IdResponse createComment(Long reportId, CommentCreationRequest request, String token) {
         var report = reportRepository.findById(reportId)
             .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
@@ -64,6 +55,7 @@ public class ReportService {
         return commentOfReportService.create(report, request, token);
     }
 
+    @Override
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public void approveReport(Long reportId, String token) {
         var report = this.findUpdatableReport(reportId, token);
@@ -72,6 +64,7 @@ public class ReportService {
         report.setReviewedTime(LocalDateTime.now());
     }
 
+    @Override
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public void rejectReport(Long reportId, String rejectReason, String token) {
         var report = this.findUpdatableReport(reportId, token);
@@ -79,6 +72,19 @@ public class ReportService {
         report.setReportStatus(ReportStatus.REJECTED);
         report.setReviewedTime(LocalDateTime.now());
         report.setRejectedReason(rejectReason);
+    }
+
+    public boolean hasAtLeastOneReport(Long taskId) {
+        return reportRepository.existsByUserTaskCreatedTaskId(taskId);
+    }
+
+    public Report save(Report report) {
+        return reportRepository.save(report);
+    }
+
+    @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
+    public List<Report> findAllByUserTaskCreatedId(Long id) {
+        return reportRepository.findAllByUserTaskCreatedId(id);
     }
 
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)

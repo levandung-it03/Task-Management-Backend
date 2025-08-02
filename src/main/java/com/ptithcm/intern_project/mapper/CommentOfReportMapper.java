@@ -1,4 +1,4 @@
-package com.ptithcm.intern_project.jpa.model.mapper;
+package com.ptithcm.intern_project.mapper;
 
 import com.ptithcm.intern_project.dto.response.CommentResponse;
 import com.ptithcm.intern_project.jpa.model.CommentOfReport;

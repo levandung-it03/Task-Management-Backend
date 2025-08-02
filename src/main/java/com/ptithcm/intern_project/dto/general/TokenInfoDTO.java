@@ -1,4 +1,4 @@
-package com.ptithcm.intern_project.common.wrapper;
+package com.ptithcm.intern_project.dto.general;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -8,7 +8,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class TokenInfo {
+public class TokenInfoDTO {
     String jti;
     String token;
 }

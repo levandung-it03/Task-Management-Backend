@@ -1,16 +1,16 @@
-package com.ptithcm.intern_project.common.filter;
+package com.ptithcm.intern_project.security.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jwt.JWTClaimsSet;
-import com.ptithcm.intern_project.common.enums.ErrorCodes;
-import com.ptithcm.intern_project.common.enums.TokenClaimNames;
-import com.ptithcm.intern_project.common.enums.TokenTypes;
-import com.ptithcm.intern_project.common.exception.AppExc;
-import com.ptithcm.intern_project.common.wrapper.RestApiResponse;
+import com.ptithcm.intern_project.exception.enums.ErrorCodes;
+import com.ptithcm.intern_project.security.enums.TokenClaimNames;
+import com.ptithcm.intern_project.security.enums.TokenTypes;
+import com.ptithcm.intern_project.exception.AppExc;
+import com.ptithcm.intern_project.dto.general.RestApiResponse;
 import com.ptithcm.intern_project.jpa.model.Account;
 import com.ptithcm.intern_project.redis.crud.InvalidTokenCrud;
 import com.ptithcm.intern_project.redis.crud.RefreshTokenCrud;
-import com.ptithcm.intern_project.service.JwtService;
+import com.ptithcm.intern_project.security.service.JwtService;
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -62,7 +62,7 @@ public class JWTAuthFilter extends OncePerRequestFilter {
             if (token == null || !token.startsWith("Bearer "))
                 throw new AppExc(ErrorCodes.INVALID_TOKEN);
 
-            var jwtClaimsSet = jwtService.verifyTokenOrElseThrow(token, true);
+            var jwtClaimsSet = jwtService.extractValidToken(token);
             switch (TokenTypes.valueOf(jwtClaimsSet.getClaim(TokenClaimNames.TOKEN_TYPE.getStr()).toString())) {
                 case ACCESS, OAUTH2_ACCESS:
                     var isKilledToken = invalidTokenCrud.existsById(jwtClaimsSet.getJWTID());

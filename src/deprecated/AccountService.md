@@ -1,21 +1,27 @@
 ```java
 package com.ptithcm.intern_project.service;
 
-import com.ptithcm.intern_project.common.enums.*;
-import com.ptithcm.intern_project.common.exception.AppExc;
-import com.ptithcm.intern_project.common.wrapper.GeneralTokenClaims;
-import com.ptithcm.intern_project.common.wrapper.TokenInfo;
+import com.ptithcm.intern_project.dto.request.*;
+import com.ptithcm.intern_project.exception.AppExc;
+import com.ptithcm.intern_project.dto.general.GeneralTokenClaims;
+import com.ptithcm.intern_project.exception.enums.ErrorCodes;
+import com.ptithcm.intern_project.dto.general.TokenInfoDTO;
 import com.ptithcm.intern_project.dto.general.TokenDTO;
 import com.ptithcm.intern_project.jpa.model.Account;
 import com.ptithcm.intern_project.jpa.model.UserInfo;
+import com.ptithcm.intern_project.security.enums.AuthorityEnum;
 import com.ptithcm.intern_project.jpa.repository.AccountRepository;
 import com.ptithcm.intern_project.jpa.repository.AuthorityRepository;
 import com.ptithcm.intern_project.jpa.repository.UserInfoRepository;
-import com.ptithcm.intern_project.dto.request.*;
 import com.ptithcm.intern_project.dto.response.AuthResponse;
 import com.ptithcm.intern_project.dto.response.VerifyEmailResponse;
 import com.ptithcm.intern_project.redis.crud.*;
 import com.ptithcm.intern_project.redis.model.*;
+import com.ptithcm.intern_project.redis.model.enums.OtpTypes;
+import com.ptithcm.intern_project.security.enums.TokenClaimNames;
+import com.ptithcm.intern_project.security.enums.TokenTypes;
+import com.ptithcm.intern_project.security.service.JwtService;
+import com.ptithcm.intern_project.security.service.OtpService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
@@ -57,14 +63,14 @@ public class AccountService {
 
         UserInfo userInfo = userInfoRepository.findByAccountId(authAccount.getId())
             .orElseThrow(() -> new AppExc(ErrorCodes.FORBIDDEN_USER));
-        TokenInfo accessTokenInfo = jwtService.generateToken(GeneralTokenClaims.builder()
+        TokenInfoDTO accessTokenInfoDTO = jwtService.generateToken(GeneralTokenClaims.builder()
             .subject(authAccount.getUsername())
             .owner(userInfo.getFullName())
             .scopes(Account.buildScope(authAccount.getAuthorities()))
             .typeEnum(TokenTypes.ACCESS)
             .isOauth2(false)
             .build());
-        TokenInfo refreshTokenInfo = jwtService.generateToken(GeneralTokenClaims.builder()
+        TokenInfoDTO refreshTokenInfoDTO = jwtService.generateToken(GeneralTokenClaims.builder()
             .subject(authAccount.getUsername())
             .owner(userInfo.getFullName())
             .scopes(Account.buildScope(authAccount.getAuthorities()))
@@ -72,10 +78,10 @@ public class AccountService {
             .isOauth2(false)
             .build());
 
-        refreshTokenCrud.save(RefreshToken.builder().id(refreshTokenInfo.getJti()).build());
+        refreshTokenCrud.save(RefreshToken.builder().id(refreshTokenInfoDTO.getJti()).build());
         return AuthResponse.builder()
-            .accessToken(accessTokenInfo.getToken())
-            .refreshToken(refreshTokenInfo.getToken())
+            .accessToken(accessTokenInfoDTO.getToken())
+            .refreshToken(refreshTokenInfoDTO.getToken())
             .build();
     }
 
@@ -90,7 +96,7 @@ public class AccountService {
 
         UserInfo userInfo = userInfoRepository.findByAccountId(authAccount.getId())
             .orElseThrow(() -> new AppExc(ErrorCodes.FORBIDDEN_USER));
-        TokenInfo accessTokenInfo = jwtService.generateToken(GeneralTokenClaims.builder()
+        TokenInfoDTO accessTokenInfoDTO = jwtService.generateToken(GeneralTokenClaims.builder()
             .subject(authAccount.getUsername())
             .owner(userInfo.getFullName())
             .scopes(Account.buildScope(authAccount.getAuthorities()))
@@ -98,7 +104,7 @@ public class AccountService {
             .isOauth2(Boolean.parseBoolean(refreshClaims.get(TokenClaimNames.IS_OAUTH2.getStr())))
             .build());
 
-        return TokenDTO.builder().accessToken(accessTokenInfo.getToken()).build();
+        return TokenDTO.builder().accessToken(accessTokenInfoDTO.getToken()).build();
     }
 
     public void logout(String refreshToken, String accessToken) {
@@ -116,7 +122,7 @@ public class AccountService {
     }
 
     public VerifyEmailResponse authorizeEmailByOtp(String token) {
-        Map<String, String> emailCustom = emailService.getEmailCustom();
+        Map<String, String> emailCustom = emailService.getMailContentCustom();
         String email = jwtService.readPayload(token).getOrDefault("sub", "");
         Account account = accountRepository.findByUsername(email)
             .orElseThrow(() -> new AppExc(ErrorCodes.WEIRD_TOKEN_SUBJECT));
@@ -126,7 +132,7 @@ public class AccountService {
         if (changePassOtpCrud.existsById(email))
             throw new AppExc(ErrorCodes.OTP_HAS_NOT_EXPIRED);
 
-        String otp = OtpGenerator.randOTP();
+        String otp = OtpService.randOTP();
         changePassOtpCrud.save(ChangePassOtp.builder()
             .email(email)
             .otp(otp)
@@ -139,8 +145,8 @@ public class AccountService {
     }
 
     public VerifyEmailResponse verifyEmailByOtp(VerifyEmailRequest dto) {
-        Map<String, String> emailCustom = emailService.getEmailCustom();
-        String otp = OtpGenerator.randOTP();
+        Map<String, String> emailCustom = emailService.getMailContentCustom();
+        String otp = OtpService.randOTP();
         switch (OtpTypes.valueOf(dto.getOtpType())) {
             case OtpTypes.REGISTER:
                 if (accountRepository.existsByUsername(dto.getEmail()))
@@ -231,24 +237,24 @@ public class AccountService {
                 savedUserDto.setDob((LocalDate) oauth2UserInfo.get("dob"));
             ((AccountService) AopContext.currentProxy()).registerUserCore(savedUserDto);
         }
-        TokenInfo accessTokenInfo = jwtService.generateToken(GeneralTokenClaims.builder()
+        TokenInfoDTO accessTokenInfoDTO = jwtService.generateToken(GeneralTokenClaims.builder()
             .subject(oauth2UserInfo.get("sub").toString())
             .owner(oauth2UserInfo.get("owner").toString())
             .scopes(oauth2UserInfo.get("scopes").toString())
             .typeEnum(TokenTypes.ACCESS)
             .isOauth2(true)
             .build());
-        TokenInfo refreshTokenInfo = jwtService.generateToken(GeneralTokenClaims.builder()
+        TokenInfoDTO refreshTokenInfoDTO = jwtService.generateToken(GeneralTokenClaims.builder()
             .subject(oauth2UserInfo.get("sub").toString())
             .owner(oauth2UserInfo.get("owner").toString())
             .scopes(oauth2UserInfo.get("scopes").toString())
             .typeEnum(TokenTypes.REFRESH)
             .isOauth2(true)
             .build());
-        refreshTokenCrud.save(RefreshToken.builder().id(refreshTokenInfo.getJti()).build());
+        refreshTokenCrud.save(RefreshToken.builder().id(refreshTokenInfoDTO.getJti()).build());
         return AuthResponse.builder()
-            .accessToken(accessTokenInfo.getToken())
-            .refreshToken(refreshTokenInfo.getToken())
+            .accessToken(accessTokenInfoDTO.getToken())
+            .refreshToken(refreshTokenInfoDTO.getToken())
             .build();
     }
 
@@ -257,7 +263,7 @@ public class AccountService {
     }
 
     public void lostPassword(LostPassRequest dto) {
-        Map<String, String> emailCustom = emailService.getEmailCustom();
+        Map<String, String> emailCustom = emailService.getMailContentCustom();
         var account = accountRepository.findByUsername(dto.getEmail())
             .orElseThrow(() -> new AppExc(ErrorCodes.EMAIL_NOT_FOUND));
 
@@ -269,7 +275,7 @@ public class AccountService {
         if (!account.isStatus() || Objects.nonNull(account.getOauth2ServiceEnum()))
             throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
-        String newPassword = OtpGenerator.randOTP();
+        String newPassword = OtpService.randOTP();
         account.setPassword(userPasswordEncoder.encode(newPassword));
         accountRepository.save(account);
 

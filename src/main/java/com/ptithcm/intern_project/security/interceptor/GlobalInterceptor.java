@@ -1,6 +1,6 @@
-package com.ptithcm.intern_project.common.interceptor;
+package com.ptithcm.intern_project.security.interceptor;
 
-import com.ptithcm.intern_project.common.logger.GlobalLogger;
+import com.ptithcm.intern_project.security.logger.GlobalLogger;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AccessLevel;

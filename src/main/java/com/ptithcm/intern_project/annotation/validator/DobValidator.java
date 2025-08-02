@@ -1,6 +1,6 @@
-package com.ptithcm.intern_project.common.annotation.validator;
+package com.ptithcm.intern_project.annotation.validator;
 
-import com.ptithcm.intern_project.common.annotation.constraint.DobConstraint;
+import com.ptithcm.intern_project.annotation.constraint.DobConstraint;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.springframework.beans.factory.annotation.Value;

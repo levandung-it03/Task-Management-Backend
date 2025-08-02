@@ -1,11 +1,12 @@
 package com.ptithcm.intern_project.service;
 
-import com.ptithcm.intern_project.common.enums.ErrorCodes;
-import com.ptithcm.intern_project.common.exception.AppExc;
+import com.ptithcm.intern_project.exception.enums.ErrorCodes;
+import com.ptithcm.intern_project.exception.AppExc;
 import com.ptithcm.intern_project.jpa.model.Department;
 import com.ptithcm.intern_project.jpa.repository.DepartmentRepository;
 import com.ptithcm.intern_project.dto.request.DepartmentRequest;
 import com.ptithcm.intern_project.dto.response.IdResponse;
+import com.ptithcm.intern_project.service.interfaces.IDepartmentService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -16,10 +17,11 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class DepartmentService {
+public class DepartmentService implements IDepartmentService {
     UserInfoService userInfoService;
     DepartmentRepository departmentRepository;
 
+    @Override
     public IdResponse create(DepartmentRequest request) {
         if (departmentRepository.existsByName(request.getName())) {
             throw new AppExc(ErrorCodes.DEPARTMENT_ALREADY_EXISTS);
@@ -32,6 +34,7 @@ public class DepartmentService {
             .build();
     }
 
+    @Override
     public void update(Long id, DepartmentRequest request) {
         Department department = departmentRepository.findById(id)
             .orElseThrow(() -> new AppExc(ErrorCodes.DEPARTMENT_NOT_FOUND));
@@ -42,6 +45,7 @@ public class DepartmentService {
         departmentRepository.save(department);
     }
 
+    @Override
     public void delete(Long id) {
         if (!departmentRepository.existsById(id)) {
             throw new AppExc(ErrorCodes.DEPARTMENT_NOT_FOUND);
@@ -52,11 +56,13 @@ public class DepartmentService {
         departmentRepository.deleteById(id);
     }
 
+    @Override
     public Department get(Long id) {
         return departmentRepository.findById(id)
             .orElseThrow(() -> new AppExc(ErrorCodes.DEPARTMENT_NOT_FOUND));
     }
 
+    @Override
     public List<Department> getAll() {
         return departmentRepository.findAll().stream().toList();
     }

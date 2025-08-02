@@ -1,8 +1,7 @@
 package com.ptithcm.intern_project.controller;
 
-import com.ptithcm.intern_project.common.enums.GroupRole;
-import com.ptithcm.intern_project.common.enums.SuccessCodes;
-import com.ptithcm.intern_project.common.wrapper.RestApiResponse;
+import com.ptithcm.intern_project.exception.enums.SuccessCodes;
+import com.ptithcm.intern_project.dto.general.RestApiResponse;
 import com.ptithcm.intern_project.jpa.model.enums.*;
 import com.ptithcm.intern_project.service.EnumService;
 import lombok.AccessLevel;
@@ -16,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 
 @RestController
-@RequestMapping("/api/v1/public/enum")
+@RequestMapping("/api/public/v1/enum")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class EnumsController {

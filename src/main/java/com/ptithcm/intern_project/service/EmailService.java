@@ -1,7 +1,7 @@
 package com.ptithcm.intern_project.service;
 
-import com.ptithcm.intern_project.common.enums.ErrorCodes;
-import com.ptithcm.intern_project.common.exception.AppExc;
+import com.ptithcm.intern_project.exception.enums.ErrorCodes;
+import com.ptithcm.intern_project.exception.AppExc;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,7 +40,7 @@ public class EmailService {
         }
     }
 
-    public Map<String, String> getEmailCustom() {
+    public Map<String, String> getMailContentCustom() {
         return Map.of(
             "msg", """
                 <div>

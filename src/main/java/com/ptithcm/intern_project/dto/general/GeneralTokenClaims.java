@@ -1,6 +1,6 @@
-package com.ptithcm.intern_project.common.wrapper;
+package com.ptithcm.intern_project.dto.general;
 
-import com.ptithcm.intern_project.common.enums.TokenTypes;
+import com.ptithcm.intern_project.security.enums.TokenTypes;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

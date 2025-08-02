@@ -1,4 +1,4 @@
-package com.ptithcm.intern_project.service;
+package com.ptithcm.intern_project.security.service;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
@@ -8,7 +8,7 @@ import java.security.SecureRandom;
 
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class OtpGenerator {
+public class OtpService {
     static String CHARACTERS = "ABCDEFGHJKLMNPQRSTUVWXYZ0123456789";
     static int OTP_LENGTH = 6;
     static SecureRandom RANDOM = new SecureRandom();

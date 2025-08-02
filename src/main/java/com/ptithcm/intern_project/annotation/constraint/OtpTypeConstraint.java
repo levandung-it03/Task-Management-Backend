@@ -1,6 +1,6 @@
-package com.ptithcm.intern_project.common.annotation.constraint;
+package com.ptithcm.intern_project.annotation.constraint;
 
-import com.ptithcm.intern_project.common.annotation.validator.OtpTypeValidator;
+import com.ptithcm.intern_project.annotation.validator.OtpTypeValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 

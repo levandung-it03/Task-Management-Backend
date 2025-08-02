@@ -1,13 +1,11 @@
 package com.ptithcm.intern_project.controller;
 
-import com.ptithcm.intern_project.common.enums.SuccessCodes;
-import com.ptithcm.intern_project.common.wrapper.RestApiResponse;
+import com.ptithcm.intern_project.exception.enums.SuccessCodes;
+import com.ptithcm.intern_project.dto.general.RestApiResponse;
 import com.ptithcm.intern_project.dto.request.CollectionRequest;
-import com.ptithcm.intern_project.dto.request.PhaseRequest;
 import com.ptithcm.intern_project.dto.request.TaskRequest;
 import com.ptithcm.intern_project.dto.response.IdResponse;
 import com.ptithcm.intern_project.jpa.model.Collection;
-import com.ptithcm.intern_project.jpa.model.Phase;
 import com.ptithcm.intern_project.jpa.model.Task;
 import com.ptithcm.intern_project.service.CollectionService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,12 +16,12 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import static com.ptithcm.intern_project.security.constvalues.AuthorityValues.*;
+
 import java.util.List;
 
-import static com.ptithcm.intern_project.common.constvalues.AuthorityValues.*;
-
 @RestController
-@RequestMapping("/api/v1/private")
+@RequestMapping("/api/private")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CollectionController {
@@ -31,8 +29,8 @@ public class CollectionController {
     
     @Operation(description = "Create Task")
     @PostMapping({
-        ROLE_PM + "/collection/{collectionId}/create-task",
-        ROLE_LEAD + "/collection/{collectionId}/create-task"})
+        ROLE_PM + "/v1/collection/{collectionId}/create-task",
+        ROLE_LEAD + "/v1/collection/{collectionId}/create-task"})
     public ResponseEntity<RestApiResponse<IdResponse>> createTask(
         @PathVariable("collectionId") Long collectionId,
         @Valid @RequestBody TaskRequest request,
@@ -42,9 +40,9 @@ public class CollectionController {
 
     @Operation(description = "Get full information of specified Collection")
     @GetMapping({
-        ROLE_PM + "/collection/{id}",
-        ROLE_LEAD + "/collection/{id}",
-        ROLE_EMP + "/collection/{id}"})
+        ROLE_PM + "/v1/collection/{id}",
+        ROLE_LEAD + "/v1/collection/{id}",
+        ROLE_EMP + "/v1/collection/{id}"})
     public ResponseEntity<RestApiResponse<Collection>> get(
         @PathVariable("id") Long id,
         @RequestHeader("Authorization") String token) {
@@ -52,7 +50,7 @@ public class CollectionController {
     }
 
     @Operation(description = "Update a Collection by PM")
-    @PutMapping(ROLE_PM + "/collection/{id}")
+    @PutMapping(ROLE_PM + "/v1/collection/{id}")
     public ResponseEntity<RestApiResponse<Void>> update(
         @PathVariable("id") Long id,
         @Valid @RequestBody CollectionRequest request,
@@ -62,7 +60,7 @@ public class CollectionController {
     }
 
     @Operation(description = "Delete specified Collection")
-    @DeleteMapping(ROLE_PM + "/collection/{id}")
+    @DeleteMapping(ROLE_PM + "/v1/collection/{id}")
     public ResponseEntity<RestApiResponse<Void>> delete(
         @PathVariable("id") Long id,
         @RequestHeader("Authorization") String token) {
@@ -72,9 +70,9 @@ public class CollectionController {
 
     @Operation(description = "Get all Tasks of specified Project")
     @PostMapping({
-        ROLE_PM + "/collection/{id}/get-all-related-tasks",
-        ROLE_LEAD + "/collection/{id}/get-all-related-tasks",
-        ROLE_EMP + "/collection/{id}/get-all-related-tasks"})
+        ROLE_PM + "/v1/collection/{id}/get-all-related-tasks",
+        ROLE_LEAD + "/v1/collection/{id}/get-all-related-tasks",
+        ROLE_EMP + "/v1/collection/{id}/get-all-related-tasks"})
     public ResponseEntity<RestApiResponse<List<Task>>> getAllRelatedTasks(
         @PathVariable("id") Long collectionId,
         @RequestHeader("Authorization") String token) {

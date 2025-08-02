@@ -1,4 +1,22 @@
 package com.ptithcm.intern_project.service.interfaces;
 
+import com.ptithcm.intern_project.dto.request.CollectionRequest;
+import com.ptithcm.intern_project.dto.request.TaskRequest;
+import com.ptithcm.intern_project.dto.response.IdResponse;
+import com.ptithcm.intern_project.jpa.model.Collection;
+import com.ptithcm.intern_project.jpa.model.Task;
+
+import java.util.List;
+
 public interface ICollectionService {
+
+    IdResponse createTask(Long collectionId, TaskRequest request, String token);
+
+    Collection get(Long id, String token);
+
+    void update(Long id, CollectionRequest request, String token);
+
+    void delete(Long id, String token);
+
+    List<Task> getAllRelatedTasks(Long collectionId, String token);
 }

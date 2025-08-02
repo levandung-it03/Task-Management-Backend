@@ -1,11 +1,11 @@
 package com.ptithcm.intern_project.service.trans;
 
-import com.ptithcm.intern_project.common.enums.ErrorCodes;
-import com.ptithcm.intern_project.common.exception.AppExc;
+import com.ptithcm.intern_project.exception.enums.ErrorCodes;
+import com.ptithcm.intern_project.exception.AppExc;
 import com.ptithcm.intern_project.jpa.model.Task;
 import com.ptithcm.intern_project.jpa.model.enums.UserTaskStatus;
 import com.ptithcm.intern_project.jpa.repository.TaskRepository;
-import com.ptithcm.intern_project.service.JwtService;
+import com.ptithcm.intern_project.security.service.JwtService;
 import com.ptithcm.intern_project.service.ProjectService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

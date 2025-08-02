@@ -1,13 +1,18 @@
 package com.ptithcm.intern_project.service;
 
-import com.ptithcm.intern_project.common.enums.AuthorityEnum;
-import com.ptithcm.intern_project.common.enums.ErrorCodes;
-import com.ptithcm.intern_project.common.exception.AppExc;
-import com.ptithcm.intern_project.common.mapper.UserInfoMapper;
+import com.ptithcm.intern_project.security.enums.AuthorityEnum;
+import com.ptithcm.intern_project.exception.enums.ErrorCodes;
+import com.ptithcm.intern_project.exception.AppExc;
+import com.ptithcm.intern_project.mapper.UserInfoMapper;
 import com.ptithcm.intern_project.dto.general.ShortUserInfoDTO;
 import com.ptithcm.intern_project.jpa.model.UserInfo;
 import com.ptithcm.intern_project.jpa.repository.UserInfoRepository;
 import com.ptithcm.intern_project.dto.request.UpdatedUserInfoRequest;
+import com.ptithcm.intern_project.security.service.JwtService;
+import com.ptithcm.intern_project.service.interfaces.IUserInfoService;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -21,17 +26,19 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class UserInfoService {
+public class UserInfoService implements IUserInfoService {
     UserInfoRepository userInfoRepository;
     JwtService jwtService;
     UserInfoMapper userInfoMapper;
 
+    @Override
     public UserInfo getUserInfo(String token) {
         HashMap<String, String> claims = jwtService.readPayload(token);
         return userInfoRepository.findByAccountUsername(claims.get("sub"))
             .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_TOKEN));
     }
 
+    @Override
     public void updateUserInfo(String token, UpdatedUserInfoRequest dto) {
         HashMap<String, String> claims = jwtService.readPayload(token);
         UserInfo originInfo = userInfoRepository.findByAccountUsername(claims.get("sub"))
@@ -41,11 +48,7 @@ public class UserInfoService {
         originInfo.setDob(dto.getDob());
         userInfoRepository.save(originInfo);
     }
-
-    public List<UserInfo> findAllByEmailIn(List<String> assignedEmails) {
-        return userInfoRepository.findAllByEmailIn(assignedEmails);
-    }
-
+    @Override
     @Transactional(rollbackFor = RuntimeException.class)
     public List<ShortUserInfoDTO> fastSearchUsers(String query, String token) {
         if (this.isAuthority(token, AuthorityEnum.ROLE_EMP))
@@ -56,6 +59,7 @@ public class UserInfoService {
             .toList();
     }
 
+    @Override
     @Transactional(rollbackFor = RuntimeException.class)
     public List<ShortUserInfoDTO> leadFastSearchUsersForNewTask(String query, String token) {
         if (!this.isAuthority(token, AuthorityEnum.ROLE_PM))
@@ -64,6 +68,17 @@ public class UserInfoService {
         return userInfoRepository.findAllByEmailOrFullName(query, query).stream()
             .map(userInfoMapper::shortenUserInfo)
             .filter(user -> !user.getRole().equals(AuthorityEnum.ROLE_PM.toString()))
+            .toList();
+    }
+
+    @Override
+    public List<ShortUserInfoDTO> pmFastSearchUsersForNewProject(String query, String token) {
+        if (!this.isAuthority(token, AuthorityEnum.ROLE_PM))
+            throw new AppExc(ErrorCodes.FORBIDDEN_USER);
+
+        return userInfoRepository.findAllByEmailOrFullName(query, query).stream()
+            .map(userInfoMapper::shortenUserInfo)
+            .filter(user -> user.getRole().equals(AuthorityEnum.ROLE_LEAD.toString()))
             .toList();
     }
 
@@ -86,13 +101,11 @@ public class UserInfoService {
         return userInfoRepository.existsByDepartmentId(id);
     }
 
-    public List<ShortUserInfoDTO> pmFastSearchUsersForNewProject(String query, String token) {
-        if (!this.isAuthority(token, AuthorityEnum.ROLE_PM))
-            throw new AppExc(ErrorCodes.FORBIDDEN_USER);
+    public List<UserInfo> findAllByEmailIn(List<String> assignedEmails) {
+        return userInfoRepository.findAllByEmailIn(assignedEmails);
+    }
 
-        return userInfoRepository.findAllByEmailOrFullName(query, query).stream()
-            .map(userInfoMapper::shortenUserInfo)
-            .filter(user -> user.getRole().equals(AuthorityEnum.ROLE_LEAD.toString()))
-            .toList();
+    public boolean existsByEmail(String email) {
+        return userInfoRepository.existsByEmail(email);
     }
 }

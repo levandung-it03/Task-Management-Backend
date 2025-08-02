@@ -1,9 +1,9 @@
-package com.ptithcm.intern_project.config;
+package com.ptithcm.intern_project.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ptithcm.intern_project.common.enums.ErrorCodes;
-import com.ptithcm.intern_project.common.filter.JWTAuthFilter;
-import com.ptithcm.intern_project.common.wrapper.RestApiResponse;
+import com.ptithcm.intern_project.exception.enums.ErrorCodes;
+import com.ptithcm.intern_project.security.filter.JWTAuthFilter;
+import com.ptithcm.intern_project.dto.general.RestApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -22,7 +22,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
-import static com.ptithcm.intern_project.common.constvalues.AuthorityValues.*;
+import static com.ptithcm.intern_project.security.constvalues.AuthorityValues.*;
 
 @EnableWebSecurity
 @Configuration
@@ -42,14 +42,14 @@ public class SecurityFilterChainConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(request -> request
-                .requestMatchers("/api/**/private/" + ROLE_ADMIN + "/**").hasAuthority("ROLE_ADMIN")
-                .requestMatchers("/api/**/private/" + ROLE_PM + "/**").hasAuthority("ROLE_PM")
-                .requestMatchers("/api/**/private/" + ROLE_LEAD + "/**").hasAuthority("ROLE_LEAD")
-                .requestMatchers("/api/**/private/" + ROLE_EMP + "/**").hasAuthority("ROLE_EMP")
-                .requestMatchers("/api/**/private/auth/**")
+                .requestMatchers("api/private/" + ROLE_ADMIN + "/**").hasAuthority("ROLE_ADMIN")
+                .requestMatchers("api/private/" + ROLE_PM + "/**").hasAuthority("ROLE_PM")
+                .requestMatchers("api/private/" + ROLE_LEAD + "/**").hasAuthority("ROLE_LEAD")
+                .requestMatchers("api/private/" + ROLE_EMP + "/**").hasAuthority("ROLE_EMP")
+                .requestMatchers("api/private/" + ROLE_AUTH + "/**")
                 .hasAnyAuthority("ROLE_ADMIN", "ROLE_PM", "ROLE_LEAD", "ROLE_EMP")
-                .requestMatchers("/api/**/public/**").permitAll()
-                .requestMatchers("/api/**/test/**").permitAll()
+                .requestMatchers("api/public/**").permitAll()
+                .requestMatchers("api/test/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                 .anyRequest().denyAll()
             ).exceptionHandling(exception -> exception.accessDeniedHandler(accessDeniedHandler()))  //--Role's denied.

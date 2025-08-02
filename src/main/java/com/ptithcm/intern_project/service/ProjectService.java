@@ -1,9 +1,10 @@
 package com.ptithcm.intern_project.service;
 
-import com.ptithcm.intern_project.common.enums.ErrorCodes;
-import com.ptithcm.intern_project.common.exception.AppExc;
-import com.ptithcm.intern_project.common.mapper.ProjectMapper;
-import com.ptithcm.intern_project.common.mapper.ProjectRoleMapper;
+import com.ptithcm.intern_project.dto.request.KickedLeaderRequest;
+import com.ptithcm.intern_project.exception.enums.ErrorCodes;
+import com.ptithcm.intern_project.exception.AppExc;
+import com.ptithcm.intern_project.mapper.ProjectMapper;
+import com.ptithcm.intern_project.mapper.ProjectRoleMapper;
 import com.ptithcm.intern_project.dto.request.AddedLeaderRequest;
 import com.ptithcm.intern_project.dto.request.PhaseRequest;
 import com.ptithcm.intern_project.dto.request.ProjectRequest;
@@ -15,6 +16,8 @@ import com.ptithcm.intern_project.jpa.model.ProjectRole;
 import com.ptithcm.intern_project.jpa.model.Task;
 import com.ptithcm.intern_project.jpa.model.enums.RoleOnEntity;
 import com.ptithcm.intern_project.jpa.repository.ProjectRepository;
+import com.ptithcm.intern_project.security.service.JwtService;
+import com.ptithcm.intern_project.service.interfaces.IProjectService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -31,7 +34,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class ProjectService {
+public class ProjectService implements IProjectService {
     ProjectRepository projectRepository;
     ProjectMapper projectMapper;
     ProjectRoleService projectRoleService;
@@ -40,6 +43,7 @@ public class ProjectService {
     ProjectRoleMapper projectRoleMapper;
     PhaseService phaseService;
 
+    @Override
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public IdResponse create(ProjectRequest request, String token) {
         var userInfoCreated = userInfoService.getUserInfo(token);
@@ -58,6 +62,7 @@ public class ProjectService {
         return IdResponse.builder().id(savedProject.getId()).build();
     }
 
+    @Override
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public void addLeaders(Long id, AddedLeaderRequest request, String token) {
         var project = this.getUpdatableProject(id, token);
@@ -75,6 +80,7 @@ public class ProjectService {
         project.getProjectUsers().addAll(newProjectRoles);
     }
 
+    @Override
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public void update(Long id, ProjectRequest request, String token) {
         var project = this.getUpdatableProject(id, token);
@@ -98,6 +104,7 @@ public class ProjectService {
         return project;
     }
 
+    @Override
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public void kickLeader(Long id, KickedLeaderRequest request, String token) {
         var project = this.getUpdatableProject(id, token);
@@ -125,6 +132,7 @@ public class ProjectService {
             ).findFirst().orElse(null) == null;
     }
 
+    @Override
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public void delete(Long id, String token) {
         var project = this.getUpdatableProject(id, token);
@@ -136,6 +144,7 @@ public class ProjectService {
         projectRepository.save(project);
     }
 
+    @Override
     public List<Project> getRelatedProjects(String token) {
         HashMap<Long, Project> projects;
         String username = jwtService.readPayload(token).get("sub");
@@ -152,6 +161,7 @@ public class ProjectService {
         return new ArrayList<>(projects.values());
     }
 
+    @Override
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public List<ProjectRoleResponse> getLeaders(String token, Long id) {
         String username = jwtService.readPayload(token).get("sub");
@@ -166,6 +176,7 @@ public class ProjectService {
             .toList();
     }
 
+    @Override
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public void complete(String token, Long id) {
         var updatedProject = this.getUpdatableProject(id, token);
@@ -174,12 +185,14 @@ public class ProjectService {
         projectRepository.save(updatedProject);
     }
 
+    @Override
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public IdResponse createPhase(Long projectId, PhaseRequest request, String token) {
         var project = this.getUpdatableProject(projectId, token);
         return phaseService.create(project, request, token);
     }
 
+    @Override
     public List<Phase> getAllRelatedPhases(Long projectId, String token) {
         var project = projectRepository.findById(projectId)
             .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));

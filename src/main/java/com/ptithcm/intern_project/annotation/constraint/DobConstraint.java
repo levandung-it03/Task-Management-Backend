@@ -1,7 +1,7 @@
-package com.ptithcm.intern_project.common.annotation.constraint;
+package com.ptithcm.intern_project.annotation.constraint;
 
 
-import com.ptithcm.intern_project.common.annotation.validator.DobValidator;
+import com.ptithcm.intern_project.annotation.validator.DobValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 

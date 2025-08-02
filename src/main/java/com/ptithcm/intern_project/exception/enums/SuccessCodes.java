@@ -1,4 +1,4 @@
-package com.ptithcm.intern_project.common.enums;
+package com.ptithcm.intern_project.exception.enums;
 
 import lombok.AccessLevel;
 import lombok.Getter;

@@ -1,6 +1,6 @@
-package com.ptithcm.intern_project.common.logger;
+package com.ptithcm.intern_project.security.logger;
 
-import com.ptithcm.intern_project.common.enums.Loggers;
+import com.ptithcm.intern_project.security.enums.Loggers;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

@@ -1,20 +1,25 @@
 package com.ptithcm.intern_project.service;
 
-import com.ptithcm.intern_project.common.enums.ErrorCodes;
-import com.ptithcm.intern_project.common.exception.AppExc;
-import com.ptithcm.intern_project.common.mapper.GroupHasUserMapper;
-import com.ptithcm.intern_project.common.mapper.GroupMapper;
-import com.ptithcm.intern_project.common.mapper.UserInfoMapper;
-import com.ptithcm.intern_project.common.util.PaginationUtil;
+import com.ptithcm.intern_project.exception.enums.ErrorCodes;
+import com.ptithcm.intern_project.exception.AppExc;
+import com.ptithcm.intern_project.dto.response.DetailGroupResponse;
+import com.ptithcm.intern_project.dto.response.GroupResponse;
+import com.ptithcm.intern_project.dto.response.IdResponse;
+import com.ptithcm.intern_project.dto.response.PaginationResponse;
+import com.ptithcm.intern_project.mapper.GroupHasUserMapper;
+import com.ptithcm.intern_project.mapper.GroupMapper;
+import com.ptithcm.intern_project.mapper.UserInfoMapper;
 import com.ptithcm.intern_project.dto.general.ShortUserInfoDTO;
 import com.ptithcm.intern_project.dto.request.ChangeGroupStatusRequest;
 import com.ptithcm.intern_project.dto.request.GroupRequest;
 import com.ptithcm.intern_project.dto.request.PaginationRequest;
 import com.ptithcm.intern_project.dto.request.UpdatedGroupRequest;
-import com.ptithcm.intern_project.dto.response.*;
 import com.ptithcm.intern_project.jpa.model.Group;
 import com.ptithcm.intern_project.jpa.model.GroupHasUsers;
 import com.ptithcm.intern_project.jpa.repository.GroupRepository;
+import com.ptithcm.intern_project.security.service.JwtService;
+import com.ptithcm.intern_project.service.interfaces.IGroupService;
+import com.ptithcm.intern_project.service.supports.PaginationService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -29,7 +34,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class GroupService {
+public class GroupService implements IGroupService {
     GroupRepository groupRepository;
     GroupHasUsersService groupUsersService;
     UserInfoService userInfoService;
@@ -39,9 +44,10 @@ public class GroupService {
     GroupHasUsersService groupHasUsersService;
     UserInfoMapper userInfoMapper;
 
+    @Override
     public PaginationResponse<GroupResponse> getPaginatedGroups(PaginationRequest request, String token) {
         var curUser = userInfoService.getUserInfo(token);
-        var pageable = PageRequest.of(PaginationUtil.PAGE_SIZE, request.getPage() - 1);
+        var pageable = PageRequest.of(PaginationService.PAGE_SIZE, request.getPage() - 1);
         var groupsPage = groupUsersService.findAllRelatedGroups(curUser.getEmail(), request.getSearchVal(), pageable);
         var groupsList = groupsPage.stream().map(groupMapper::toResponse).toList();
 
@@ -51,6 +57,7 @@ public class GroupService {
             .build();
     }
 
+    @Override
     @Transactional(rollbackFor = RuntimeException.class)
     public IdResponse create(GroupRequest request, String token) {
         var curUser = userInfoService.getUserInfo(token);
@@ -71,6 +78,7 @@ public class GroupService {
         return IdResponse.builder().id(savedGroup.getId()).build();
     }
 
+    @Override
     public DetailGroupResponse get(Long id, String token) {
         var curUser = userInfoService.getUserInfo(token);
         var group = groupRepository.findById(id).orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
@@ -89,6 +97,7 @@ public class GroupService {
             .build();
     }
 
+    @Override
     @Transactional(rollbackFor = RuntimeException.class)
     public void update(Long id, UpdatedGroupRequest request, String token) {
         var curUser = userInfoService.getUserInfo(token);
@@ -109,6 +118,7 @@ public class GroupService {
         groupUsersService.saveAll(newGroupUsers);
     }
 
+    @Override
     public void changeStatus(Long id, ChangeGroupStatusRequest request, String token) {
         var curUser = userInfoService.getUserInfo(token);
         var changedGroup = groupRepository.findById(id).orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
@@ -121,23 +131,25 @@ public class GroupService {
         groupRepository.save(changedGroup);
     }
 
+    @Override
+    public List<Group> getRelatedGroups(String token) {
+        String username = jwtService.readPayload(token).get("sub");
+        return groupHasUsersService.findAllRelatedToUser(username);
+    }
+
+    @Override
+    public List<ShortUserInfoDTO> getUsersGroupToAssign(String id, String token) {
+        String username = jwtService.readPayload(token).get("sub");
+        return groupUsersService.getUsersGroupToAssign(id, username)
+            .stream().map(userInfoMapper::shortenUserInfo)
+            .toList();
+    }
+
     private boolean isRelatedToGroup(String email, Group group) {
         var userCreatedGroup = group.getUserInfoCreated().getEmail().equals(email);
         var userRelatedToGroup = group.getGroupUsers().stream().anyMatch(groupUser ->
             groupUser.getJoinedUserInfo().getEmail().equals(email)
         );
         return userCreatedGroup || userRelatedToGroup;
-    }
-
-    public List<Group> getRelatedGroups(String token) {
-        String username = jwtService.readPayload(token).get("sub");
-        return groupHasUsersService.findAllRelatedToUser(username);
-    }
-
-    public List<ShortUserInfoDTO> getUsersGroupToAssign(String id, String token) {
-        String username = jwtService.readPayload(token).get("sub");
-        return groupUsersService.getUsersGroupToAssign(id, username)
-            .stream().map(userInfoMapper::shortenUserInfo)
-            .toList();
     }
 }

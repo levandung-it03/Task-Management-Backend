@@ -1,9 +1,9 @@
-package com.ptithcm.intern_project.common.wrapper;
+package com.ptithcm.intern_project.dto.general;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ptithcm.intern_project.annotation.general.Overloads;
-import com.ptithcm.intern_project.common.enums.ErrorCodes;
-import com.ptithcm.intern_project.common.enums.SuccessCodes;
+import com.ptithcm.intern_project.exception.enums.ErrorCodes;
+import com.ptithcm.intern_project.exception.enums.SuccessCodes;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;

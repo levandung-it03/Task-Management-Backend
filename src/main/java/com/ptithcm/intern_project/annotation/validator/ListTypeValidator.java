@@ -1,6 +1,6 @@
-package com.ptithcm.intern_project.common.annotation.validator;
+package com.ptithcm.intern_project.annotation.validator;
 
-import com.ptithcm.intern_project.common.annotation.constraint.ListTypeConstraint;
+import com.ptithcm.intern_project.annotation.constraint.ListTypeConstraint;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 

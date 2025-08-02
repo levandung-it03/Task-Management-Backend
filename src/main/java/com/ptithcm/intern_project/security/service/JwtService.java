@@ -1,4 +1,4 @@
-package com.ptithcm.intern_project.service;
+package com.ptithcm.intern_project.security.service;
 
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
@@ -6,8 +6,8 @@ import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import com.ptithcm.intern_project.exception.enums.ErrorCodes;
-import com.ptithcm.intern_project.common.enums.TokenClaimNames;
-import com.ptithcm.intern_project.common.enums.TokenTypes;
+import com.ptithcm.intern_project.security.enums.TokenClaimNames;
+import com.ptithcm.intern_project.security.enums.TokenTypes;
 import com.ptithcm.intern_project.exception.AppExc;
 import com.ptithcm.intern_project.dto.general.GeneralTokenClaims;
 import com.ptithcm.intern_project.dto.general.TokenInfoDTO;
@@ -79,7 +79,7 @@ public class JwtService {
         if (paddingLength < 4)    //--Required format if (payload.length % 4) # 0
             payload += "=".repeat(paddingLength);
         var payLoadJson = new String(Base64.getUrlDecoder().decode(payload));
-         var strItems = payLoadJson.replaceAll("[{}]", "").split(",");
+        var strItems = payLoadJson.replaceAll("[{}]", "").split(",");
         var result = new HashMap<String, String>();
         Arrays.stream(strItems).forEach(strItem -> {
             var items = strItem.replaceAll("[\"]", "").split(":");

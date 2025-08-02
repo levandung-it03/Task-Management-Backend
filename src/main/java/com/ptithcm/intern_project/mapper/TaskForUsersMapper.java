@@ -1,4 +1,4 @@
-package com.ptithcm.intern_project.jpa.model.mapper;
+package com.ptithcm.intern_project.mapper;
 
 import com.ptithcm.intern_project.dto.general.ShortUserInfoDTO;
 import com.ptithcm.intern_project.jpa.model.TaskForUsers;

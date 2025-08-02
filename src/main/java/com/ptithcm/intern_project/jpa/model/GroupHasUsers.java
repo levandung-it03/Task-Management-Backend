@@ -1,6 +1,6 @@
 package com.ptithcm.intern_project.jpa.model;
 
-import com.ptithcm.intern_project.common.enums.GroupRole;
+import com.ptithcm.intern_project.jpa.model.enums.GroupRole;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;

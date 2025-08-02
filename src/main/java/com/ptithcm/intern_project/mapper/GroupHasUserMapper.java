@@ -1,6 +1,6 @@
-package com.ptithcm.intern_project.jpa.model.mapper;
+package com.ptithcm.intern_project.mapper;
 
-import com.ptithcm.intern_project.common.enums.GroupRole;
+import com.ptithcm.intern_project.jpa.model.enums.GroupRole;
 import com.ptithcm.intern_project.dto.response.GroupUserResponse;
 import com.ptithcm.intern_project.jpa.model.Group;
 import com.ptithcm.intern_project.jpa.model.GroupHasUsers;

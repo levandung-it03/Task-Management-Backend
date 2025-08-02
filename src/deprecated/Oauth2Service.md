@@ -1,10 +1,10 @@
 ```java
 package com.ptithcm.intern_project.service;
 
-import com.ptithcm.intern_project.common.enums.AuthorityEnum;
-import com.ptithcm.intern_project.common.enums.ErrorCodes;
+import com.ptithcm.intern_project.security.enums.AuthorityEnum;
+import com.ptithcm.intern_project.exception.enums.ErrorCodes;
 import com.ptithcm.intern_project.common.enums.Oauth2ServiceEnum;
-import com.ptithcm.intern_project.common.exception.AppExc;
+import com.ptithcm.intern_project.exception.AppExc;
 import com.ptithcm.intern_project.dto.request.DTO_Oauth2Authenticate;
 import com.ptithcm.intern_project.dto.response.DTO_Oauth2GoogleUserResponse;
 import lombok.RequiredArgsConstructor;

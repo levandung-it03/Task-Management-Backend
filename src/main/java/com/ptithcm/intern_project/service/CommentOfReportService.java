@@ -1,7 +1,7 @@
 package com.ptithcm.intern_project.service;
 
-import com.ptithcm.intern_project.common.enums.ErrorCodes;
-import com.ptithcm.intern_project.common.exception.AppExc;
+import com.ptithcm.intern_project.exception.enums.ErrorCodes;
+import com.ptithcm.intern_project.exception.AppExc;
 import com.ptithcm.intern_project.dto.request.CommentCreationRequest;
 import com.ptithcm.intern_project.dto.response.IdResponse;
 import com.ptithcm.intern_project.jpa.model.CommentOfReport;

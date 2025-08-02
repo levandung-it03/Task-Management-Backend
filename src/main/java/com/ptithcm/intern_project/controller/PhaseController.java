@@ -1,9 +1,7 @@
 package com.ptithcm.intern_project.controller;
 
-import static com.ptithcm.intern_project.common.constvalues.AuthorityValues.*;
-
-import com.ptithcm.intern_project.common.enums.SuccessCodes;
-import com.ptithcm.intern_project.common.wrapper.RestApiResponse;
+import com.ptithcm.intern_project.exception.enums.SuccessCodes;
+import com.ptithcm.intern_project.dto.general.RestApiResponse;
 import com.ptithcm.intern_project.dto.request.CollectionRequest;
 import com.ptithcm.intern_project.dto.request.PhaseRequest;
 import com.ptithcm.intern_project.dto.response.IdResponse;
@@ -20,18 +18,20 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.ptithcm.intern_project.security.constvalues.AuthorityValues.*;
+
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/private")
+@RequestMapping("/api/private")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PhaseController {
     PhaseService phaseService;
 
     @Operation(description = "Get full information of specified Phase")
     @GetMapping({
-        ROLE_PM + "/phase/{id}",
-        ROLE_LEAD + "/phase/{id}",
-        ROLE_EMP + "/phase/{id}"})
+        ROLE_PM + "/v1/phase/{id}",
+        ROLE_LEAD + "/v1/phase/{id}",
+        ROLE_EMP + "/v1/phase/{id}"})
     public ResponseEntity<RestApiResponse<Phase>> get(
         @PathVariable("id") Long id,
         @RequestHeader("Authorization") String token) {
@@ -39,7 +39,7 @@ public class PhaseController {
     }
 
     @Operation(description = "Create a Phase by PM")
-    @PutMapping(ROLE_PM + "/phase/{id}")
+    @PutMapping(ROLE_PM + "/v1/phase/{id}")
     public ResponseEntity<RestApiResponse<Void>> update(
         @PathVariable("id") Long id,
         @Valid @RequestBody PhaseRequest request,
@@ -49,7 +49,7 @@ public class PhaseController {
     }
 
     @Operation(description = "Delete specified Phase")
-    @DeleteMapping(ROLE_PM + "/phase/{id}")
+    @DeleteMapping(ROLE_PM + "/v1/phase/{id}")
     public ResponseEntity<RestApiResponse<Void>> delete(
         @PathVariable("id") Long id,
         @RequestHeader("Authorization") String token) {
@@ -58,7 +58,7 @@ public class PhaseController {
     }
 
     @Operation(description = "Create a Collection of specified Phase")
-    @PostMapping(ROLE_PM + "/phase/{id}/create-collection")
+    @PostMapping(ROLE_PM + "/v1/phase/{id}/create-collection")
     public ResponseEntity<RestApiResponse<IdResponse>> createCollection(
         @PathVariable("id") Long phaseId,
         @Valid @RequestBody CollectionRequest request,
@@ -68,9 +68,9 @@ public class PhaseController {
 
     @Operation(description = "Get all Collections of specified Project")
     @PostMapping({
-        ROLE_PM + "/phase/{id}/get-all-related-collections",
-        ROLE_LEAD + "/phase/{id}/get-all-related-collections",
-        ROLE_EMP + "/phase/{id}/get-all-related-collections",
+        ROLE_PM + "/v1/phase/{id}/get-all-related-collections",
+        ROLE_LEAD + "/v1/phase/{id}/get-all-related-collections",
+        ROLE_EMP + "/v1/phase/{id}/get-all-related-collections",
     })
     public ResponseEntity<RestApiResponse<List<Collection>>> getAllRelatedCollections(
         @PathVariable("id") Long phaseId,

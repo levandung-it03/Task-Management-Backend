@@ -1,0 +1,21 @@
+package com.ptithcm.intern_project.service.interfaces;
+
+import com.ptithcm.intern_project.dto.general.ShortUserInfoDTO;
+import com.ptithcm.intern_project.dto.request.ReportRequest;
+import com.ptithcm.intern_project.dto.response.IdResponse;
+import com.ptithcm.intern_project.dto.response.ReportCommentsResponse;
+
+import java.util.List;
+
+public interface ITaskForUsersService {
+
+    List<ShortUserInfoDTO> searchUsersOfRootToCreateSubTask(Long taskId, String query, String token);
+
+    void kickUser(Long taskUserId, String token);
+
+    void reAddUser(Long taskUserId, String token);
+
+    IdResponse createReport(Long taskUserId, ReportRequest request, String token);
+
+    List<ReportCommentsResponse> getReportsAndComments(Long taskUserId, String token);
+}

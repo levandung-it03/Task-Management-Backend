@@ -1,20 +1,27 @@
 package com.ptithcm.intern_project.service;
 
-import com.ptithcm.intern_project.common.enums.*;
-import com.ptithcm.intern_project.common.exception.AppExc;
-import com.ptithcm.intern_project.common.wrapper.GeneralTokenClaims;
-import com.ptithcm.intern_project.common.wrapper.TokenInfo;
+import com.ptithcm.intern_project.dto.request.*;
+import com.ptithcm.intern_project.exception.AppExc;
+import com.ptithcm.intern_project.dto.general.GeneralTokenClaims;
+import com.ptithcm.intern_project.exception.enums.ErrorCodes;
+import com.ptithcm.intern_project.dto.general.TokenInfoDTO;
 import com.ptithcm.intern_project.dto.general.TokenDTO;
 import com.ptithcm.intern_project.jpa.model.Account;
 import com.ptithcm.intern_project.jpa.model.UserInfo;
+import com.ptithcm.intern_project.security.enums.AuthorityEnum;
 import com.ptithcm.intern_project.jpa.repository.AccountRepository;
 import com.ptithcm.intern_project.jpa.repository.DepartmentRepository;
 import com.ptithcm.intern_project.jpa.repository.UserInfoRepository;
-import com.ptithcm.intern_project.dto.request.*;
 import com.ptithcm.intern_project.dto.response.AuthResponse;
 import com.ptithcm.intern_project.dto.response.VerifyEmailResponse;
 import com.ptithcm.intern_project.redis.crud.*;
 import com.ptithcm.intern_project.redis.model.*;
+import com.ptithcm.intern_project.redis.model.enums.OtpTypes;
+import com.ptithcm.intern_project.security.enums.TokenClaimNames;
+import com.ptithcm.intern_project.security.enums.TokenTypes;
+import com.ptithcm.intern_project.security.service.JwtService;
+import com.ptithcm.intern_project.security.service.OtpService;
+import com.ptithcm.intern_project.service.interfaces.IAccountService;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +40,7 @@ import java.util.*;
 @RequiredArgsConstructor
 @EnableAspectJAutoProxy(exposeProxy = true)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class AccountService {
+public class AccountService implements IAccountService {
     @Getter
     AccountRepository accountRepository;
     AuthorityService authorityService;
@@ -47,7 +54,9 @@ public class AccountService {
     ChangePassOtpCrud changePassOtpCrud;
     UserInfoRepository userInfoRepository;
     DepartmentRepository departmentRepository;
+    UserInfoService userInfoService;
 
+    @Override
     public AuthResponse authenticate(AuthRequest dto) {
         Account authAccount = accountRepository.findByUsername(dto.getUsername())
             .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_CREDENTIALS));
@@ -60,14 +69,14 @@ public class AccountService {
 
         UserInfo userInfo = userInfoRepository.findByAccountId(authAccount.getId())
             .orElseThrow(() -> new AppExc(ErrorCodes.FORBIDDEN_USER));
-        TokenInfo accessTokenInfo = jwtService.generateToken(GeneralTokenClaims.builder()
+        TokenInfoDTO accessTokenInfoDTO = jwtService.generateToken(GeneralTokenClaims.builder()
             .subject(authAccount.getUsername())
             .owner(userInfo.getFullName())
             .scopes(Account.buildScope(authAccount.getAuthorities()))
             .typeEnum(TokenTypes.ACCESS)
             .isOauth2(false)
             .build());
-        TokenInfo refreshTokenInfo = jwtService.generateToken(GeneralTokenClaims.builder()
+        TokenInfoDTO refreshTokenInfoDTO = jwtService.generateToken(GeneralTokenClaims.builder()
             .subject(authAccount.getUsername())
             .owner(userInfo.getFullName())
             .scopes(Account.buildScope(authAccount.getAuthorities()))
@@ -75,13 +84,14 @@ public class AccountService {
             .isOauth2(false)
             .build());
 
-        refreshTokenCrud.save(RefreshToken.builder().id(refreshTokenInfo.getJti()).build());
+        refreshTokenCrud.save(RefreshToken.builder().id(refreshTokenInfoDTO.getJti()).build());
         return AuthResponse.builder()
-            .accessToken(accessTokenInfo.getToken())
-            .refreshToken(refreshTokenInfo.getToken())
+            .accessToken(accessTokenInfoDTO.getToken())
+            .refreshToken(refreshTokenInfoDTO.getToken())
             .build();
     }
 
+    @Override
     public TokenDTO refreshToken(String refreshToken, String accessToken) {
         HashMap<String, String> refreshClaims = jwtService.readPayload(refreshToken);
         HashMap<String, String> accessClaims = jwtService.readPayload(accessToken);
@@ -93,7 +103,7 @@ public class AccountService {
 
         UserInfo userInfo = userInfoRepository.findByAccountId(authAccount.getId())
             .orElseThrow(() -> new AppExc(ErrorCodes.FORBIDDEN_USER));
-        TokenInfo accessTokenInfo = jwtService.generateToken(GeneralTokenClaims.builder()
+        TokenInfoDTO accessTokenInfoDTO = jwtService.generateToken(GeneralTokenClaims.builder()
             .subject(authAccount.getUsername())
             .owner(userInfo.getFullName())
             .scopes(Account.buildScope(authAccount.getAuthorities()))
@@ -101,9 +111,10 @@ public class AccountService {
             .isOauth2(Boolean.parseBoolean(refreshClaims.get(TokenClaimNames.IS_OAUTH2.getStr())))
             .build());
 
-        return TokenDTO.builder().accessToken(accessTokenInfo.getToken()).build();
+        return TokenDTO.builder().accessToken(accessTokenInfoDTO.getToken()).build();
     }
 
+    @Override
     public void logout(String refreshToken, String accessToken) {
         //--Reached this method means 'accessToken' and 'refreshToken' are both valid (passed JwtAuthFilter).
         HashMap<String, String> accessClaims = jwtService.readPayload(accessToken);
@@ -118,66 +129,36 @@ public class AccountService {
                 .build());
     }
 
+    @Override
     public VerifyEmailResponse authorizeEmailByOtp(String token) {
-        Map<String, String> emailCustom = emailService.getEmailCustom();
-        String email = jwtService.readPayload(token).getOrDefault("sub", "");
+        Map<String, String> mailCustom = emailService.getMailContentCustom();
+        UserInfo userInfo = userInfoService.getUserInfo(token);
 
-        if (!accountRepository.existsByUsername(email))
-            throw new AppExc(ErrorCodes.WEIRD_TOKEN_SUBJECT);
-        if (changePassOtpCrud.existsById(email))
+        if (changePassOtpCrud.existsById(userInfo.getEmail()))
             throw new AppExc(ErrorCodes.OTP_HAS_NOT_EXPIRED);
 
-        String otp = OtpGenerator.randOTP();
+        String otp = OtpService.randOTP();
         changePassOtpCrud.save(ChangePassOtp.builder()
-            .email(email)
+            .email(userInfo.getEmail())
             .otp(otp)
             .build());
         emailService.sendSimpleEmail(
-            email,
-            String.format(emailCustom.get("subject"), "Register OTP"),
-            String.format(emailCustom.get("msg"), email, otp));
+            userInfo.getEmail(),
+            String.format(mailCustom.get("subject"), "Register OTP"),
+            String.format(mailCustom.get("msg"), userInfo.getEmail(), otp));
         return VerifyEmailResponse.builder().otpAgeInSeconds(ChangePassOtp.OTP_AGE).build();
     }
 
-    public VerifyEmailResponse verifyEmailByOtp(VerifyEmailRequest dto) {
-        Map<String, String> emailCustom = emailService.getEmailCustom();
-        String otp = OtpGenerator.randOTP();
-        switch (OtpTypes.valueOf(dto.getOtpType())) {
-            case OtpTypes.REGISTER:
-                if (accountRepository.existsByUsername(dto.getEmail()))
-                    throw new AppExc(ErrorCodes.DUPLICATED_EMAIL);
-                if (registerOtpCrud.existsById(dto.getEmail()))
-                    throw new AppExc(ErrorCodes.OTP_HAS_NOT_EXPIRED);
-                registerOtpCrud.save(RegisterOtp.builder()
-                    .email(dto.getEmail())
-                    .otp(otp)
-                    .build());
-                emailService.sendSimpleEmail(
-                    dto.getEmail(),
-                    String.format(emailCustom.get("subject"), "Register OTP"),
-                    String.format(emailCustom.get("msg"), dto.getEmail(), otp));
-                return VerifyEmailResponse.builder().otpAgeInSeconds(RegisterOtp.OTP_AGE).build();
-
-            case OtpTypes.LOST_PASSWORD:
-                if (!accountRepository.existsByUsername(dto.getEmail()))
-                    throw new AppExc(ErrorCodes.EMAIL_NOT_FOUND);
-                if (lostPassOtpCrud.existsById(dto.getEmail()))
-                    throw new AppExc(ErrorCodes.OTP_HAS_NOT_EXPIRED);
-                lostPassOtpCrud.save(LostPassOtp.builder()
-                    .email(dto.getEmail())
-                    .otp(otp)
-                    .build());
-                emailService.sendSimpleEmail(
-                    dto.getEmail(),
-                    String.format(emailCustom.get("subject"), "Lost Password OTP"),
-                    String.format(emailCustom.get("msg"), dto.getEmail(), otp));
-                return VerifyEmailResponse.builder().otpAgeInSeconds(LostPassOtp.OTP_AGE).build();
-
-            default:
-                throw new AppExc(ErrorCodes.OTP_TYPE_NOT_FOUND);
-        }
+    @Override
+    public VerifyEmailResponse verifyEmailByOtp(VerifyEmailRequest request) {
+        return switch (OtpTypes.valueOf(request.getOtpType())) {
+            case OtpTypes.REGISTER -> this.verifyEmailByRegisterOtp(request);
+            case OtpTypes.LOST_PASSWORD -> this.verifyEmailByLostPassOtp(request);
+            default -> throw new AppExc(ErrorCodes.OTP_TYPE_NOT_FOUND);
+        };
     }
 
+    @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void registerNewAccount(RegisterRequest dto) {
         var department = departmentRepository.findById(dto.getDepartmentId())
@@ -201,32 +182,75 @@ public class AccountService {
             .build());
     }
 
+    @Override
     public void lostPassword(LostPassRequest dto) {
-        Map<String, String> emailCustom = emailService.getEmailCustom();
-        var account = accountRepository.findByUsername(dto.getEmail())
+        Map<String, String> emailCustom = emailService.getMailContentCustom();
+        var account = accountRepository.findByUsername(dto.getUsername())
             .orElseThrow(() -> new AppExc(ErrorCodes.EMAIL_NOT_FOUND));
+        var userInfo = userInfoService.findByAccountUsername(account.getUsername())
+            .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_CREDENTIALS));
 
-        LostPassOtp otp = lostPassOtpCrud.findById(dto.getEmail())
+        LostPassOtp otp = lostPassOtpCrud.findById(dto.getUsername())
             .orElseThrow(() -> new AppExc(ErrorCodes.OTP_NOT_FOUND));
         if (!otp.getOtp().equals(dto.getOtp()))
             throw new AppExc(ErrorCodes.OTP_NOT_CORRECT);
 
-        String newPassword = OtpGenerator.randOTP();
+        String newPassword = OtpService.randOTP();
         account.setPassword(userPasswordEncoder.encode(newPassword));
         accountRepository.save(account);
 
         emailService.sendSimpleEmail(
-            dto.getEmail(),
+            userInfo.getEmail(),
             String.format(emailCustom.get("subject"), "New Password"),
-            String.format(emailCustom.get("msg"), dto.getEmail(), newPassword));
+            String.format(emailCustom.get("msg"), userInfo.getEmail(), newPassword));
     }
 
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     public void changePassword(String token, ChangePassRequest dto) {
-        String email = jwtService.readPayload(token).getOrDefault("sub", "");
-        Account account = accountRepository.findByUsername(email)
+        var userInfo = userInfoRepository.findByAccountUsername(token)
             .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_TOKEN));
+        var account = userInfo.getAccount();
 
         account.setPassword(userPasswordEncoder.encode(dto.getPassword()));
         accountRepository.save(account);
+    }
+
+    private VerifyEmailResponse verifyEmailByRegisterOtp(VerifyEmailRequest request) {
+        Map<String, String> mailCustom = emailService.getMailContentCustom();
+        String otp = OtpService.randOTP();
+
+        if (userInfoService.existsByEmail(request.getEmail()))
+            throw new AppExc(ErrorCodes.DUPLICATED_EMAIL);
+        if (registerOtpCrud.existsById(request.getEmail()))
+            throw new AppExc(ErrorCodes.OTP_HAS_NOT_EXPIRED);
+        registerOtpCrud.save(RegisterOtp.builder()
+            .email(request.getEmail())
+            .otp(otp)
+            .build());
+        emailService.sendSimpleEmail(
+            request.getEmail(),
+            String.format(mailCustom.get("subject"), "Register OTP"),
+            String.format(mailCustom.get("msg"), request.getEmail(), otp));
+        return VerifyEmailResponse.builder().otpAgeInSeconds(RegisterOtp.OTP_AGE).build();
+    }
+
+    private VerifyEmailResponse verifyEmailByLostPassOtp(VerifyEmailRequest request) {
+        Map<String, String> mailCustom = emailService.getMailContentCustom();
+        String otp = OtpService.randOTP();
+
+        if (!userInfoService.existsByEmail(request.getEmail()))
+            throw new AppExc(ErrorCodes.EMAIL_NOT_FOUND);
+        if (lostPassOtpCrud.existsById(request.getEmail()))
+            throw new AppExc(ErrorCodes.OTP_HAS_NOT_EXPIRED);
+        lostPassOtpCrud.save(LostPassOtp.builder()
+            .email(request.getEmail())
+            .otp(otp)
+            .build());
+        emailService.sendSimpleEmail(
+            request.getEmail(),
+            String.format(mailCustom.get("subject"), "Lost Password OTP"),
+            String.format(mailCustom.get("msg"), request.getEmail(), otp));
+        return VerifyEmailResponse.builder().otpAgeInSeconds(LostPassOtp.OTP_AGE).build();
     }
 }

@@ -1,13 +1,14 @@
 package com.ptithcm.intern_project.service;
 
-import com.ptithcm.intern_project.common.enums.AuthorityEnum;
-import com.ptithcm.intern_project.common.enums.ErrorCodes;
-import com.ptithcm.intern_project.common.enums.GroupRole;
-import com.ptithcm.intern_project.common.exception.AppExc;
+import com.ptithcm.intern_project.jpa.model.enums.GroupRole;
+import com.ptithcm.intern_project.security.enums.AuthorityEnum;
+import com.ptithcm.intern_project.exception.enums.ErrorCodes;
+import com.ptithcm.intern_project.exception.AppExc;
 import com.ptithcm.intern_project.jpa.model.Group;
 import com.ptithcm.intern_project.jpa.model.GroupHasUsers;
 import com.ptithcm.intern_project.jpa.model.UserInfo;
 import com.ptithcm.intern_project.jpa.repository.GroupHasUsersRepository;
+import com.ptithcm.intern_project.service.interfaces.IGroupHasUsersService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -21,18 +22,11 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class GroupHasUsersService {
+public class GroupHasUsersService implements IGroupHasUsersService {
     GroupHasUsersRepository groupUserRepository;
     UserInfoService userInfoService;
 
-    public Page<Group> findAllRelatedGroups(String email, String query, Pageable pageable) {
-        return groupUserRepository.findAllRelatedGroups(email, query, pageable);
-    }
-
-    public List<GroupHasUsers> saveAll(List<GroupHasUsers> groupHasUsers) {
-        return groupUserRepository.saveAll(groupHasUsers);
-    }
-
+    @Override
     @Transactional(rollbackFor = RuntimeException.class)
     public void update(Long id, GroupRole role, String token) {
         var curUser = userInfoService.getUserInfo(token);
@@ -52,12 +46,22 @@ public class GroupHasUsersService {
         groupUserRepository.save(changedGroupUser);
     }
 
+    @Override
     public void kickUser(Long id, String token) {
         this.updateGroupUserStatus(id, token, false);
     }
 
+    @Override
     public void reAddUser(Long id, String token) {
         this.updateGroupUserStatus(id, token, true);
+    }
+
+    public Page<Group> findAllRelatedGroups(String email, String query, Pageable pageable) {
+        return groupUserRepository.findAllRelatedGroups(email, query, pageable);
+    }
+
+    public List<GroupHasUsers> saveAll(List<GroupHasUsers> groupHasUsers) {
+        return groupUserRepository.saveAll(groupHasUsers);
     }
 
     public boolean isNotAdminOnGroup(String userEmailOnGroup) {

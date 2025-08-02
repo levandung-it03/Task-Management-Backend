@@ -1,5 +1,5 @@
 
-package com.ptithcm.intern_project.common.enums;
+package com.ptithcm.intern_project.security.enums;
 
 import lombok.AccessLevel;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package com.ptithcm.intern_project.common.enums;
+package com.ptithcm.intern_project.security.enums;
 
 public enum TokenTypes {
     TOKEN_TYPE_FIELD,

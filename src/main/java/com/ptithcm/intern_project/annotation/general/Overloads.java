@@ -1,4 +1,4 @@
-package com.ptithcm.intern_project.common.annotation.general;
+package com.ptithcm.intern_project.annotation.general;
 
 import java.lang.annotation.*;
 

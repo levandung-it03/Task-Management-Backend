@@ -1,7 +1,8 @@
 package com.ptithcm.intern_project.controller;
 
-import com.ptithcm.intern_project.common.enums.SuccessCodes;
-import com.ptithcm.intern_project.common.wrapper.RestApiResponse;
+import com.ptithcm.intern_project.dto.general.StatusDTO;
+import com.ptithcm.intern_project.exception.enums.SuccessCodes;
+import com.ptithcm.intern_project.dto.general.RestApiResponse;
 import com.ptithcm.intern_project.dto.request.TaskRequest;
 import com.ptithcm.intern_project.dto.request.UpdatedContentRequest;
 import com.ptithcm.intern_project.dto.request.UpdatedTaskRequest;
@@ -20,10 +21,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static com.ptithcm.intern_project.common.constvalues.AuthorityValues.*;
+import static com.ptithcm.intern_project.security.constvalues.AuthorityValues.*;
 
 @RestController
-@RequestMapping("/api/v1/private")
+@RequestMapping("/api/private")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class TaskController {
@@ -31,8 +32,8 @@ public class TaskController {
 
     @Operation(description = "Create Sub-Task of a Root-Task")
     @PostMapping({
-        ROLE_PM + "/task/{id}/create-sub-task",
-        ROLE_LEAD + "/task/{id}/create-sub-task"})
+        ROLE_PM + "/v1/task/{id}/create-sub-task",
+        ROLE_LEAD + "/v1/task/{id}/create-sub-task"})
     public ResponseEntity<RestApiResponse<IdResponse>> createSubTask(
         @PathVariable("id") Long id,
         @Valid @RequestBody TaskRequest request,
@@ -42,9 +43,9 @@ public class TaskController {
 
     @Operation(description = "Get Task detail")
     @GetMapping({
-        ROLE_PM + "/task/{id}",
-        ROLE_LEAD + "/task/{id}",
-        ROLE_EMP + "/task/{id}"})
+        ROLE_PM + "/v1/task/{id}",
+        ROLE_LEAD + "/v1/task/{id}",
+        ROLE_EMP + "/v1/task/{id}"})
     public ResponseEntity<RestApiResponse<TaskResponse>> get(
         @PathVariable("id") Long id,
         @RequestHeader("Authorization") String token) {
@@ -53,8 +54,8 @@ public class TaskController {
 
     @Operation(description = "Update Task Description")
     @PutMapping({
-        ROLE_PM + "/task/{id}/update-description",
-        ROLE_LEAD + "/task/{id}/update-description"})
+        ROLE_PM + "/v1/task/{id}/update-description",
+        ROLE_LEAD + "/v1/task/{id}/update-description"})
     public ResponseEntity<RestApiResponse<Void>> updateDescription(
         @PathVariable("id") Long id,
         @Valid @RequestBody UpdatedContentRequest request,
@@ -65,8 +66,8 @@ public class TaskController {
 
     @Operation(description = "Update Task Report Format")
     @PutMapping({
-        ROLE_PM + "/task/{id}/update-report-format",
-        ROLE_LEAD + "/task/{id}/update-report-format"})
+        ROLE_PM + "/v1/task/{id}/update-report-format",
+        ROLE_LEAD + "/v1/task/{id}/update-report-format"})
     public ResponseEntity<RestApiResponse<Void>> updateReportFormat(
         @PathVariable("id") Long id,
         @Valid @RequestBody UpdatedContentRequest request,
@@ -77,8 +78,8 @@ public class TaskController {
 
     @Operation(description = "Update Task base information")
     @PutMapping({
-        ROLE_PM + "/task/{id}",
-        ROLE_LEAD + "/task/{id}"})
+        ROLE_PM + "/v1/task/{id}",
+        ROLE_LEAD + "/v1/task/{id}"})
     public ResponseEntity<RestApiResponse<Void>> updateTask(
         @PathVariable("id") Long id,
         @Valid @RequestBody UpdatedTaskRequest request,
@@ -89,8 +90,8 @@ public class TaskController {
 
     @Operation(description = "Get all Users by Task-Id to render on Task-Detail")
     @GetMapping({
-        ROLE_PM + "/task/{id}/get-assigned-users",
-        ROLE_LEAD + "/task/{id}/get-assigned-users"})
+        ROLE_PM + "/v1/task/{id}/get-assigned-users",
+        ROLE_LEAD + "/v1/task/{id}/get-assigned-users"})
     public ResponseEntity<RestApiResponse<List<ShortUserInfoDTO>>> getUsersOfTask(
         @PathVariable("id") Long id,
         @RequestHeader("Authorization") String token) {
@@ -99,8 +100,8 @@ public class TaskController {
 
     @Operation(description = "Update specified Task that it's done")
     @PutMapping({
-        ROLE_PM + "/task/{id}/done",
-        ROLE_LEAD + "/task/{id}/done"})
+        ROLE_PM + "/v1/task/{id}/done",
+        ROLE_LEAD + "/v1/task/{id}/done"})
     public ResponseEntity<RestApiResponse<Void>> updateDoneTask(
         @PathVariable("id") Long id,
         @RequestHeader("Authorization") String token) {
@@ -108,22 +109,23 @@ public class TaskController {
         return RestApiResponse.fromScs(SuccessCodes.UPDATED);
     }
 
-    @Operation(description = "Lock the specified Task")
+    @Operation(description = "Lock/Unlock the specified Task")
     @PutMapping({
-        ROLE_PM + "/task/{id}/lock",
-        ROLE_LEAD + "/task/{id}/lock"})
-    public ResponseEntity<RestApiResponse<Void>> lockTask(
+        ROLE_PM + "/v1/task/{id}/update-locked-status",
+        ROLE_LEAD + "/v1/task/{id}/update-locked-status"})
+    public ResponseEntity<RestApiResponse<Void>> updateLockedStatusTask(
         @PathVariable("id") Long id,
+        @Valid @RequestBody StatusDTO request,
         @RequestHeader("Authorization") String token) {
-        taskService.lockTask(id, token);
+        taskService.updateLockedStatusTask(id, request, token);
         return RestApiResponse.fromScs(SuccessCodes.UPDATED);
     }
 
     @Operation(description = "Get all Sub-Tasks of specified Root-Task")
     @PutMapping({
-        ROLE_PM + "/task/{id}/sub-tasks",
-        ROLE_LEAD + "/task/{id}/sub-tasks",
-        ROLE_EMP + "/task/{id}/sub-tasks"})
+        ROLE_PM + "/v1/task/{id}/sub-tasks",
+        ROLE_LEAD + "/v1/task/{id}/sub-tasks",
+        ROLE_EMP + "/v1/task/{id}/sub-tasks"})
     public ResponseEntity<RestApiResponse<List<ShortTaskResponse>>> getSubTasksOfRootTask(
         @PathVariable("id") Long id,
         @RequestHeader("Authorization") String token) {
@@ -132,8 +134,8 @@ public class TaskController {
 
     @Operation(description = "Search Users by `query` to add into an existing Task (only Owner can use this)")
     @GetMapping({
-        ROLE_PM + "/task/{id}/search-new-users/{query}",
-        ROLE_LEAD + "/task/{id}/search-new-users/{query}"})
+        ROLE_PM + "/v1/task/{id}/search-new-users/{query}",
+        ROLE_LEAD + "/v1/task/{id}/search-new-users/{query}"})
     public ResponseEntity<RestApiResponse<List<ShortUserInfoDTO>>> searchNewAddedUsersForRootTask(
         @PathVariable("id") Long id,
         @PathVariable("query") String query,
@@ -144,8 +146,8 @@ public class TaskController {
 
     @Operation(description = "Search Users by `query` of a root Task to created Sub-Task (only Owner can use this)")
     @GetMapping({
-        ROLE_PM + "/task/{rootId}/search-users/{query}",
-        ROLE_LEAD + "/task/{rootId}/search-users/{query}"})
+        ROLE_PM + "/v1/task/{rootId}/search-users/{query}",
+        ROLE_LEAD + "/v1/task/{rootId}/search-users/{query}"})
     public ResponseEntity<RestApiResponse<List<ShortUserInfoDTO>>> searchRootTaskUsers(
         @PathVariable("rootId") Long rootId,
         @PathVariable("query") String query,

@@ -1,4 +1,4 @@
-package com.ptithcm.intern_project.jpa.model.enums;
+package com.ptithcm.intern_project.security.enums;
 
 public enum AuthorityEnum {
     ROLE_ADMIN,

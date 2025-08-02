@@ -1,10 +1,9 @@
 package com.ptithcm.intern_project.service.trans;
 
-import com.ptithcm.intern_project.common.enums.ErrorCodes;
-import com.ptithcm.intern_project.common.exception.AppExc;
+import com.ptithcm.intern_project.exception.enums.ErrorCodes;
+import com.ptithcm.intern_project.exception.AppExc;
 import com.ptithcm.intern_project.jpa.model.Report;
 import com.ptithcm.intern_project.jpa.repository.ReportRepository;
-import com.ptithcm.intern_project.service.JwtService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

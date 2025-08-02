@@ -1,7 +1,7 @@
 package com.ptithcm.intern_project.controller;
 
-import com.ptithcm.intern_project.common.enums.SuccessCodes;
-import com.ptithcm.intern_project.common.wrapper.RestApiResponse;
+import com.ptithcm.intern_project.exception.enums.SuccessCodes;
+import com.ptithcm.intern_project.dto.general.RestApiResponse;
 import com.ptithcm.intern_project.dto.request.CommentCreationRequest;
 import com.ptithcm.intern_project.dto.request.ReportRejectedRequest;
 import com.ptithcm.intern_project.dto.request.UpdatedReportRequest;
@@ -15,10 +15,10 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static com.ptithcm.intern_project.common.constvalues.AuthorityValues.*;
+import static com.ptithcm.intern_project.security.constvalues.AuthorityValues.*;
 
 @RestController
-@RequestMapping("/api/v1/private")
+@RequestMapping("/api/private")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ReportController {
@@ -26,9 +26,9 @@ public class ReportController {
 
     @Operation(description = "Update Report by Report's owner")
     @PutMapping({
-        ROLE_EMP + "/report/{reportId}",
-        ROLE_LEAD + "/report/{reportId}",
-        ROLE_PM + "/report/{reportId}"})
+        ROLE_EMP + "/v1/report/{reportId}",
+        ROLE_LEAD + "/v1/report/{reportId}",
+        ROLE_PM + "/v1/report/{reportId}"})
     public ResponseEntity<RestApiResponse<Void>> update(
         @PathVariable("reportId") Long reportId,
         @Valid @RequestBody UpdatedReportRequest request,
@@ -39,9 +39,9 @@ public class ReportController {
 
     @Operation(description = "Create Comment of the Report (may be is replying another one)")
     @PostMapping({
-        ROLE_EMP + "/report/{reportId}/create-comment",
-        ROLE_LEAD + "/report/{reportId}/create-comment",
-        ROLE_PM + "/report/{reportId}/create-comment"})
+        ROLE_EMP + "/v1/report/{reportId}/create-comment",
+        ROLE_LEAD + "/v1/report/{reportId}/create-comment",
+        ROLE_PM + "/v1/report/{reportId}/create-comment"})
     public ResponseEntity<RestApiResponse<IdResponse>> createComment(
         @PathVariable("reportId") Long reportId,
         @Valid @RequestBody CommentCreationRequest request,
@@ -51,8 +51,8 @@ public class ReportController {
 
     @Operation(description = "Approve specified Report by Task owner")
     @PutMapping({
-        ROLE_PM + "/report/{reportId}/approve-report",
-        ROLE_LEAD + "/report/{reportId}/approve-report"})
+        ROLE_PM + "/v1/report/{reportId}/approve-report",
+        ROLE_LEAD + "/v1/report/{reportId}/approve-report"})
     public ResponseEntity<RestApiResponse<Void>> approveReport(
         @PathVariable("reportId") Long reportId,
         @RequestHeader("Authorization") String token) {
@@ -62,8 +62,8 @@ public class ReportController {
 
     @Operation(description = "Reject specified Report by Task owner")
     @PutMapping({
-        ROLE_PM + "/report/{reportId}/reject-report",
-        ROLE_LEAD + "/report/{reportId}/reject-report"})
+        ROLE_PM + "/v1/report/{reportId}/reject-report",
+        ROLE_LEAD + "/v1/report/{reportId}/reject-report"})
     public ResponseEntity<RestApiResponse<Void>> rejectReport(
         @PathVariable("reportId") Long reportId,
         @Valid @RequestBody ReportRejectedRequest request,

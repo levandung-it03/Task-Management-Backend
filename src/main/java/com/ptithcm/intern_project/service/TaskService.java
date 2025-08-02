@@ -1,11 +1,12 @@
 package com.ptithcm.intern_project.service;
 
-import com.ptithcm.intern_project.common.enums.AuthorityEnum;
-import com.ptithcm.intern_project.common.enums.ErrorCodes;
-import com.ptithcm.intern_project.common.exception.AppExc;
-import com.ptithcm.intern_project.common.mapper.TaskForUsersMapper;
-import com.ptithcm.intern_project.common.mapper.TaskMapper;
-import com.ptithcm.intern_project.common.mapper.UserInfoMapper;
+import com.ptithcm.intern_project.dto.general.StatusDTO;
+import com.ptithcm.intern_project.security.enums.AuthorityEnum;
+import com.ptithcm.intern_project.exception.enums.ErrorCodes;
+import com.ptithcm.intern_project.exception.AppExc;
+import com.ptithcm.intern_project.mapper.TaskForUsersMapper;
+import com.ptithcm.intern_project.mapper.TaskMapper;
+import com.ptithcm.intern_project.mapper.UserInfoMapper;
 import com.ptithcm.intern_project.dto.general.TaskCreationDTO;
 import com.ptithcm.intern_project.dto.request.TaskRequest;
 import com.ptithcm.intern_project.dto.request.UpdatedTaskRequest;
@@ -18,6 +19,8 @@ import com.ptithcm.intern_project.jpa.model.Task;
 import com.ptithcm.intern_project.jpa.model.TaskForUsers;
 import com.ptithcm.intern_project.jpa.model.enums.UserTaskStatus;
 import com.ptithcm.intern_project.jpa.repository.TaskRepository;
+import com.ptithcm.intern_project.security.service.JwtService;
+import com.ptithcm.intern_project.service.interfaces.ITaskService;
 import com.ptithcm.intern_project.service.trans.TaskTransService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +38,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class TaskService {
+public class TaskService implements ITaskService {
     TaskRepository taskRepository;
     UserInfoService userInfoService;
     TaskForUsersService taskForUsersService;
@@ -72,6 +75,7 @@ public class TaskService {
         return IdResponse.builder().id(savedRootTask.getId()).build();
     }
 
+    @Override
     @Transactional(rollbackFor = RuntimeException.class)
     public IdResponse createSubTask(Long rootId, TaskRequest request, String token) {
         var userCreated = userInfoService.getUserInfo(token);
@@ -117,22 +121,7 @@ public class TaskService {
         return IdResponse.builder().id(savedSubTask.getId()).build();
     }
 
-    private void validateTask(Task task) {
-        if (LocalDate.now().isAfter(task.getStartDate()))
-            throw new AppExc(ErrorCodes.INVALID_TASK_START_DATE);
-
-        if (task.getStartDate().isAfter(task.getDeadline()))
-            throw new AppExc(ErrorCodes.INVALID_TASK_DEADLINE);
-    }
-
-    private void validateSubTask(Task task) {
-        if (task.getRootTask().getStartDate().isAfter(task.getStartDate()))
-            throw new AppExc(ErrorCodes.INVALID_SUB_TASK_START_DATE);
-
-        if (task.getDeadline().isAfter(task.getRootTask().getDeadline()))
-            throw new AppExc(ErrorCodes.INVALID_SUB_TASK_DEADLINE);
-    }
-
+    @Override
     @Transactional(rollbackFor = RuntimeException.class)
     public TaskResponse get(Long id, String token) {
         var currentUsername = jwtService.readPayload(token).get("sub");
@@ -146,6 +135,7 @@ public class TaskService {
         return taskMapper.toResponse(foundTask, hasAtLeastOneReport);
     }
 
+    @Override
     public void updateDescription(Long id, String description, String token) {
         Task foundTask = taskTransService.findUpdatableTaskByOwner(id, token);
 
@@ -154,6 +144,7 @@ public class TaskService {
         taskRepository.save(foundTask);
     }
 
+    @Override
     public void updateReportFormat(Long id, String reportFormat, String token) {
         Task foundTask = taskTransService.findUpdatableTaskByOwner(id, token);
 
@@ -162,6 +153,7 @@ public class TaskService {
         taskRepository.save(foundTask);
     }
 
+    @Override
     @Transactional(rollbackFor = RuntimeException.class)
     public void update(Long id, UpdatedTaskRequest request, String token) {
         String username = jwtService.readPayload(token).get("sub");
@@ -189,6 +181,7 @@ public class TaskService {
         taskForUsersService.save(newUserTask);
     }
 
+    @Override
     public List<ShortUserInfoDTO> getUsersOfTask(Long id, String token) {
         String username = jwtService.readPayload(token).get("sub");
         var task = taskRepository.findById(id).orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
@@ -212,6 +205,7 @@ public class TaskService {
         return taskForUsersService.getAllUsersOfTask(id);
     }
 
+    @Override
     public void updateDoneTask(Long id, String token) {
         Task updatedTask = taskTransService.findUpdatableTaskByOwner(id, token);
 
@@ -220,13 +214,15 @@ public class TaskService {
         taskRepository.save(updatedTask);
     }
 
-    public void lockTask(Long id, String token) {
+    @Override
+    public void updateLockedStatusTask(Long id, StatusDTO request, String token) {
         Task lockedTask = taskTransService.findUpdatableTaskByOwner(id, token);
 
-        lockedTask.setLocked(true);
+        lockedTask.setLocked(request.isStatus());
         taskRepository.save(lockedTask);
     }
 
+    @Override
     @Transactional(rollbackFor = RuntimeException.class)
     public List<ShortTaskResponse> getSubTasksOfRootTask(Long rootTaskId, String token) {
         var userInfo = userInfoService
@@ -255,6 +251,7 @@ public class TaskService {
             .toList();
     }
 
+    @Override
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public List<ShortUserInfoDTO> searchNewAddedUsersForRootTask(Long rootTaskId, String query, String token) {
         String username = jwtService.readPayload(token).get("sub");
@@ -268,6 +265,7 @@ public class TaskService {
             .toList();
     }
 
+    @Override
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public List<ShortUserInfoDTO> searchRootTaskUsers(Long rootId, String query, String token) {
         String username = jwtService.readPayload(token).get("sub");
@@ -289,5 +287,21 @@ public class TaskService {
             return taskRepository.findAllByCollectionId(collection.getId());
 
         return taskRepository.findAllByAssignedUsernameAndCollectionId(collection.getId(), username);
+    }
+
+    private void validateTask(Task task) {
+        if (LocalDate.now().isAfter(task.getStartDate()))
+            throw new AppExc(ErrorCodes.INVALID_TASK_START_DATE);
+
+        if (task.getStartDate().isAfter(task.getDeadline()))
+            throw new AppExc(ErrorCodes.INVALID_TASK_DEADLINE);
+    }
+
+    private void validateSubTask(Task task) {
+        if (task.getRootTask().getStartDate().isAfter(task.getStartDate()))
+            throw new AppExc(ErrorCodes.INVALID_SUB_TASK_START_DATE);
+
+        if (task.getDeadline().isAfter(task.getRootTask().getDeadline()))
+            throw new AppExc(ErrorCodes.INVALID_SUB_TASK_DEADLINE);
     }
 }

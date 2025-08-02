@@ -14,7 +14,7 @@ import org.hibernate.validator.constraints.Length;
 public class AuthRequest {
     @NotNull
     @NotEmpty
-    @Length(min = 6, max = 50)
+    @Length(min = 3, max = 50)
     String username;
 
     @NotNull

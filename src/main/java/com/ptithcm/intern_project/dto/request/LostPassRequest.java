@@ -16,7 +16,7 @@ public class LostPassRequest {
     @NotNull
     @NotEmpty
     @Email
-    String email;
+    String username;
 
     @NotNull
     @NotEmpty

@@ -37,4 +37,6 @@ public interface UserInfoRepository extends JpaRepository<UserInfo, Long> {
     List<UserInfo> fastSearchUsersIgnoreInRootTask(@Param("rootTaskId") Long rootTaskId, @Param("query") String query);
 
     boolean existsByDepartmentId(Long id);
+
+    boolean existsByEmail(String email);
 }
