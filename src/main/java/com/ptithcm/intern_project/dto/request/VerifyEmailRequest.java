@@ -1,6 +1,6 @@
 package com.ptithcm.intern_project.dto.request;
 
-import com.ptithcm.intern_project.common.annotation.constraint.OtpTypeConstraint;
+import com.ptithcm.intern_project.annotation.constraint.OtpTypeConstraint;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;

@@ -1,6 +1,6 @@
 package com.ptithcm.intern_project.dto.request;
 
-import com.ptithcm.intern_project.common.annotation.constraint.ListTypeConstraint;
+import com.ptithcm.intern_project.annotation.constraint.ListTypeConstraint;
 import com.ptithcm.intern_project.jpa.model.enums.TaskLevel;
 import com.ptithcm.intern_project.jpa.model.enums.TaskPriority;
 import com.ptithcm.intern_project.jpa.model.enums.TaskType;
