@@ -4,6 +4,7 @@ import com.ptithcm.intern_project.dto.general.RestApiResponse;
 import com.ptithcm.intern_project.dto.general.TokenDTO;
 import com.ptithcm.intern_project.dto.request.*;
 import com.ptithcm.intern_project.dto.response.AuthResponse;
+import com.ptithcm.intern_project.dto.response.EmailResponse;
 import com.ptithcm.intern_project.dto.response.VerifyEmailResponse;
 import com.ptithcm.intern_project.service.AccountService;
 import static com.ptithcm.intern_project.exception.enums.SuccessCodes.*;
@@ -15,6 +16,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 import static com.ptithcm.intern_project.security.constvalues.AuthorityValues.*;
 
@@ -56,7 +59,11 @@ public class AccountController {
     }
 
     @Operation(description = "Generally authorize an existing email, by OTP")
-    @PostMapping("/private/" + ROLE_AUTH + "/v1/account/authorize-email")
+    @PostMapping({
+        "/private/" + ROLE_ADMIN + "/v1/account/authorize-email",
+        "/private/" + ROLE_PM + "/v1/account/authorize-email",
+        "/private/" + ROLE_LEAD + "/v1/account/authorize-email",
+        "/private/" + ROLE_EMP + "/v1/account/authorize-email",})
     public ResponseEntity<RestApiResponse<VerifyEmailResponse>> authorizeEmailByOtp(
         @RequestHeader("Authorization") String token) {
         return RestApiResponse.fromScs(GET_OTP, accountService.authorizeEmailByOtp(token));
@@ -77,11 +84,25 @@ public class AccountController {
     }
 
     @Operation(description = "Pro-actively change password by user")
-    @PutMapping("/private/v1/account/change-password")
+    @PutMapping({
+        "/private/" + ROLE_ADMIN + "/v1/account/change-password",
+        "/private/" + ROLE_PM + "/v1/account/change-password",
+        "/private/" + ROLE_LEAD + "/v1/account/change-password",
+        "/private/" + ROLE_EMP + "/v1/account/change-password"})
     public ResponseEntity<RestApiResponse<Void>> changePassword(
         @RequestHeader("Authorization") String token,
         @Valid @RequestBody ChangePassRequest dto) {
         accountService.changePassword(token, dto);
         return RestApiResponse.fromScs(LOST_PASSWORD);
+    }
+
+    @Operation(description = "Get email to verify permissions")
+    @GetMapping({
+        "/private/" + ROLE_ADMIN + "/v1/account/email",
+        "/private/" + ROLE_PM + "/v1/account/email",
+        "/private/" + ROLE_LEAD + "/v1/account/email",
+        "/private/" + ROLE_EMP + "/v1/account/email",})
+    public ResponseEntity<RestApiResponse<EmailResponse>> getEmail(@RequestHeader("Authorization") String token) {
+        return RestApiResponse.fromScs(GET_DETAIL, accountService.getEmail(token));
     }
 }

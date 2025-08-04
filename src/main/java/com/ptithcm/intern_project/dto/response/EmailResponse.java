@@ -1,6 +1,5 @@
-package com.ptithcm.intern_project.dto.request;
+package com.ptithcm.intern_project.dto.response;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -10,7 +9,6 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ChangeGroupStatusRequest {
-    @NotNull
-    Boolean status;
+public class EmailResponse {
+    String email;
 }

@@ -1,6 +1,7 @@
 package com.ptithcm.intern_project.service;
 
 import com.ptithcm.intern_project.dto.request.*;
+import com.ptithcm.intern_project.dto.response.EmailResponse;
 import com.ptithcm.intern_project.exception.AppExc;
 import com.ptithcm.intern_project.dto.general.GeneralTokenClaims;
 import com.ptithcm.intern_project.exception.enums.ErrorCodes;
@@ -216,6 +217,13 @@ public class AccountService implements IAccountService {
         accountRepository.save(account);
     }
 
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
+    public EmailResponse getEmail(String token) {
+        var userInfo = userInfoService.getUserInfo(token);
+        return EmailResponse.builder().email(userInfo.getEmail()).build();
+    }
+
     private VerifyEmailResponse verifyEmailByRegisterOtp(VerifyEmailRequest request) {
         Map<String, String> mailCustom = emailService.getMailContentCustom();
         String otp = OtpService.randOTP();
@@ -253,4 +261,5 @@ public class AccountService implements IAccountService {
             String.format(mailCustom.get("msg"), request.getEmail(), otp));
         return VerifyEmailResponse.builder().otpAgeInSeconds(LostPassOtp.OTP_AGE).build();
     }
+
 }

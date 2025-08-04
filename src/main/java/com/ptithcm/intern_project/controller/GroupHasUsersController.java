@@ -28,7 +28,7 @@ public class GroupHasUsersController {
         @RequestHeader("Authorization") String token,
         @Valid @RequestBody ChangeGroupRoleRequest request) {
         groupHasUsersService.update(id, request.getGroupRole(), token);
-        return RestApiResponse.fromScs(SuccessCodes.GET_DETAIL);
+        return RestApiResponse.fromScs(SuccessCodes.UPDATED);
     }
 
     @Operation(description = "Kick joined User by Group-User-Id")

@@ -26,7 +26,7 @@ public interface GroupHasUsersRepository extends JpaRepository<GroupHasUsers, Lo
         @Param("query") String searchVal,
         Pageable pageable);
 
-    Optional<GroupHasUsers> findByJoinedUserInfoEmail(String email);
+    Optional<GroupHasUsers> findByGroupIdAndJoinedUserInfoEmail(Long groupId, String email);
 
     @Query("""
         SELECT DISTINCT ghu.group FROM GroupHasUsers ghu
@@ -39,8 +39,9 @@ public interface GroupHasUsersRepository extends JpaRepository<GroupHasUsers, Lo
     @Query("""
         SELECT ghu.joinedUserInfo FROM GroupHasUsers ghu
         WHERE ghu.group.id = :id
-        AND NOT ghu.group.userInfoCreated.account.username = :username
+        AND NOT ghu.joinedUserInfo.account.username = :username
         AND ghu.group.active = TRUE
+        AND ghu.active = TRUE
     """)
-    List<UserInfo> findAllUsersGroupToAssign(@Param("id") String id, @Param("username") String username);
+    List<UserInfo> findAllUsersGroupToAssign(@Param("id") Long id, @Param("username") String username);
 }

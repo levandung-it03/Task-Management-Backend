@@ -24,6 +24,7 @@ public class GroupHasUserMapper {
             .role(groupHasUsers.getRole())
             .joinedUser(userInfoMapper.shortenUserInfo(groupHasUsers.getJoinedUserInfo()))
             .involvedTime(groupHasUsers.getInvolvedTime())
+            .active(groupHasUsers.isActive())
             .build();
     }
 

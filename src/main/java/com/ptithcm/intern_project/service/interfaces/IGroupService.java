@@ -5,11 +5,7 @@ import com.ptithcm.intern_project.dto.request.ChangeGroupStatusRequest;
 import com.ptithcm.intern_project.dto.request.GroupRequest;
 import com.ptithcm.intern_project.dto.request.PaginationRequest;
 import com.ptithcm.intern_project.dto.request.UpdatedGroupRequest;
-import com.ptithcm.intern_project.dto.response.DetailGroupResponse;
-import com.ptithcm.intern_project.dto.response.GroupResponse;
-import com.ptithcm.intern_project.dto.response.IdResponse;
-import com.ptithcm.intern_project.dto.response.PaginationResponse;
-import com.ptithcm.intern_project.jpa.model.Group;
+import com.ptithcm.intern_project.dto.response.*;
 
 import java.util.List;
 
@@ -25,7 +21,7 @@ public interface IGroupService {
 
     void changeStatus(Long id, ChangeGroupStatusRequest request, String token);
 
-    List<Group> getRelatedGroups(String token);
+    List<ShortGroupResponse> getRelatedGroups(String token);
 
-    List<ShortUserInfoDTO> getUsersGroupToAssign(String id, String token);
+    List<ShortUserInfoDTO> getUsersGroupToAssign(Long id, String token);
 }

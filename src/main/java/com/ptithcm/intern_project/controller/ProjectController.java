@@ -106,7 +106,7 @@ public class ProjectController {
     }
 
     @Operation(description = "Create a Phase of specified Project")
-    @PostMapping(ROLE_PM + "/v1/project/{id}/create-phase")
+    @PostMapping(ROLE_PM + "/v1/project/{id}/phase")
     public ResponseEntity<RestApiResponse<IdResponse>> createPhase(
         @PathVariable("id") Long projectId,
         @Valid @RequestBody PhaseRequest request,
@@ -115,10 +115,10 @@ public class ProjectController {
     }
 
     @Operation(description = "Get all Phases of specified Project")
-    @PostMapping({
-        ROLE_PM + "/v1/project/{id}/get-all-related-phase",
-        ROLE_LEAD + "/v1/project/{id}/get-all-related-phase",
-        ROLE_EMP + "/v1/project/{id}/get-all-related-phase",
+    @GetMapping({
+        ROLE_PM + "/v1/project/{id}/phases",
+        ROLE_LEAD + "/v1/project/{id}/phases",
+        ROLE_EMP + "/v1/project/{id}/phases",
     })
     public ResponseEntity<RestApiResponse<List<PhaseResponse>>> getAllRelatedPhases(
         @PathVariable("id") Long projectId,

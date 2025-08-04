@@ -1,5 +1,6 @@
 package com.ptithcm.intern_project.service;
 
+import com.ptithcm.intern_project.dto.response.UserTaskResponse;
 import com.ptithcm.intern_project.exception.enums.ErrorCodes;
 import com.ptithcm.intern_project.exception.AppExc;
 import com.ptithcm.intern_project.mapper.ReportMapper;
@@ -141,10 +142,8 @@ public class TaskForUsersService implements ITaskForUsersService {
         taskForUsersRepository.save(newUserTask);
     }
 
-    public List<ShortUserInfoDTO> getAllUsersOfTask(Long taskId) {
-        return taskForUsersRepository.findAllByTaskId(taskId)
-            .stream().map(userTask -> userInfoMapper.shortenUserInfo(userTask.getAssignedUser()))
-            .toList();
+    public List<UserTaskResponse> getAllUsersOfTask(Long taskId) {
+        return taskForUsersRepository.findAllByTaskId(taskId);
     }
 
     public Optional<Task> findByRootIdAndAssignedUsername(Long rootTaskId, String username) {
@@ -165,5 +164,9 @@ public class TaskForUsersService implements ITaskForUsersService {
 
     public boolean existsByProjectIdAndAssignedUsername(Long projectId, String username) {
         return taskForUsersRepository.existsByProjectIdAndAssignedUsername(projectId, username);
+    }
+
+    public UserTaskResponse getUserOfTask(Long taskId, String username) {
+        return taskForUsersRepository.findByTaskIdAndAssignedUsername(taskId, username);
     }
 }

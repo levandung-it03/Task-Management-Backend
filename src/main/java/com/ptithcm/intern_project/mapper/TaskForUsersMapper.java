@@ -1,6 +1,7 @@
 package com.ptithcm.intern_project.mapper;
 
 import com.ptithcm.intern_project.dto.general.ShortUserInfoDTO;
+import com.ptithcm.intern_project.dto.response.UserTaskResponse;
 import com.ptithcm.intern_project.jpa.model.TaskForUsers;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;

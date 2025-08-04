@@ -47,7 +47,7 @@ public class TaskForUsersController {
         @PathVariable("taskUserId") Long taskUserId,
         @RequestHeader("Authorization") String token) {
         taskForUsersService.kickUser(taskUserId, token);
-        return RestApiResponse.fromScs(SuccessCodes.GET_LIST);
+        return RestApiResponse.fromScs(SuccessCodes.UPDATED);
     }
 
     @Operation(description = "Re-add User of specified Task")
@@ -58,7 +58,7 @@ public class TaskForUsersController {
         @PathVariable("taskUserId") Long taskUserId,
         @RequestHeader("Authorization") String token) {
         taskForUsersService.reAddUser(taskUserId, token);
-        return RestApiResponse.fromScs(SuccessCodes.GET_LIST);
+        return RestApiResponse.fromScs(SuccessCodes.UPDATED);
     }
 
     @Operation(description = "Create Report by assigned-User")

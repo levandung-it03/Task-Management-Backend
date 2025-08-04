@@ -21,4 +21,6 @@ public class GroupUserResponse {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime involvedTime;
+
+    boolean active;
 }

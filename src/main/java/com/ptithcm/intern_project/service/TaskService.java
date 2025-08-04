@@ -1,6 +1,7 @@
 package com.ptithcm.intern_project.service;
 
 import com.ptithcm.intern_project.dto.general.StatusDTO;
+import com.ptithcm.intern_project.dto.response.UserTaskResponse;
 import com.ptithcm.intern_project.security.enums.AuthorityEnum;
 import com.ptithcm.intern_project.exception.enums.ErrorCodes;
 import com.ptithcm.intern_project.exception.AppExc;
@@ -100,6 +101,9 @@ public class TaskService implements ITaskService {
         this.validateTask(subTask);
         this.validateSubTask(subTask);
 
+        var existsReportOnUsers = reportService.existsByEmailsInAndTaskId(request.getAssignedEmails(), rootTask.getId());
+        if (existsReportOnUsers)    throw new AppExc(ErrorCodes.USERS_SUB_TASK_HAS_REPORT);
+
         var savedSubTask = taskRepository.save(subTask);
         var subTaskUsersMap = taskForUsersService
             .saveAllByEmails(request.getAssignedEmails(), savedSubTask)
@@ -181,9 +185,9 @@ public class TaskService implements ITaskService {
     }
 
     @Override
-    public List<ShortUserInfoDTO> getUsersOfTask(Long id, String token) {
+    public List<UserTaskResponse> getUsersOfTask(Long taskId, String token) {
         String username = jwtService.readPayload(token).get("sub");
-        var task = taskRepository.findById(id).orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
+        var task = taskRepository.findById(taskId).orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
 
         if (!taskTransService.canSeeTask(task, username))
             throw new AppExc(ErrorCodes.FORBIDDEN_USER);
@@ -193,23 +197,22 @@ public class TaskService implements ITaskService {
 
         var currentAuthority = userInfo.getAccount().getAuthorities().getFirst().getAuthority();
         if (currentAuthority.equals(AuthorityEnum.ROLE_EMP.toString())) {
-            var justAssignedEmployee = ShortUserInfoDTO.builder()
-                .email(userInfo.getEmail())
-                .fullName(userInfo.getFullName())
-                .role(currentAuthority)
-                .build();
+            var justAssignedEmployee = taskForUsersService.getUserOfTask(taskId, username);
             return List.of(justAssignedEmployee);
         }
-
-        return taskForUsersService.getAllUsersOfTask(id);
+        return taskForUsersService.getAllUsersOfTask(taskId);
     }
 
     @Override
+    @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public void updateDoneTask(Long id, String token) {
         Task updatedTask = taskTransService.findUpdatableTaskByOwner(id, token);
 
         var isNotStartedTask = LocalDate.now().isBefore(updatedTask.getStartDate());
         if (isNotStartedTask)   throw new AppExc(ErrorCodes.TASK_HASNT_STARTED);
+
+        var isUndoneTask = taskRepository.existsUndoneTaskById(id);
+        if (isUndoneTask) throw new AppExc(ErrorCodes.TASK_ENDED);
 
         updatedTask.setEndDate(LocalDate.now());
         updatedTask.setUpdatedTime(LocalDateTime.now());

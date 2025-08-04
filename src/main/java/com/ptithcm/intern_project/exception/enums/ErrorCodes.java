@@ -40,6 +40,7 @@ public enum ErrorCodes {
     EMP_CANT_BE_ADMIN(13000, "Employee cannot be an Admin", BAD_REQUEST),
     AT_LEAST_ONE_ADMIN(13001, "Group must has at least one admin", BAD_REQUEST),
     CANT_KICK_YOURSELF(13002, "Cannot kick yourself", BAD_REQUEST),
+    USER_NOT_FOUND_ON_GROUP(13003, "User not found on group", BAD_REQUEST),
     //--Task(14)
     INVALID_TASK_START_DATE(14000, "Invalid task start date", BAD_REQUEST),
     INVALID_TASK_DEADLINE(14001, "Invalid task deadline", BAD_REQUEST),
@@ -47,6 +48,8 @@ public enum ErrorCodes {
     INVALID_SUB_TASK_DEADLINE(14003, "Deadline on Sub Task cannot be after Root Task", BAD_REQUEST),
     TASK_ENDED(14004, "Cannot change an ended Task", BAD_REQUEST),
     TASK_HASNT_STARTED(14005, "Task has not started yet, cannot perform action", BAD_REQUEST),
+    CANNOT_DONE_TASK(14006, "There are Reports still not approved, check Task again", BAD_REQUEST),
+    USERS_SUB_TASK_HAS_REPORT(14007, "At least 1 Report existing on Task, cannot create Sub-Task", BAD_REQUEST),
     //--Report(15)
     REPORT_REVIEWED(15000, "Report has been reviewed, cannot perform action", BAD_REQUEST),
     //--Project(16)

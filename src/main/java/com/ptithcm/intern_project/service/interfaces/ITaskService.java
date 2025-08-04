@@ -7,6 +7,7 @@ import com.ptithcm.intern_project.dto.response.IdResponse;
 import com.ptithcm.intern_project.dto.general.ShortUserInfoDTO;
 import com.ptithcm.intern_project.dto.response.ShortTaskResponse;
 import com.ptithcm.intern_project.dto.response.TaskResponse;
+import com.ptithcm.intern_project.dto.response.UserTaskResponse;
 
 import java.util.List;
 
@@ -22,7 +23,7 @@ public interface ITaskService {
 
     void update(Long id, UpdatedTaskRequest request, String token);
 
-    List<ShortUserInfoDTO> getUsersOfTask(Long id, String token);
+    List<UserTaskResponse> getUsersOfTask(Long id, String token);
 
     List<ShortTaskResponse> getAllRelatedUndoneTasks(String token);
 

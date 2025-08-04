@@ -1,6 +1,7 @@
 package com.ptithcm.intern_project.controller;
 
 import com.ptithcm.intern_project.dto.general.StatusDTO;
+import com.ptithcm.intern_project.dto.response.UserTaskResponse;
 import com.ptithcm.intern_project.exception.enums.SuccessCodes;
 import com.ptithcm.intern_project.dto.general.RestApiResponse;
 import com.ptithcm.intern_project.dto.request.TaskRequest;
@@ -92,7 +93,7 @@ public class TaskController {
     @GetMapping({
         ROLE_PM + "/v1/task/{id}/get-assigned-users",
         ROLE_LEAD + "/v1/task/{id}/get-assigned-users"})
-    public ResponseEntity<RestApiResponse<List<ShortUserInfoDTO>>> getUsersOfTask(
+    public ResponseEntity<RestApiResponse<List<UserTaskResponse>>> getUsersOfTask(
         @PathVariable("id") Long id,
         @RequestHeader("Authorization") String token) {
         return RestApiResponse.fromScs(SuccessCodes.GET_LIST, taskService.getUsersOfTask(id, token));

@@ -103,4 +103,8 @@ public class ReportService implements IReportService {
 
         return report;
     }
+
+    public boolean existsByEmailsInAndTaskId(List<String> assignedEmails, Long taskId) {
+        return reportRepository.existsByEmailsInAndTaskId(assignedEmails, taskId);
+    }
 }

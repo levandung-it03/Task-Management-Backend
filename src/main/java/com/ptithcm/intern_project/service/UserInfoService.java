@@ -50,20 +50,24 @@ public class UserInfoService implements IUserInfoService {
         if (this.isAuthority(token, AuthorityEnum.ROLE_EMP))
             throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
-        return userInfoRepository.findAllByEmailOrFullName(query, query)
-            .stream().map(userInfoMapper::shortenUserInfo)
+        var usernameFinding = jwtService.readPayload(token).get("sub");
+        return userInfoRepository.findAllByEmailOrFullName(query, query).stream()
+            .filter(userInfo -> !userInfo.getAccount().getUsername().equals(usernameFinding))
+            .map(userInfoMapper::shortenUserInfo)
             .toList();
     }
 
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
     public List<ShortUserInfoDTO> leadFastSearchUsersForNewTask(String query, String token) {
-        if (!this.isAuthority(token, AuthorityEnum.ROLE_PM))
+        if (!this.isAuthority(token, AuthorityEnum.ROLE_LEAD))
             throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
+        var usernameFinding = jwtService.readPayload(token).get("sub");
         return userInfoRepository.findAllByEmailOrFullName(query, query).stream()
+            .filter(userInfo -> !userInfo.getAccount().getUsername().equals(usernameFinding))
             .map(userInfoMapper::shortenUserInfo)
-            .filter(user -> !user.getRole().equals(AuthorityEnum.ROLE_PM.toString()))
+            .filter(user -> user.getRole().equals(AuthorityEnum.ROLE_EMP.toString()))
             .toList();
     }
 

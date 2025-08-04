@@ -1,11 +1,8 @@
 package com.ptithcm.intern_project.service;
 
+import com.ptithcm.intern_project.dto.response.*;
 import com.ptithcm.intern_project.exception.enums.ErrorCodes;
 import com.ptithcm.intern_project.exception.AppExc;
-import com.ptithcm.intern_project.dto.response.DetailGroupResponse;
-import com.ptithcm.intern_project.dto.response.GroupResponse;
-import com.ptithcm.intern_project.dto.response.IdResponse;
-import com.ptithcm.intern_project.dto.response.PaginationResponse;
 import com.ptithcm.intern_project.mapper.GroupHasUserMapper;
 import com.ptithcm.intern_project.mapper.GroupMapper;
 import com.ptithcm.intern_project.mapper.UserInfoMapper;
@@ -15,7 +12,6 @@ import com.ptithcm.intern_project.dto.request.GroupRequest;
 import com.ptithcm.intern_project.dto.request.PaginationRequest;
 import com.ptithcm.intern_project.dto.request.UpdatedGroupRequest;
 import com.ptithcm.intern_project.jpa.model.Group;
-import com.ptithcm.intern_project.jpa.model.GroupHasUsers;
 import com.ptithcm.intern_project.jpa.repository.GroupRepository;
 import com.ptithcm.intern_project.security.service.JwtService;
 import com.ptithcm.intern_project.service.interfaces.IGroupService;
@@ -25,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -47,7 +44,7 @@ public class GroupService implements IGroupService {
     @Override
     public PaginationResponse<GroupResponse> getPaginatedGroups(PaginationRequest request, String token) {
         var curUser = userInfoService.getUserInfo(token);
-        var pageable = PageRequest.of(PaginationService.PAGE_SIZE, request.getPage() - 1);
+        var pageable = PageRequest.of(request.getPage() - 1, PaginationService.PAGE_SIZE);
         var groupsPage = groupUsersService.findAllRelatedGroups(curUser.getEmail(), request.getSearchVal(), pageable);
         var groupsList = groupsPage.stream().map(groupMapper::toResponse).toList();
 
@@ -87,7 +84,6 @@ public class GroupService implements IGroupService {
             throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
         var groupHasUsers = group.getGroupUsers().stream()
-            .filter(GroupHasUsers::isActive)
             .map(groupHasUserMapper::toResponse)
             .toList();
 
@@ -103,7 +99,7 @@ public class GroupService implements IGroupService {
         var curUser = userInfoService.getUserInfo(token);
         var changedGroup = groupRepository.findById(id).orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
 
-        if (groupUsersService.isNotAdminOnGroup(curUser.getEmail()))
+        if (groupUsersService.isNotAdminOnGroup(id, curUser.getEmail()))
             throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
         var addedUsers = userInfoService.findAllByEmailIn(request.getAddedEmails());
@@ -123,22 +119,33 @@ public class GroupService implements IGroupService {
         var curUser = userInfoService.getUserInfo(token);
         var changedGroup = groupRepository.findById(id).orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
 
-        if (groupUsersService.isNotAdminOnGroup(curUser.getEmail()))
+        if (groupUsersService.isNotAdminOnGroup(id, curUser.getEmail()))
             throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
-        changedGroup.setActive(request.getNewStatus());
+        changedGroup.setActive(request.getStatus());
         changedGroup.setUpdatedTime(LocalDateTime.now());
         groupRepository.save(changedGroup);
     }
 
     @Override
-    public List<Group> getRelatedGroups(String token) {
+    @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
+    public List<ShortGroupResponse> getRelatedGroups(String token) {
         String username = jwtService.readPayload(token).get("sub");
-        return groupHasUsersService.findAllRelatedToUser(username);
+        return groupHasUsersService.findAllRelatedToUser(username).stream()
+            .map(group -> {
+                var userGroup = group.getGroupUsers().stream()
+                    .filter(groupHasUsers -> groupHasUsers.getJoinedUserInfo()
+                        .getAccount()
+                        .getUsername().equals(username))
+                    .findFirst()
+                    .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_TOKEN));
+                return groupMapper.shortenGroup(group, userGroup);
+            })
+            .toList();
     }
 
     @Override
-    public List<ShortUserInfoDTO> getUsersGroupToAssign(String id, String token) {
+    public List<ShortUserInfoDTO> getUsersGroupToAssign(Long id, String token) {
         String username = jwtService.readPayload(token).get("sub");
         return groupUsersService.getUsersGroupToAssign(id, username)
             .stream().map(userInfoMapper::shortenUserInfo)

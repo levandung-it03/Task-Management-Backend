@@ -2,7 +2,9 @@ package com.ptithcm.intern_project.mapper;
 
 import com.ptithcm.intern_project.dto.response.GroupResponse;
 import com.ptithcm.intern_project.dto.general.ShortUserInfoDTO;
+import com.ptithcm.intern_project.dto.response.ShortGroupResponse;
 import com.ptithcm.intern_project.jpa.model.Group;
+import com.ptithcm.intern_project.jpa.model.GroupHasUsers;
 import com.ptithcm.intern_project.jpa.model.UserInfo;
 import org.springframework.stereotype.Component;
 
@@ -28,6 +30,7 @@ public class GroupMapper {
             .createdTime(group.getCreatedTime())
             .updatedTime(group.getUpdatedTime())
             .userQuantity(group.getGroupUsers().size())
+            .active(group.isActive())
             .build();
     }
 
@@ -38,6 +41,14 @@ public class GroupMapper {
             .createdTime(LocalDateTime.now())
             .updatedTime(LocalDateTime.now())
             .active(true)
+            .build();
+    }
+
+    public ShortGroupResponse shortenGroup(Group group, GroupHasUsers userGroup) {
+        return ShortGroupResponse.builder()
+            .id(group.getId())
+            .name(group.getName())
+            .role(userGroup.getRole())
             .build();
     }
 }

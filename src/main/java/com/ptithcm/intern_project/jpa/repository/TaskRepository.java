@@ -51,4 +51,16 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     List<Task> findAllAssignedAndUndoneByUsername(String username);
 
     List<Task> findAllByRootTaskId(Long rootTaskId);
+
+    @Query("""
+        SELECT CASE WHEN COUNT(tfu) > 0 THEN TRUE ELSE FALSE END
+        FROM TaskForUsers tfu
+        JOIN tfu.task t
+        WHERE t.id = :taskId AND tfu NOT IN (
+            SELECT utc FROM Report r
+            JOIN r.userTaskCreated utc
+            WHERE r.reportStatus = 'APPROVED'
+        )
+    """)
+    boolean existsUndoneTaskById(@Param("taskId") Long taskId);
 }

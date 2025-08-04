@@ -1,5 +1,6 @@
 package com.ptithcm.intern_project.controller;
 
+import com.ptithcm.intern_project.dto.response.*;
 import com.ptithcm.intern_project.exception.enums.SuccessCodes;
 import com.ptithcm.intern_project.dto.general.RestApiResponse;
 import com.ptithcm.intern_project.dto.general.ShortUserInfoDTO;
@@ -8,10 +9,6 @@ import com.ptithcm.intern_project.dto.request.GroupRequest;
 import com.ptithcm.intern_project.dto.request.PaginationRequest;
 import com.ptithcm.intern_project.dto.request.UpdatedGroupRequest;
 import com.ptithcm.intern_project.jpa.model.Group;
-import com.ptithcm.intern_project.dto.response.DetailGroupResponse;
-import com.ptithcm.intern_project.dto.response.GroupResponse;
-import com.ptithcm.intern_project.dto.response.IdResponse;
-import com.ptithcm.intern_project.dto.response.PaginationResponse;
 import com.ptithcm.intern_project.service.GroupService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -77,23 +74,22 @@ public class GroupController {
     }
 
     @Operation(description = "Get all related `Active` Groups by both Owner, or joined Users")
-    @PutMapping({
+    @GetMapping({
         ROLE_PM + "/v1/group/get-related-groups",
         ROLE_LEAD + "/v1/group/get-related-groups",
-        ROLE_EMP + "/v1/group/get-related-groups",
-    })
-    public ResponseEntity<RestApiResponse<List<Group>>> getRelatedGroups(@RequestHeader("Authorization") String token) {
+        ROLE_EMP + "/v1/group/get-related-groups"})
+    public ResponseEntity<RestApiResponse<List<ShortGroupResponse>>> getRelatedGroups(
+        @RequestHeader("Authorization") String token) {
         return RestApiResponse.fromScs(SuccessCodes.GET_LIST, groupService.getRelatedGroups(token));
     }
 
     @Operation(description = "Get all joined Users by active Group-Id")
-    @PutMapping({
+    @GetMapping({
         ROLE_PM + "/v1/group/{id}/get-users-to-assign",
         ROLE_LEAD + "/v1/group/{id}/get-users-to-assign",
-        ROLE_EMP + "/v1/group/{id}/get-users-to-assign",
-    })
+        ROLE_EMP + "/v1/group/{id}/get-users-to-assign"})
     public ResponseEntity<RestApiResponse<List<ShortUserInfoDTO>>> getUsersGroupToAssign(
-        @PathVariable("id") String id,
+        @PathVariable("id") Long id,
         @RequestHeader("Authorization") String token) {
         return RestApiResponse.fromScs(SuccessCodes.GET_LIST, groupService.getUsersGroupToAssign(id, token));
     }

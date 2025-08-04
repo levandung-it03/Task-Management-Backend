@@ -68,9 +68,9 @@ public class PhaseController {
 
     @Operation(description = "Get all Collections of specified Project")
     @PostMapping({
-        ROLE_PM + "/v1/phase/{id}/get-all-related-collections",
-        ROLE_LEAD + "/v1/phase/{id}/get-all-related-collections",
-        ROLE_EMP + "/v1/phase/{id}/get-all-related-collections",
+        ROLE_PM + "/v1/phase/{id}/collections",
+        ROLE_LEAD + "/v1/phase/{id}/collections",
+        ROLE_EMP + "/v1/phase/{id}/collections",
     })
     public ResponseEntity<RestApiResponse<List<CollectionResponse>>> getAllRelatedCollections(
         @PathVariable("id") Long phaseId,

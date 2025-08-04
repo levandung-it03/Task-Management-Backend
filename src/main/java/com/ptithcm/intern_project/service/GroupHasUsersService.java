@@ -33,7 +33,7 @@ public class GroupHasUsersService implements IGroupHasUsersService {
         var changedGroupUser = groupUserRepository.findById(id)
             .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
 
-        if (this.isNotAdminOnGroup(curUser.getEmail()))
+        if (this.isNotAdminOnGroup(changedGroupUser.getGroup().getId(), curUser.getEmail()))
             throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
         var isEmployee = changedGroupUser.getJoinedUserInfo()
@@ -41,6 +41,15 @@ public class GroupHasUsersService implements IGroupHasUsersService {
             .equals(AuthorityEnum.ROLE_EMP.toString());
         if (role.equals(GroupRole.ADMIN) && isEmployee)
             throw new AppExc(ErrorCodes.EMP_CANT_BE_ADMIN);
+
+        var hasNoAdminOnTheRestRelationships = changedGroupUser.getGroup()
+            .getGroupUsers().stream()
+            .filter(userGroup -> !userGroup.getJoinedUserInfo().getEmail().equals(curUser.getEmail()))
+            .filter(userGroup -> userGroup.getRole().equals(GroupRole.ADMIN))
+            .findFirst()
+            .orElse(null) == null;
+        if (hasNoAdminOnTheRestRelationships && role.equals(GroupRole.MEMBER))
+            throw new AppExc(ErrorCodes.AT_LEAST_ONE_ADMIN);
 
         changedGroupUser.setRole(role);
         groupUserRepository.save(changedGroupUser);
@@ -64,8 +73,8 @@ public class GroupHasUsersService implements IGroupHasUsersService {
         return groupUserRepository.saveAll(groupHasUsers);
     }
 
-    public boolean isNotAdminOnGroup(String userEmailOnGroup) {
-        var currentUserInGroup = groupUserRepository.findByJoinedUserInfoEmail(userEmailOnGroup)
+    public boolean isNotAdminOnGroup(Long groupId, String userEmailOnGroup) {
+        var currentUserInGroup = groupUserRepository.findByGroupIdAndJoinedUserInfoEmail(groupId, userEmailOnGroup)
             .orElseThrow(() -> new AppExc(ErrorCodes.FORBIDDEN_USER));
         return !currentUserInGroup.getRole().equals(GroupRole.ADMIN);
     }
@@ -74,7 +83,7 @@ public class GroupHasUsersService implements IGroupHasUsersService {
         return groupUserRepository.findAllRelatedToUser(username);
     }
 
-    public List<UserInfo> getUsersGroupToAssign(String id, String username) {
+    public List<UserInfo> getUsersGroupToAssign(Long id, String username) {
         return groupUserRepository.findAllUsersGroupToAssign(id, username);
     }
 
@@ -83,7 +92,7 @@ public class GroupHasUsersService implements IGroupHasUsersService {
         var kickedGroupUser = groupUserRepository.findById(groupId)
             .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
 
-        if (this.isNotAdminOnGroup(curUser.getEmail()))
+        if (this.isNotAdminOnGroup(groupId, curUser.getEmail()))
             throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
         if (kickedGroupUser.getJoinedUserInfo().getEmail().equals(curUser.getEmail()))

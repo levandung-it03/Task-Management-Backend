@@ -1,5 +1,6 @@
 package com.ptithcm.intern_project.jpa.repository;
 
+import com.ptithcm.intern_project.dto.response.UserTaskResponse;
 import com.ptithcm.intern_project.jpa.model.Task;
 import com.ptithcm.intern_project.jpa.model.TaskForUsers;
 import com.ptithcm.intern_project.jpa.model.UserInfo;
@@ -8,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,7 +28,24 @@ public interface TaskForUsersRepository extends JpaRepository<TaskForUsers, Long
         @Param("query") String query,
         @Param("owner") String username);
 
-    List<TaskForUsers> findAllByTaskId(Long taskId);
+    @Query("""
+        SELECT DISTINCT new com.ptithcm.intern_project.dto.response.UserTaskResponse(
+            tfu.id,
+            tfu.assignedUser.email,
+            tfu.assignedUser.fullName,
+            auth.name,
+            tfu.userTaskStatus,
+            CASE WHEN (
+                SELECT COUNT(r) FROM Report r
+                JOIN r.userTaskCreated utc
+                WHERE utc.id = tfu.id
+                AND r.reportStatus = 'APPROVED'
+            ) > 0 THEN TRUE ELSE FALSE END
+        ) FROM TaskForUsers tfu
+        JOIN tfu.assignedUser.account.authorities auth
+        WHERE tfu.task.id = :taskId
+    """)
+    List<UserTaskResponse> findAllByTaskId(Long taskId);
 
     @Query("""
         SELECT t.task FROM TaskForUsers t
@@ -57,4 +76,24 @@ public interface TaskForUsersRepository extends JpaRepository<TaskForUsers, Long
         AND tfu.assignedUser.account.username = :username
     """)
     boolean existsByProjectIdAndAssignedUsername(@Param("projectId") Long projectId, @Param("username") String username);
+
+    @Query("""
+        SELECT DISTINCT new com.ptithcm.intern_project.dto.response.UserTaskResponse(
+            tfu.id,
+            tfu.assignedUser.email,
+            tfu.assignedUser.fullName,
+            auth.name,
+            tfu.userTaskStatus,
+            CASE WHEN (
+                SELECT COUNT(r) FROM Report r
+                JOIN r.userTaskCreated utc
+                WHERE utc.id = tfu.id
+                AND r.reportStatus = 'APPROVED'
+            ) > 0 THEN TRUE ELSE FALSE END
+        ) FROM TaskForUsers tfu
+        JOIN tfu.assignedUser.account.authorities auth
+        WHERE tfu.task.id = :taskId
+        AND tfu.assignedUser.account.username = :username
+    """)
+    UserTaskResponse findByTaskIdAndAssignedUsername(@Param("taskId") Long taskId, @Param("username") String username);
 }
