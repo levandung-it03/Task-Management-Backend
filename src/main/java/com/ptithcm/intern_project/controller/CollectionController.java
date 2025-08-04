@@ -1,12 +1,12 @@
 package com.ptithcm.intern_project.controller;
 
+import com.ptithcm.intern_project.dto.response.ShortTaskResponse;
 import com.ptithcm.intern_project.exception.enums.SuccessCodes;
 import com.ptithcm.intern_project.dto.general.RestApiResponse;
 import com.ptithcm.intern_project.dto.request.CollectionRequest;
 import com.ptithcm.intern_project.dto.request.TaskRequest;
 import com.ptithcm.intern_project.dto.response.IdResponse;
 import com.ptithcm.intern_project.jpa.model.Collection;
-import com.ptithcm.intern_project.jpa.model.Task;
 import com.ptithcm.intern_project.service.CollectionService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -73,7 +73,7 @@ public class CollectionController {
         ROLE_PM + "/v1/collection/{id}/get-all-related-tasks",
         ROLE_LEAD + "/v1/collection/{id}/get-all-related-tasks",
         ROLE_EMP + "/v1/collection/{id}/get-all-related-tasks"})
-    public ResponseEntity<RestApiResponse<List<Task>>> getAllRelatedTasks(
+    public ResponseEntity<RestApiResponse<List<ShortTaskResponse>>> getAllRelatedTasks(
         @PathVariable("id") Long collectionId,
         @RequestHeader("Authorization") String token) {
         return RestApiResponse.fromScs(SuccessCodes.CREATED, collectionService.getAllRelatedTasks(collectionId, token));

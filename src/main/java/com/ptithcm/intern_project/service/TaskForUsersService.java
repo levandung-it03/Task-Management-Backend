@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -82,6 +83,9 @@ public class TaskForUsersService implements ITaskForUsersService {
         var isProjectActive = taskUserCreating.getTask().getCollection().getPhase().getProject().isActive();
         if (!isProjectActive)   throw new AppExc(ErrorCodes.PROJECT_WAS_CLOSED);
 
+        var isNotStartedTask = LocalDate.now().isBefore(taskUserCreating.getTask().getStartDate());
+        if (isNotStartedTask)   throw new AppExc(ErrorCodes.TASK_HASNT_STARTED);
+
         var report = reportMapper.newModel(request, taskUserCreating);
         return IdResponse.builder()
             .id(reportService.save(report).getId())
@@ -125,11 +129,11 @@ public class TaskForUsersService implements ITaskForUsersService {
             .toList();
     }
 
-    public void deleteAll(ArrayList<TaskForUsers> taskForUsers) {
+    public void deleteAll(List<TaskForUsers> taskForUsers) {
         taskForUsersRepository.deleteAll(taskForUsers);
     }
 
-    public void saveAll(ArrayList<TaskForUsers> restUsersOfRootTask) {
+    public void saveAll(List<TaskForUsers> restUsersOfRootTask) {
         taskForUsersRepository.saveAll(restUsersOfRootTask);
     }
 
@@ -145,10 +149,6 @@ public class TaskForUsersService implements ITaskForUsersService {
 
     public Optional<Task> findByRootIdAndAssignedUsername(Long rootTaskId, String username) {
         return taskForUsersRepository.findByRootIdAndAssignedUsername(rootTaskId, username);
-    }
-
-    public List<Task> findAllByRootTaskId(Long rootTaskId) {
-        return taskForUsersRepository.findAllByRootTaskId(rootTaskId);
     }
 
     public List<TaskForUsers> searchRootTaskUsers(Long rootId, String query, String username) {

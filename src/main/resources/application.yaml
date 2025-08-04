@@ -54,7 +54,7 @@ spring:
 env:
   jwt:
     secret-key: "odjF+SYmu+CMjO3SDf3cpM1IjfhCQfdMnMcpP9v63o+b/SrdReK6EwNHvwE8LcyQomnBrYJm4J7s3S1UAqC3GW+afWRox8nu6XXUWMjjJP4="
-    access-time: 120
+    access-time: 605_000
     refresh-time: 605_000
   services:
     front-end: "http://localhost:3000"

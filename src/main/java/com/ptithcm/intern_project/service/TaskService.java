@@ -106,12 +106,11 @@ public class TaskService implements ITaskService {
             .stream()
             .collect(Collectors.toMap(rel -> rel.getAssignedUser().getId(), rel -> rel));
 
-        var restUsersOfRootTask = new ArrayList<>(rootTask
+        var restUsersOfRootTask = rootTask
             .getTaskForUsers()
             .stream()
             .filter(rel -> !subTaskUsersMap.containsKey(rel.getAssignedUser().getId()))
-            .toList()
-        );
+            .toList();
         rootTask.getTaskForUsers().clear();
         taskForUsersService.deleteAll(rootTask.getTaskForUsers());
 
@@ -209,6 +208,9 @@ public class TaskService implements ITaskService {
     public void updateDoneTask(Long id, String token) {
         Task updatedTask = taskTransService.findUpdatableTaskByOwner(id, token);
 
+        var isNotStartedTask = LocalDate.now().isBefore(updatedTask.getStartDate());
+        if (isNotStartedTask)   throw new AppExc(ErrorCodes.TASK_HASNT_STARTED);
+
         updatedTask.setEndDate(LocalDate.now());
         updatedTask.setUpdatedTime(LocalDateTime.now());
         taskRepository.save(updatedTask);
@@ -225,16 +227,15 @@ public class TaskService implements ITaskService {
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
     public List<ShortTaskResponse> getSubTasksOfRootTask(Long rootTaskId, String token) {
+        var username = jwtService.readPayload(token).get("sub");
         var userInfo = userInfoService
             .findByAccountUsername(jwtService.readPayload(token).get("sub"))
             .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_TOKEN));
         var rootTask = taskRepository.findById(rootTaskId).orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
 
-        if (!taskTransService.canSeeTask(rootTask, token))
+        var canSeeTask = taskTransService.canSeeTask(rootTask, username);
+        if (!canSeeTask)
             throw new AppExc(ErrorCodes.FORBIDDEN_USER);
-
-        var isRootTaskOwner = rootTask.getUserInfoCreated().getEmail().equals(userInfo.getEmail());
-        if (!isRootTaskOwner)   throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
         var isEmployee = userInfo.getAccount()
             .getAuthorities().getFirst()
@@ -245,8 +246,7 @@ public class TaskService implements ITaskService {
                 .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
             return List.of(taskMapper.shortenTaskResponse(assignedUserSubTask));
         }
-
-        return taskForUsersService.findAllByRootTaskId(rootTaskId)
+        return taskRepository.findAllByRootTaskId(rootTaskId)
             .stream().map(taskMapper::shortenTaskResponse)
             .toList();
     }
@@ -272,6 +272,18 @@ public class TaskService implements ITaskService {
         return taskForUsersService.searchRootTaskUsers(rootId, query, username)
             .stream().map(taskForUsersMapper::shortenTaskUserResponse)
             .toList();
+    }
+
+    @Override
+    @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
+    public List<ShortTaskResponse> getAllRelatedUndoneTasks(String token) {
+        String username = jwtService.readPayload(token).get("sub");
+        var resultList = new ArrayList<Task>();
+
+        resultList.addAll(taskRepository.findAllCreatedAndUndoneByUsername(username));
+        resultList.addAll(taskRepository.findAllAssignedAndUndoneByUsername(username));
+
+        return resultList.stream().map(taskMapper::shortenTaskResponse).toList();
     }
 
     public boolean existsByCollectionId(Long id) {

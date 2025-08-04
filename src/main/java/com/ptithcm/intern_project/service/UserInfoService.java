@@ -10,9 +10,6 @@ import com.ptithcm.intern_project.jpa.repository.UserInfoRepository;
 import com.ptithcm.intern_project.dto.request.UpdatedUserInfoRequest;
 import com.ptithcm.intern_project.security.service.JwtService;
 import com.ptithcm.intern_project.service.interfaces.IUserInfoService;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -45,7 +42,6 @@ public class UserInfoService implements IUserInfoService {
             .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_TOKEN));
 
         originInfo.setFullName(dto.getFullName());
-        originInfo.setDob(dto.getDob());
         userInfoRepository.save(originInfo);
     }
     @Override

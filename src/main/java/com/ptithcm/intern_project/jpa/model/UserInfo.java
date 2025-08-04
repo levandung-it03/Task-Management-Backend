@@ -42,8 +42,4 @@ public class UserInfo {
     @JsonIgnore
     Account account;
 
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    @Column(name = "date_of_birth")
-    LocalDate dob;
-
 }

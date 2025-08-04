@@ -1,6 +1,7 @@
 package com.ptithcm.intern_project.mapper;
 
 import com.ptithcm.intern_project.dto.request.CollectionRequest;
+import com.ptithcm.intern_project.dto.response.CollectionResponse;
 import com.ptithcm.intern_project.jpa.model.Collection;
 import com.ptithcm.intern_project.jpa.model.UserInfo;
 import lombok.NoArgsConstructor;
@@ -30,5 +31,18 @@ public class CollectionMapper {
         phase.setStartDate(request.getStartDate());
         phase.setDueDate(request.getDueDate());
         phase.setUpdatedTime(LocalDateTime.now());
+    }
+
+    public CollectionResponse toResponse(Collection collection) {
+        return CollectionResponse.builder()
+            .id(collection.getId())
+            .name(collection.getName())
+            .description(collection.getDescription())
+            .startDate(collection.getStartDate())
+            .dueDate(collection.getDueDate())
+            .endDate(collection.getEndDate())
+            .createdTime(collection.getCreatedTime())
+            .updatedTime(collection.getUpdatedTime())
+            .build();
     }
 }

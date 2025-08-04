@@ -5,14 +5,16 @@ import com.ptithcm.intern_project.dto.request.UpdatedTaskRequest;
 import com.ptithcm.intern_project.dto.response.ShortTaskResponse;
 import com.ptithcm.intern_project.dto.response.TaskResponse;
 import com.ptithcm.intern_project.jpa.model.Task;
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
 @Component
-@NoArgsConstructor
+@AllArgsConstructor
 public class TaskMapper {
+    UserInfoMapper userInfoMapper;
 
     public Task newModel(TaskCreationDTO request) {
         return Task.builder()
@@ -45,7 +47,8 @@ public class TaskMapper {
         return ShortTaskResponse.builder()
             .id(task.getId())
             .name(task.getName())
-            .taskPriority(task.getPriority())
+            .level(task.getLevel())
+            .priority(task.getPriority())
             .startDate(task.getStartDate())
             .deadline(task.getDeadline())
             .taskType(task.getTaskType())
@@ -54,8 +57,9 @@ public class TaskMapper {
 
     public TaskResponse toResponse(Task foundTask, boolean hasAtLeastOneReport) {
         return TaskResponse.builder()
-            .userInfo(foundTask.getUserInfoCreated())
-            .rootTask(foundTask.getRootTask())
+            .id(foundTask.getId())
+            .userInfo(userInfoMapper.shortenUserInfo(foundTask.getUserInfoCreated()))
+            .rootTaskId(foundTask.getRootTask() == null ? null : foundTask.getRootTask().getId())
             .name(foundTask.getName())
             .description(foundTask.getDescription())
             .reportFormat(foundTask.getReportFormat())

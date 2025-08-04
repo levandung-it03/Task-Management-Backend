@@ -1,5 +1,7 @@
 package com.ptithcm.intern_project.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.ptithcm.intern_project.dto.general.ShortUserInfoDTO;
 import com.ptithcm.intern_project.jpa.model.Task;
 import com.ptithcm.intern_project.jpa.model.UserInfo;
 import com.ptithcm.intern_project.jpa.model.enums.TaskLevel;
@@ -19,8 +21,8 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class TaskResponse {
     long id;
-    UserInfo userInfo;
-    Task rootTask;
+    ShortUserInfoDTO userInfo;
+    Long rootTaskId;
     String name;
     String description;
     String reportFormat;
@@ -28,10 +30,21 @@ public class TaskResponse {
     TaskType taskType;
     TaskPriority priority;
     boolean isLocked;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     LocalDate startDate;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     LocalDate endDate;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     LocalDate deadline;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime createdTime;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime updatedTime;
+
     boolean hasAtLeastOneReport;
 }

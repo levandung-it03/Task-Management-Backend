@@ -1,11 +1,11 @@
 package com.ptithcm.intern_project.controller;
 
+import com.ptithcm.intern_project.dto.response.CollectionResponse;
 import com.ptithcm.intern_project.exception.enums.SuccessCodes;
 import com.ptithcm.intern_project.dto.general.RestApiResponse;
 import com.ptithcm.intern_project.dto.request.CollectionRequest;
 import com.ptithcm.intern_project.dto.request.PhaseRequest;
 import com.ptithcm.intern_project.dto.response.IdResponse;
-import com.ptithcm.intern_project.jpa.model.Collection;
 import com.ptithcm.intern_project.jpa.model.Phase;
 import com.ptithcm.intern_project.service.PhaseService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -72,7 +72,7 @@ public class PhaseController {
         ROLE_LEAD + "/v1/phase/{id}/get-all-related-collections",
         ROLE_EMP + "/v1/phase/{id}/get-all-related-collections",
     })
-    public ResponseEntity<RestApiResponse<List<Collection>>> getAllRelatedCollections(
+    public ResponseEntity<RestApiResponse<List<CollectionResponse>>> getAllRelatedCollections(
         @PathVariable("id") Long phaseId,
         @RequestHeader("Authorization") String token) {
         return RestApiResponse.fromScs(SuccessCodes.CREATED, phaseService.getAllRelatedCollections(phaseId, token));

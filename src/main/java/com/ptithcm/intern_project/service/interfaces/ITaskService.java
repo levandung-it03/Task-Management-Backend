@@ -24,6 +24,8 @@ public interface ITaskService {
 
     List<ShortUserInfoDTO> getUsersOfTask(Long id, String token);
 
+    List<ShortTaskResponse> getAllRelatedUndoneTasks(String token);
+
     void updateDoneTask(Long id, String token);
 
     void updateLockedStatusTask(Long id, StatusDTO request, String token);

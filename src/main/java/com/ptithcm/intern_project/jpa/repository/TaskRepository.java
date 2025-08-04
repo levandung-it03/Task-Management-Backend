@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 
 @Repository
@@ -28,4 +29,26 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     List<Task> findAllByAssignedUsernameAndCollectionId(
         @Param("collectionId") Long collectionId,
         @Param("username") String username);
+
+    @Query("""
+        SELECT DISTINCT t FROM TaskForUsers tfu
+        JOIN tfu.task t
+        WHERE tfu.task.userInfoCreated.account.username = :username
+        AND tfu.task.endDate IS NULL
+    """)
+    List<Task> findAllCreatedAndUndoneByUsername(@Param("username") String username);
+
+    @Query("""
+        SELECT DISTINCT t FROM TaskForUsers tfu
+        JOIN tfu.task t
+        WHERE tfu.assignedUser.account.username = :username
+        AND tfu.id NOT IN (
+            SELECT utc.id FROM Report r
+            JOIN r.userTaskCreated utc
+            WHERE r.reportStatus = 'APPROVED'
+        )
+    """)
+    List<Task> findAllAssignedAndUndoneByUsername(String username);
+
+    List<Task> findAllByRootTaskId(Long rootTaskId);
 }

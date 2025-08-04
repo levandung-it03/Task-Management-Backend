@@ -174,11 +174,11 @@ public class AccountService implements IAccountService {
             .build());
         userInfoRepository.save(UserInfo.builder()
             .email(dto.getEmail())
+            .identity(dto.getIdentity())
             .phone(dto.getPhone())
             .department(department)
             .fullName(dto.getFullName())
             .account(savedAccount)
-            .dob(dto.getDob())
             .build());
     }
 

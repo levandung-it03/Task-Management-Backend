@@ -1,5 +1,6 @@
 package com.ptithcm.intern_project.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ptithcm.intern_project.dto.general.ShortUserInfoDTO;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -17,5 +18,7 @@ public class CommentResponse {
     ShortUserInfoDTO createdBy;
     Long repliedCommendId;
     String comment;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime createdTime;
 }

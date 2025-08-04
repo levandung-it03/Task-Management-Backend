@@ -122,7 +122,7 @@ public class TaskController {
     }
 
     @Operation(description = "Get all Sub-Tasks of specified Root-Task")
-    @PutMapping({
+    @GetMapping({
         ROLE_PM + "/v1/task/{id}/sub-tasks",
         ROLE_LEAD + "/v1/task/{id}/sub-tasks",
         ROLE_EMP + "/v1/task/{id}/sub-tasks"})
@@ -154,5 +154,16 @@ public class TaskController {
         @RequestHeader("Authorization") String token) {
         return RestApiResponse.fromScs(SuccessCodes.GET_LIST,
             taskService.searchRootTaskUsers(rootId, query, token));
+    }
+
+    @Operation(description = "Get all related and undone Tasks")
+    @GetMapping({
+        ROLE_EMP + "/v1/task/get-all-undone",
+        ROLE_PM + "/v1/task/get-all-undone",
+        ROLE_LEAD + "/v1/task/get-all-undone"})
+    public ResponseEntity<RestApiResponse<List<ShortTaskResponse>>> searchRootTaskUsers(
+        @RequestHeader("Authorization") String token) {
+        return RestApiResponse.fromScs(SuccessCodes.GET_LIST,
+            taskService.getAllRelatedUndoneTasks(token));
     }
 }

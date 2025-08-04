@@ -46,6 +46,7 @@ public enum ErrorCodes {
     INVALID_SUB_TASK_START_DATE(14002, "Start date on Sub Task cannot be after Root Task", BAD_REQUEST),
     INVALID_SUB_TASK_DEADLINE(14003, "Deadline on Sub Task cannot be after Root Task", BAD_REQUEST),
     TASK_ENDED(14004, "Cannot change an ended Task", BAD_REQUEST),
+    TASK_HASNT_STARTED(14005, "Task has not started yet, cannot perform action", BAD_REQUEST),
     //--Report(15)
     REPORT_REVIEWED(15000, "Report has been reviewed, cannot perform action", BAD_REQUEST),
     //--Project(16)

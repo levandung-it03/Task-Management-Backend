@@ -36,12 +36,6 @@ public interface TaskForUsersRepository extends JpaRepository<TaskForUsers, Long
     Optional<Task> findByRootIdAndAssignedUsername(@Param("rootId") Long rootId, @Param("assignedUsername") String username);
 
     @Query("""
-        SELECT DISTINCT t.task FROM TaskForUsers t
-        WHERE t.task.id = :rootId
-    """)
-    List<Task> findAllByRootTaskId(@Param("rootId") Long rootTaskId);
-
-    @Query("""
         SELECT tfu FROM TaskForUsers tfu
         WHERE tfu.task.rootTask.id = :rootId
         AND tfu.task.userInfoCreated.account.username = :username

@@ -1,5 +1,6 @@
 package com.ptithcm.intern_project.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ptithcm.intern_project.jpa.model.enums.GroupRole;
 import com.ptithcm.intern_project.dto.general.ShortUserInfoDTO;
 import lombok.*;
@@ -17,5 +18,7 @@ public class GroupUserResponse {
     Long id;
     GroupRole role;
     ShortUserInfoDTO joinedUser;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime involvedTime;
 }

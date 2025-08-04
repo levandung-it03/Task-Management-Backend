@@ -1,5 +1,6 @@
 package com.ptithcm.intern_project.service;
 
+import com.ptithcm.intern_project.dto.response.ShortTaskResponse;
 import com.ptithcm.intern_project.exception.enums.ErrorCodes;
 import com.ptithcm.intern_project.exception.AppExc;
 import com.ptithcm.intern_project.mapper.CollectionMapper;
@@ -8,8 +9,8 @@ import com.ptithcm.intern_project.dto.request.TaskRequest;
 import com.ptithcm.intern_project.dto.response.IdResponse;
 import com.ptithcm.intern_project.jpa.model.Collection;
 import com.ptithcm.intern_project.jpa.model.Phase;
-import com.ptithcm.intern_project.jpa.model.Task;
 import com.ptithcm.intern_project.jpa.repository.CollectionRepository;
+import com.ptithcm.intern_project.mapper.TaskMapper;
 import com.ptithcm.intern_project.security.service.JwtService;
 import com.ptithcm.intern_project.service.interfaces.ICollectionService;
 import com.ptithcm.intern_project.service.trans.CollectionTransService;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -32,6 +34,7 @@ public class CollectionService implements ICollectionService {
     CollectionMapper collectionMapper;
     TaskService taskService;
     JwtService jwtService;
+    TaskMapper taskMapper;
 
     @Override
     public IdResponse createTask(Long collectionId, TaskRequest request, String token) {
@@ -88,10 +91,21 @@ public class CollectionService implements ICollectionService {
     }
 
     @Override
-    public List<Task> getAllRelatedTasks(Long collectionId, String token) {
+    public List<ShortTaskResponse> getAllRelatedTasks(Long collectionId, String token) {
         var collection = collectionRepository.findById(collectionId)
             .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
-        return taskService.getAllRelatedTasks(collection, token);
+        return taskService.getAllRelatedTasks(collection, token)
+            .stream()
+            .map(taskMapper::shortenTaskResponse)
+            .sorted((prev, next) -> {
+                int prevValue = prev.getEndDate() == null ? -1 : 1;
+                int nextValue = next.getEndDate() == null ? -1 : 1;
+                return prevValue - nextValue;
+            })
+            .sorted(Comparator.comparing(ShortTaskResponse::getStartDate))
+            .sorted((prev, next) ->
+                next.getPriority().ordinal() - prev.getPriority().ordinal()
+            ).toList();
     }
 
     public boolean existsByPhaseId(Long id) {

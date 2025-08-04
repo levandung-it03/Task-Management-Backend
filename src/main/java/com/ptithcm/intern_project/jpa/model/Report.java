@@ -1,5 +1,6 @@
 package com.ptithcm.intern_project.jpa.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ptithcm.intern_project.jpa.model.enums.ReportStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -7,6 +8,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -49,5 +51,7 @@ public class Report {
     LocalDateTime updatedTime = LocalDateTime.now();
 
     @OneToMany(mappedBy = "report", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    ArrayList<CommentOfReport> commentOfReports = new ArrayList<>();
+    @JsonIgnore
+    @Builder.Default    //--Keep default value is our manually set value (or will be null)
+    List<CommentOfReport> commentOfReports = new ArrayList<>();    //--OneToMany must receive a list, and init by ArrayList
 }

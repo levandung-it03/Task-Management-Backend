@@ -20,7 +20,7 @@ import static com.ptithcm.intern_project.exception.enums.SuccessCodes.*;
 import static com.ptithcm.intern_project.security.constvalues.AuthorityValues.*;
 
 @RestController
-@RequestMapping("/api/v1/private")
+@RequestMapping("/api/private")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserInfoController {

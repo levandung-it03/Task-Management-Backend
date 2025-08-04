@@ -1,8 +1,11 @@
 package com.ptithcm.intern_project.service;
 
 import com.ptithcm.intern_project.dto.request.KickedLeaderRequest;
+import com.ptithcm.intern_project.dto.response.PhaseResponse;
+import com.ptithcm.intern_project.dto.response.ProjectStatisticResponse;
 import com.ptithcm.intern_project.exception.enums.ErrorCodes;
 import com.ptithcm.intern_project.exception.AppExc;
+import com.ptithcm.intern_project.mapper.PhaseMapper;
 import com.ptithcm.intern_project.mapper.ProjectMapper;
 import com.ptithcm.intern_project.mapper.ProjectRoleMapper;
 import com.ptithcm.intern_project.dto.request.AddedLeaderRequest;
@@ -10,7 +13,6 @@ import com.ptithcm.intern_project.dto.request.PhaseRequest;
 import com.ptithcm.intern_project.dto.request.ProjectRequest;
 import com.ptithcm.intern_project.dto.response.IdResponse;
 import com.ptithcm.intern_project.dto.response.ProjectRoleResponse;
-import com.ptithcm.intern_project.jpa.model.Phase;
 import com.ptithcm.intern_project.jpa.model.Project;
 import com.ptithcm.intern_project.jpa.model.ProjectRole;
 import com.ptithcm.intern_project.jpa.model.Task;
@@ -27,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -42,6 +45,7 @@ public class ProjectService implements IProjectService {
     JwtService jwtService;
     ProjectRoleMapper projectRoleMapper;
     PhaseService phaseService;
+    PhaseMapper phaseMapper;
 
     @Override
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
@@ -158,7 +162,15 @@ public class ProjectService implements IProjectService {
         projects.putAll(relatedProjectsWithLowRole.stream().collect(
             Collectors.toMap(Project::getId, proj -> proj)
         ));
-        return new ArrayList<>(projects.values());
+        return new ArrayList<>(projects.values())
+            .stream()
+            .sorted((prev, next) -> {
+                int prevValue = prev.getEndDate() == null ? -1 : 1;
+                int nextValue = next.getEndDate() == null ? -1 : 1;
+                return prevValue - nextValue;
+            })
+            .sorted(Comparator.comparing(Project::getStartDate))
+            .toList();
     }
 
     @Override
@@ -193,9 +205,41 @@ public class ProjectService implements IProjectService {
     }
 
     @Override
-    public List<Phase> getAllRelatedPhases(Long projectId, String token) {
+    public List<PhaseResponse> getAllRelatedPhases(Long projectId, String token) {
         var project = projectRepository.findById(projectId)
             .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
-        return phaseService.getAllRelatedPhases(project, token);
+        return phaseService.getAllRelatedPhases(project, token)
+            .stream()
+            .map(phaseMapper::toResponse)
+            .sorted((prev, next) -> {
+                int prevValue = prev.getEndDate() == null ? -1 : 1;
+                int nextValue = next.getEndDate() == null ? -1 : 1;
+                return prevValue - nextValue;
+            })
+            .sorted(Comparator.comparing(PhaseResponse::getStartDate))
+            .toList();
+    }
+
+    @Override
+    public ProjectStatisticResponse getProjectStatistic(String token) {
+        List<Project> relatedProjects = this.getRelatedProjects(token);
+
+        var response = new ProjectStatisticResponse();
+        for (Project project : relatedProjects) {
+            var isEndedProject = project.getEndDate() != null;
+            if (isEndedProject) {
+                response.setEndedProjects(response.getEndedProjects() + 1);
+                continue;
+            }
+            var isStartedProject = !LocalDate.now().isBefore(project.getStartDate());
+            if (isStartedProject) {
+                response.setRunningProjects(response.getRunningProjects() + 1);
+                continue;
+            }
+            var isPendingProject = LocalDate.now().isBefore(project.getStartDate());
+            if (isPendingProject)   response.setPendingProjects(response.getPendingProjects() + 1);
+        }
+        response.setTotalProjects(relatedProjects.size());
+        return response;
     }
 }

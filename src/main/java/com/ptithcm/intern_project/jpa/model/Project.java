@@ -8,6 +8,7 @@ import lombok.experimental.FieldDefaults;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -51,7 +52,8 @@ public class Project {
     @Column(name = "updated_time", nullable = false)
     LocalDateTime updatedTime = LocalDateTime.now();
 
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonIgnore
-    ArrayList<ProjectRole> projectUsers = new ArrayList<>();
+    @Builder.Default    //--Keep default value is our manually set value (or will be null)
+    List<ProjectRole> projectUsers = new ArrayList<>();    //--OneToMany must receive a list, and init by ArrayList
 }

@@ -41,8 +41,9 @@ public class RegisterRequest {
     String fullName;
 
     @NotNull
-    @DobConstraint
-    LocalDate dob;
+    @NotEmpty
+    @Pattern(regexp = "^[0-9]{9,20}$")
+    String identity;
 
     @NotNull
     @NotEmpty

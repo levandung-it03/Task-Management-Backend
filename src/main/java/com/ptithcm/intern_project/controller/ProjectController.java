@@ -1,5 +1,7 @@
 package com.ptithcm.intern_project.controller;
 
+import com.ptithcm.intern_project.dto.response.PhaseResponse;
+import com.ptithcm.intern_project.dto.response.ProjectStatisticResponse;
 import com.ptithcm.intern_project.exception.enums.SuccessCodes;
 import com.ptithcm.intern_project.dto.general.RestApiResponse;
 import com.ptithcm.intern_project.dto.request.AddedLeaderRequest;
@@ -7,7 +9,6 @@ import com.ptithcm.intern_project.dto.request.PhaseRequest;
 import com.ptithcm.intern_project.dto.request.ProjectRequest;
 import com.ptithcm.intern_project.dto.response.IdResponse;
 import com.ptithcm.intern_project.dto.response.ProjectRoleResponse;
-import com.ptithcm.intern_project.jpa.model.Phase;
 import com.ptithcm.intern_project.jpa.model.Project;
 import com.ptithcm.intern_project.dto.request.KickedLeaderRequest;
 import com.ptithcm.intern_project.service.ProjectService;
@@ -119,9 +120,20 @@ public class ProjectController {
         ROLE_LEAD + "/v1/project/{id}/get-all-related-phase",
         ROLE_EMP + "/v1/project/{id}/get-all-related-phase",
     })
-    public ResponseEntity<RestApiResponse<List<Phase>>> getAllRelatedPhases(
+    public ResponseEntity<RestApiResponse<List<PhaseResponse>>> getAllRelatedPhases(
         @PathVariable("id") Long projectId,
         @RequestHeader("Authorization") String token) {
         return RestApiResponse.fromScs(SuccessCodes.GET_LIST, projectService.getAllRelatedPhases(projectId, token));
+    }
+
+    @Operation(description = "Get statistic of all related Projects")
+    @GetMapping({
+        ROLE_PM + "/v1/project/get-statistic",
+        ROLE_LEAD + "/v1/project/get-statistic",
+        ROLE_EMP + "/v1/project/get-statistic",
+    })
+    public ResponseEntity<RestApiResponse<ProjectStatisticResponse>> getProjectStatistic(
+        @RequestHeader("Authorization") String token) {
+        return RestApiResponse.fromScs(SuccessCodes.GET_DETAIL, projectService.getProjectStatistic(token));
     }
 }

@@ -1,12 +1,14 @@
 package com.ptithcm.intern_project.service;
 
+import com.ptithcm.intern_project.dto.response.CollectionResponse;
+import com.ptithcm.intern_project.dto.response.PhaseResponse;
 import com.ptithcm.intern_project.exception.enums.ErrorCodes;
 import com.ptithcm.intern_project.exception.AppExc;
+import com.ptithcm.intern_project.mapper.CollectionMapper;
 import com.ptithcm.intern_project.mapper.PhaseMapper;
 import com.ptithcm.intern_project.dto.request.CollectionRequest;
 import com.ptithcm.intern_project.dto.request.PhaseRequest;
 import com.ptithcm.intern_project.dto.response.IdResponse;
-import com.ptithcm.intern_project.jpa.model.Collection;
 import com.ptithcm.intern_project.jpa.model.Phase;
 import com.ptithcm.intern_project.jpa.model.Project;
 import com.ptithcm.intern_project.jpa.repository.PhaseRepository;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -31,6 +34,7 @@ public class PhaseService implements IPhaseService {
     UserInfoService userInfoService;
     CollectionService collectionService;
     PhaseMapper phaseMapper;
+    CollectionMapper collectionMapper;
     JwtService jwtService;
 
     @Override
@@ -97,9 +101,18 @@ public class PhaseService implements IPhaseService {
     }
 
     @Override
-    public List<Collection> getAllRelatedCollections(Long phaseId, String token) {
+    public List<CollectionResponse> getAllRelatedCollections(Long phaseId, String token) {
         var phase = phaseRepository.findById(phaseId).orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
-        return collectionService.getAllRelatedCollections(phase, token);
+        return collectionService.getAllRelatedCollections(phase, token)
+            .stream()
+            .map(collectionMapper::toResponse)
+            .sorted((prev, next) -> {
+                int prevValue = prev.getEndDate() == null ? -1 : 1;
+                int nextValue = next.getEndDate() == null ? -1 : 1;
+                return prevValue - nextValue;
+            })
+            .sorted(Comparator.comparing(CollectionResponse::getStartDate))
+            .toList();
     }
 
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)

@@ -51,22 +51,44 @@ VALUES ('lead1', '$2a$08$l11nU8s5XrHEmTRRvxjU1OyX1SAfEJ/Y0Juk8jQrO0.yiW85up0QG',
 INSERT INTO account (username, password, status, created_time, updated_time)
 VALUES ('pm1', '$2a$08$l11nU8s5XrHEmTRRvxjU1OyX1SAfEJ/Y0Juk8jQrO0.yiW85up0QG', 1, NOW(), NOW());
 
+-- ROLE_EMP cho 10 employee
+INSERT INTO account_authorities (account_id, authority_id)
+SELECT a.id, au.id
+FROM account a
+         JOIN authority au ON au.name = 'ROLE_EMP'
+WHERE a.username IN ('employee1', 'employee2', 'employee3', 'employee4', 'employee5',
+                     'employee6', 'employee7', 'employee8', 'employee9', 'employee10');
+
+-- ROLE_LEAD cho 3 lead
+INSERT INTO account_authorities (account_id, authority_id)
+SELECT a.id, au.id
+FROM account a
+         JOIN authority au ON au.name = 'ROLE_LEAD'
+WHERE a.username IN ('lead1', 'lead2', 'lead3');
+
+-- ROLE_PM cho 1 PM
+INSERT INTO account_authorities (account_id, authority_id)
+SELECT a.id, au.id
+FROM account a
+         JOIN authority au ON au.name = 'ROLE_PM'
+WHERE a.username = 'pm1';
+
 -- 6. Tạo UserInfo liên kết Account, 10 employee + 3 lead + 1 pm, phòng ban assign đơn giản
-INSERT INTO user_info (full_name, email, phone, identity, department_id, account_id, date_of_birth)
-VALUES ('Employee 1', 'employee1@example.com', '0900000001', 'ID001', 1, 1, '1990-01-01'),
-       ('Employee 2', 'employee2@example.com', '0900000002', 'ID002', 1, 2, '1990-02-01'),
-       ('Employee 3', 'employee3@example.com', '0900000003', 'ID003', 1, 3, '1990-03-01'),
-       ('Employee 4', 'employee4@example.com', '0900000004', 'ID004', 1, 4, '1990-04-01'),
-       ('Employee 5', 'employee5@example.com', '0900000005', 'ID005', 1, 5, '1990-05-01'),
-       ('Employee 6', 'employee6@example.com', '0900000006', 'ID006', 1, 6, '1990-06-01'),
-       ('Employee 7', 'employee7@example.com', '0900000007', 'ID007', 1, 7, '1990-07-01'),
-       ('Employee 8', 'employee8@example.com', '0900000008', 'ID008', 1, 8, '1990-08-01'),
-       ('Employee 9', 'employee9@example.com', '0900000009', 'ID009', 1, 9, '1990-09-01'),
-       ('Employee 10', 'employee10@example.com', '0900000010', 'ID010', 1, 10, '1990-10-01'),
-       ('Lead 1', 'lead1@example.com', '0910000001', 'ID011', 2, 11, '1985-01-01'),
-       ('Lead 2', 'lead2@example.com', '0910000002', 'ID012', 2, 12, '1985-02-01'),
-       ('Lead 3', 'lead3@example.com', '0910000003', 'ID013', 2, 13, '1985-03-01'),
-       ('PM 1', 'pm1@example.com', '0920000001', 'ID014', 3, 14, '1980-01-01');
+INSERT INTO user_info (full_name, email, phone, identity, department_id, account_id)
+VALUES ('Employee 1', 'employee1@example.com', '0900000001', 'ID001', 1, 1),
+       ('Employee 2', 'employee2@example.com', '0900000002', 'ID002', 1, 2),
+       ('Employee 3', 'employee3@example.com', '0900000003', 'ID003', 1, 3),
+       ('Employee 4', 'employee4@example.com', '0900000004', 'ID004', 1, 4),
+       ('Employee 5', 'employee5@example.com', '0900000005', 'ID005', 1, 5),
+       ('Employee 6', 'employee6@example.com', '0900000006', 'ID006', 1, 6),
+       ('Employee 7', 'employee7@example.com', '0900000007', 'ID007', 1, 7),
+       ('Employee 8', 'employee8@example.com', '0900000008', 'ID008', 1, 8),
+       ('Employee 9', 'employee9@example.com', '0900000009', 'ID009', 1, 9),
+       ('Employee 10', 'employee10@example.com', '0900000010', 'ID010', 1, 10),
+       ('Lead 1', 'lead1@example.com', '0910000001', 'ID011', 2, 11),
+       ('Lead 2', 'lead2@example.com', '0910000002', 'ID012', 2, 12),
+       ('Lead 3', 'lead3@example.com', '0910000003', 'ID013', 2, 13),
+       ('PM 1', 'pm1@example.com', '0920000001', 'ID014', 3, 14);
 
 -- 7. Gán ROLE_EMP cho 10 Employee (Account id 1~10), ROLE_LEAD cho 11~13, ROLE_PM cho 14
 -- Tạm bỏ qua vì không có bảng join riêng giữa Account - Authority

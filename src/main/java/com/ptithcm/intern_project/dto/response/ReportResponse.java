@@ -1,5 +1,6 @@
 package com.ptithcm.intern_project.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ptithcm.intern_project.dto.general.ShortUserInfoDTO;
 import com.ptithcm.intern_project.jpa.model.enums.ReportStatus;
 import lombok.*;
@@ -20,7 +21,13 @@ public class ReportResponse {
     String content;
     String rejectedReason;
     ReportStatus reportStatus;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime reviewedTime;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime createdTime;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime updatedTime;
 }

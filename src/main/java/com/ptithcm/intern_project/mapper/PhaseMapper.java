@@ -1,6 +1,7 @@
 package com.ptithcm.intern_project.mapper;
 
 import com.ptithcm.intern_project.dto.request.PhaseRequest;
+import com.ptithcm.intern_project.dto.response.PhaseResponse;
 import com.ptithcm.intern_project.jpa.model.Phase;
 import com.ptithcm.intern_project.jpa.model.UserInfo;
 import lombok.NoArgsConstructor;
@@ -30,5 +31,18 @@ public class PhaseMapper {
         phase.setStartDate(request.getStartDate());
         phase.setDueDate(request.getDueDate());
         phase.setUpdatedTime(LocalDateTime.now());
+    }
+
+    public PhaseResponse toResponse(Phase phase) {
+        return PhaseResponse.builder()
+            .id(phase.getId())
+            .name(phase.getName())
+            .description(phase.getDescription())
+            .startDate(phase.getStartDate())
+            .dueDate(phase.getDueDate())
+            .endDate(phase.getEndDate())
+            .createdTime(phase.getCreatedTime())
+            .updatedTime(phase.getUpdatedTime())
+            .build();
     }
 }

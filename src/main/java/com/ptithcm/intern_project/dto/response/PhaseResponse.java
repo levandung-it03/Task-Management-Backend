@@ -1,10 +1,10 @@
 package com.ptithcm.intern_project.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.ptithcm.intern_project.dto.general.ShortUserInfoDTO;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -13,12 +13,22 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class GroupResponse {
+public class PhaseResponse {
+
     Long id;
-    ShortUserInfoDTO createdByUser;    //--Equivalent: `DTO_FastUserInfo`
+
     String name;
-    boolean isActive;
-    int userQuantity;
+
+    String description;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+
+    LocalDate startDate;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    LocalDate endDate;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    LocalDate dueDate;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime createdTime;
