@@ -15,7 +15,9 @@ public class CommentOfReportMapper {
             .id(commentOfReport.getId())
             .comment(commentOfReport.getComment())
             .createdBy(userInfoMapper.shortenUserInfo(commentOfReport.getUserInfoCreated()))
-            .repliedCommendId(commentOfReport.getRepliedComment().getId())
+            .repliedCommendId(commentOfReport.getRepliedComment() == null
+                ? null
+                : commentOfReport.getRepliedComment().getId())
             .createdTime(commentOfReport.getCreatedTime())
             .build();
     }

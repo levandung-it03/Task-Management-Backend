@@ -27,11 +27,9 @@ public class TaskTransService {
     public Task findUpdatableTaskByOwner(Long id, String tokenOwner) {
         String username = jwtService.readPayload(tokenOwner).get("sub");
         var foundTask = this.findTaskByOwner(id, username);
+
         if (foundTask.getEndDate() != null)
             throw new AppExc(ErrorCodes.TASK_ENDED);
-
-        var isRootTaskOwner = foundTask.getUserInfoCreated().getAccount().getUsername().equals(username);
-        if (!isRootTaskOwner)   throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
         var isKickedLeaderProject = ProjectService.isKickedLeader(foundTask, username);
         if (isKickedLeaderProject) throw new AppExc(ErrorCodes.FORBIDDEN_USER);
@@ -45,8 +43,7 @@ public class TaskTransService {
             .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
 
         var isTaskOwner = foundTask.getUserInfoCreated().getAccount().getUsername().equals(username);
-        if (!isTaskOwner)
-            throw new AppExc(ErrorCodes.FORBIDDEN_USER);
+        if (!isTaskOwner)   throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
         return foundTask;
     }

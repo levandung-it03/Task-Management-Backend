@@ -135,4 +135,8 @@ public class PhaseService implements IPhaseService {
         var isEndingAfterProject = request.getDueDate().isAfter(project.getDueDate());
         if (isEndingAfterProject)    throw new AppExc(ErrorCodes.END_AFTER_PROJECT);
     }
+
+    public boolean existsByProjectId(Long id) {
+        return phaseRepository.existsByProjectId(id);
+    }
 }

@@ -23,4 +23,13 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
         AND rtc.assignedUser.email IN :emails
     """)
     boolean existsByEmailsInAndTaskId(@Param("emails") List<String> assignedEmails, @Param("taskId") Long taskId);
+
+    @Query("""
+        SELECT CASE WHEN COUNT(r) > 0 THEN TRUE ELSE FALSE END
+        FROM Report r
+        WHERE r.userTaskCreated.task.id = :taskId
+        OR (r.userTaskCreated.task.rootTask IS NOT NULL
+            AND r.userTaskCreated.task.id = :taskId)
+    """)
+    boolean existsReportByTaskId(@Param("taskId") Long id);
 }

@@ -108,4 +108,8 @@ public class UserInfoService implements IUserInfoService {
     public boolean existsByEmail(String email) {
         return userInfoRepository.existsByEmail(email);
     }
+
+    public Optional<UserInfo> findByEmail(String addedUserEmail) {
+        return userInfoRepository.findByEmail(addedUserEmail);
+    }
 }

@@ -3,6 +3,7 @@ package com.ptithcm.intern_project.service;
 import com.ptithcm.intern_project.dto.response.UserTaskResponse;
 import com.ptithcm.intern_project.exception.enums.ErrorCodes;
 import com.ptithcm.intern_project.exception.AppExc;
+import com.ptithcm.intern_project.jpa.model.UserInfo;
 import com.ptithcm.intern_project.mapper.ReportMapper;
 import com.ptithcm.intern_project.mapper.UserInfoMapper;
 import com.ptithcm.intern_project.dto.general.ShortUserInfoDTO;
@@ -120,8 +121,8 @@ public class TaskForUsersService implements ITaskForUsersService {
         var isAssignedUser = taskUserAssigned.getAssignedUser().getAccount().getUsername().equals(username);
         var isNotKickedOut = !taskUserAssigned.getUserTaskStatus().equals(UserTaskStatus.KICKED_OUT);
 
-        if (isProjectOwner || isTaskOwner || (isAssignedUser && isNotKickedOut))
-            throw new AppExc(ErrorCodes.FORBIDDEN_USER);
+        var canSeeReports = isProjectOwner || isTaskOwner || (isAssignedUser && isNotKickedOut);
+        if (!canSeeReports) throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
         var reportList = reportService.findAllByUserTaskCreatedId(taskUserAssigned.getId());
 
@@ -150,7 +151,7 @@ public class TaskForUsersService implements ITaskForUsersService {
         return taskForUsersRepository.findByRootIdAndAssignedUsername(rootTaskId, username);
     }
 
-    public List<TaskForUsers> searchRootTaskUsers(Long rootId, String query, String username) {
+    public List<UserInfo> searchRootTaskUsers(Long rootId, String query, String username) {
         return taskForUsersRepository.searchTheRestUsersOnRoot(rootId, query, username);
     }
 

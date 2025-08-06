@@ -49,7 +49,8 @@ public enum ErrorCodes {
     TASK_ENDED(14004, "Cannot change an ended Task", BAD_REQUEST),
     TASK_HASNT_STARTED(14005, "Task has not started yet, cannot perform action", BAD_REQUEST),
     CANNOT_DONE_TASK(14006, "There are Reports still not approved, check Task again", BAD_REQUEST),
-    USERS_SUB_TASK_HAS_REPORT(14007, "At least 1 Report existing on Task, cannot create Sub-Task", BAD_REQUEST),
+    AT_LEAST_ONE_REPORT_ON_TASK(14007, "At least 1 Report existing on Task, cannot perform action", BAD_REQUEST),
+    TASK_CREATED_IN_LENGTHY_TIME(14008, "Task has been created in a lengthy time, cannot perform action", BAD_REQUEST),
     //--Report(15)
     REPORT_REVIEWED(15000, "Report has been reviewed, cannot perform action", BAD_REQUEST),
     //--Project(16)
@@ -58,8 +59,10 @@ public enum ErrorCodes {
     END_AFTER_PROJECT(16002, "Cannot end after Project", BAD_REQUEST),
     //--Phase(17)
     CANT_DELETE_PHASE(17000, "Phase has already had Collection, cannot perform action", BAD_REQUEST),
-    START_BEFORE_PHASE(16001, "Cannot start before Phase", BAD_REQUEST),
-    END_AFTER_PHASE(16002, "Cannot end after Phase", BAD_REQUEST),
+    START_BEFORE_PHASE(17001, "Cannot start before Phase", BAD_REQUEST),
+    END_AFTER_PHASE(17002, "Cannot end after Phase", BAD_REQUEST),
+    //--UserInfo(18)
+    INVALID_EMAIL(18000, "Email not found or is invalid", BAD_REQUEST),
     ;
     int code;
     String msg;

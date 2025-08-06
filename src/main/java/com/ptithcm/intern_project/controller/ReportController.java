@@ -1,11 +1,11 @@
 package com.ptithcm.intern_project.controller;
 
+import com.ptithcm.intern_project.dto.response.CommentResponse;
 import com.ptithcm.intern_project.exception.enums.SuccessCodes;
 import com.ptithcm.intern_project.dto.general.RestApiResponse;
 import com.ptithcm.intern_project.dto.request.CommentCreationRequest;
 import com.ptithcm.intern_project.dto.request.ReportRejectedRequest;
 import com.ptithcm.intern_project.dto.request.UpdatedReportRequest;
-import com.ptithcm.intern_project.dto.response.IdResponse;
 import com.ptithcm.intern_project.service.ReportService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -42,7 +42,7 @@ public class ReportController {
         ROLE_EMP + "/v1/report/{reportId}/create-comment",
         ROLE_LEAD + "/v1/report/{reportId}/create-comment",
         ROLE_PM + "/v1/report/{reportId}/create-comment"})
-    public ResponseEntity<RestApiResponse<IdResponse>> createComment(
+    public ResponseEntity<RestApiResponse<CommentResponse>> createComment(
         @PathVariable("reportId") Long reportId,
         @Valid @RequestBody CommentCreationRequest request,
         @RequestHeader("Authorization") String token) {

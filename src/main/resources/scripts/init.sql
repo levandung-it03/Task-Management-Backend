@@ -173,7 +173,23 @@ VALUES (3, 3, 'JOINED', NOW()), -- Employee 3
        (4, 3, 'JOINED', NOW());
 -- Employee 4
 
--- 16. Đảm bảo Root Task (task_id=1) không có TaskForUsers (đã rỗng theo nghiệp vụ)
+
+INSERT IGNORE INTO report (id, created_by_id, title, content, rejected_reason, report_status, reviewed_time, created_time, updated_time)
+VALUES
+    (1, 1, 'Report 1', 'This is report 1', NULL, 'APPROVED', '2025-08-05 23:30:00', '2025-08-05 23:00:00', '2025-08-05 23:30:00'),
+    (2, 2, 'Report 2', 'This is report 2', NULL, 'WAITING', NULL, '2025-08-05 23:10:00', '2025-08-05 23:10:00'),
+    (3, 3, 'Report 3', 'This is report 3', 'Incomplete data', 'REJECTED', '2025-08-05 23:15:00', '2025-08-05 23:00:00', '2025-08-05 23:15:00'),
+    (4, 4, 'Report 4', 'This is report 4', NULL, 'APPROVED', '2025-08-05 23:20:00', '2025-08-05 22:59:00', '2025-08-05 23:20:00');
+
+INSERT IGNORE INTO comment_of_report (id, created_by_id, report_id, replied_comment_id, comment, created_time)
+VALUES
+    -- Comments for Report 1
+    (1, 2, 1, NULL, 'I reviewed this report. Looks good.', '2025-08-05 23:35:00'),
+    (2, 1, 1, 1, 'Thanks for checking!', '2025-08-05 23:36:00'),
+
+    -- Comments for Report 3
+    (3, 4, 3, NULL, 'The data is not clear.', '2025-08-05 23:17:00'),
+    (4, 3, 3, 3, 'Okay, I will fix and resubmit.', '2025-08-05 23:18:00');
 
 -- Kiểm tra lại AUTO_INCREMENT các bảng để tránh lỗi
 ALTER TABLE authority

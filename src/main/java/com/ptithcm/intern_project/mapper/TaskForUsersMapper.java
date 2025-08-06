@@ -1,8 +1,7 @@
 package com.ptithcm.intern_project.mapper;
 
 import com.ptithcm.intern_project.dto.general.ShortUserInfoDTO;
-import com.ptithcm.intern_project.dto.response.UserTaskResponse;
-import com.ptithcm.intern_project.jpa.model.TaskForUsers;
+import com.ptithcm.intern_project.jpa.model.UserInfo;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
@@ -13,11 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class TaskForUsersMapper {
 
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
-    public ShortUserInfoDTO shortenTaskUserResponse(TaskForUsers taskForUsers) {
+    public ShortUserInfoDTO shortenTaskUserResponse(UserInfo userInfo) {
         return ShortUserInfoDTO.builder()
-            .email(taskForUsers.getAssignedUser().getEmail())
-            .fullName(taskForUsers.getAssignedUser().getFullName())
-            .role(taskForUsers.getAssignedUser().getAccount().getAuthorities().getFirst().getAuthority())
+            .email(userInfo.getEmail())
+            .fullName(userInfo.getFullName())
+            .role(userInfo.getAccount().getAuthorities().getFirst().getAuthority())
             .build();
     }
 }

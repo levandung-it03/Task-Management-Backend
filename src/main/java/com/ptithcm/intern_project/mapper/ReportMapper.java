@@ -47,6 +47,7 @@ public class ReportMapper {
             .title(report.getTitle())
             .content(report.getContent())
             .createdBy(assignedUser)
+            .reportStatus(report.getReportStatus())
             .rejectedReason(report.getRejectedReason())
             .reviewedTime(report.getReviewedTime())
             .createdTime(report.getCreatedTime())

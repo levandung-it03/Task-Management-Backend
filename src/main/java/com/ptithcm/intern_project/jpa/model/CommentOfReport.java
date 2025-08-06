@@ -28,7 +28,7 @@ public class CommentOfReport {
     Report report;
 
     @ManyToOne
-    @JoinColumn(name = "replied_comment_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "replied_comment_id", referencedColumnName = "id")
     CommentOfReport repliedComment;
 
     @Column(name = "comment", nullable = false)

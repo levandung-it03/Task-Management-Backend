@@ -36,4 +36,6 @@ public interface ITaskService {
     List<ShortUserInfoDTO> searchNewAddedUsersForRootTask(Long id, String query, String token);
 
     List<ShortUserInfoDTO> searchRootTaskUsers(Long rootId, String query, String token);
+
+    void delete(Long id, String token);
 }

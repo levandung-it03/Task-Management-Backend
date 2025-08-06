@@ -35,7 +35,8 @@ public class CollectionController {
         @PathVariable("collectionId") Long collectionId,
         @Valid @RequestBody TaskRequest request,
         @RequestHeader("Authorization") String token) {
-        return RestApiResponse.fromScs(SuccessCodes.CREATED, collectionService.createTask(collectionId, request, token));
+        return RestApiResponse.fromScs(SuccessCodes.CREATED_TASK,
+            collectionService.createTask(collectionId, request, token));
     }
 
     @Operation(description = "Get full information of specified Collection")

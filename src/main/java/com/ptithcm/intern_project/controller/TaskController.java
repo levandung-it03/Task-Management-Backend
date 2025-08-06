@@ -91,6 +91,7 @@ public class TaskController {
 
     @Operation(description = "Get all Users by Task-Id to render on Task-Detail")
     @GetMapping({
+        ROLE_EMP + "/v1/task/{id}/get-assigned-users",
         ROLE_PM + "/v1/task/{id}/get-assigned-users",
         ROLE_LEAD + "/v1/task/{id}/get-assigned-users"})
     public ResponseEntity<RestApiResponse<List<UserTaskResponse>>> getUsersOfTask(
@@ -166,5 +167,16 @@ public class TaskController {
         @RequestHeader("Authorization") String token) {
         return RestApiResponse.fromScs(SuccessCodes.GET_LIST,
             taskService.getAllRelatedUndoneTasks(token));
+    }
+
+    @Operation(description = "Delete specified Root-Task")
+    @DeleteMapping({
+        ROLE_PM + "/v1/task/{id}",
+        ROLE_LEAD + "/v1/task/{id}"})
+    public ResponseEntity<RestApiResponse<Void>> delete(
+        @PathVariable("id") Long id,
+        @RequestHeader("Authorization") String token) {
+        taskService.delete(id, token);
+        return RestApiResponse.fromScs(SuccessCodes.DELETED);
     }
 }

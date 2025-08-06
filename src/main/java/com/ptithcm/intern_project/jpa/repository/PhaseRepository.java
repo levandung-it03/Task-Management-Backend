@@ -24,4 +24,6 @@ public interface PhaseRepository extends JpaRepository<Phase, Long> {
     List<Phase> findAllByAssignedUsernameAndProjectId(
         @Param("projectId") Long projectId,
         @Param("username") String username);
+
+    boolean existsByProjectId(Long id);
 }

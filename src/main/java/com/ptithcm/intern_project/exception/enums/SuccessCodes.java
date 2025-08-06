@@ -25,6 +25,8 @@ public enum SuccessCodes {
     //--UserInfo(22)
     GET_USER_INFO(22000, "Get User Info successfully"),
     UPDATE_USER_INFO(22001, "Update your info successfully"),
+    //--Task(23)
+    CREATED_TASK(23000, "Task has been created, you can delete it in 12 hours")
     ;
     int code;
     String msg;

@@ -140,7 +140,10 @@ public class ProjectService implements IProjectService {
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public void delete(Long id, String token) {
         var project = this.getUpdatableProject(id, token);
-        if (project.getProjectUsers().isEmpty()) {
+
+        var canDeleteProject = project.getProjectUsers().isEmpty()
+            || phaseService.existsByProjectId(project.getId());
+        if (canDeleteProject) {
             projectRepository.delete(project);
             return;
         }

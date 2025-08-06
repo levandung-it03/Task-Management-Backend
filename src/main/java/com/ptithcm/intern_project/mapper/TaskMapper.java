@@ -6,7 +6,6 @@ import com.ptithcm.intern_project.dto.response.ShortTaskResponse;
 import com.ptithcm.intern_project.dto.response.TaskResponse;
 import com.ptithcm.intern_project.jpa.model.Task;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -18,7 +17,7 @@ public class TaskMapper {
 
     public Task newModel(TaskCreationDTO request) {
         return Task.builder()
-            .collection(null)
+            .collection(request.getCollectionOfTask())
             .userInfoCreated(request.getUserInfo())
             .rootTask(request.getRootTask())
             .name(request.getRequest().getName())
@@ -66,12 +65,12 @@ public class TaskMapper {
             .level(foundTask.getLevel())
             .taskType(foundTask.getTaskType())
             .priority(foundTask.getPriority())
-            .isLocked(true) //--Locking a new Task (for any updating action)
+            .isLocked(foundTask.isLocked())
             .startDate(foundTask.getStartDate())
-            .endDate(null)
+            .endDate(foundTask.getEndDate())
             .deadline(foundTask.getDeadline())
-            .createdTime(LocalDateTime.now())
-            .updatedTime(LocalDateTime.now())
+            .createdTime(foundTask.getCreatedTime())
+            .updatedTime(foundTask.getUpdatedTime())
             .hasAtLeastOneReport(hasAtLeastOneReport)
             .build();
     }
