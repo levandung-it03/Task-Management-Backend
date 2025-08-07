@@ -41,9 +41,9 @@ public class PhaseController {
     @Operation(description = "Create a Phase by PM")
     @PutMapping(ROLE_PM + "/v1/phase/{id}")
     public ResponseEntity<RestApiResponse<Void>> update(
-        @PathVariable("id") Long id,
-        @Valid @RequestBody PhaseRequest request,
-        @RequestHeader("Authorization") String token) {
+            @PathVariable("id") Long id,
+            @Valid @RequestBody PhaseRequest request,
+            @RequestHeader("Authorization") String token) {
         phaseService.update(id, request, token);
         return RestApiResponse.fromScs(SuccessCodes.UPDATED);
     }

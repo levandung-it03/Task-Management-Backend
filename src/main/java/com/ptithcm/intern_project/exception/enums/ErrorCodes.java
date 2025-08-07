@@ -60,6 +60,10 @@ public enum ErrorCodes {
     CANT_DELETE_PHASE(17000, "Phase has already had Collection, cannot perform action", BAD_REQUEST),
     START_BEFORE_PHASE(16001, "Cannot start before Phase", BAD_REQUEST),
     END_AFTER_PHASE(16002, "Cannot end after Phase", BAD_REQUEST),
+    //--Collection(18)
+    CANT_DELETE_COLLECTION_WITH_TASKS(18000, "Collection still has tasks, cannot be deleted", BAD_REQUEST),
+    CANT_DELETE_PHASE_WITH_COLLECTION(18001, "Phase still has collections, cannot be deleted", BAD_REQUEST),
+
     ;
     int code;
     String msg;

@@ -1,5 +1,6 @@
 package com.ptithcm.intern_project.controller;
 
+import com.ptithcm.intern_project.dto.general.ShortUserInfoDTO;
 import com.ptithcm.intern_project.dto.response.PhaseResponse;
 import com.ptithcm.intern_project.dto.response.ProjectStatisticResponse;
 import com.ptithcm.intern_project.exception.enums.SuccessCodes;
@@ -70,7 +71,7 @@ public class ProjectController {
     }
 
     @Operation(description = "Delete, or in-activate the specified Project by PM")
-    @DeleteMapping(ROLE_LEAD + "/v1/project/{id}")
+    @DeleteMapping(ROLE_PM + "/v1/project/{id}")
     public ResponseEntity<RestApiResponse<Void>> delete(
         @PathVariable("id") Long id,
         @RequestHeader("Authorization") String token) {
@@ -135,5 +136,15 @@ public class ProjectController {
     public ResponseEntity<RestApiResponse<ProjectStatisticResponse>> getProjectStatistic(
         @RequestHeader("Authorization") String token) {
         return RestApiResponse.fromScs(SuccessCodes.GET_DETAIL, projectService.getProjectStatistic(token));
+    }
+
+    @Operation(description = "Get new Leaders (by name or email) of specified Project to add")
+    @GetMapping(ROLE_PM + "/v1/project/{projectId}/search-new-leaders/{query}")
+    public ResponseEntity<RestApiResponse<List<ShortUserInfoDTO>>> getLeadersToAddIntoProject(
+            @PathVariable("projectId") Long projectId,
+            @PathVariable("query") String query,
+            @RequestHeader("Authorization") String token) {
+        return RestApiResponse.fromScs(SuccessCodes.GET_DETAIL,
+                projectService.getLeadersToAddIntoProject(projectId, query, token));
     }
 }

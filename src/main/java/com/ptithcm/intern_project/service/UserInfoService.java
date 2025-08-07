@@ -108,4 +108,8 @@ public class UserInfoService implements IUserInfoService {
     public boolean existsByEmail(String email) {
         return userInfoRepository.existsByEmail(email);
     }
+
+    public List<UserInfo> searchAllLeaderByNotEmailIn(List<String> emails, String query) {
+        return userInfoRepository.searchAllLeaderByNotEmailIn(emails, query);
+    }
 }

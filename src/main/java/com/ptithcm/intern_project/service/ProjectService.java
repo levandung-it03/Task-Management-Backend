@@ -1,10 +1,12 @@
 package com.ptithcm.intern_project.service;
 
+import com.ptithcm.intern_project.dto.general.ShortUserInfoDTO;
 import com.ptithcm.intern_project.dto.request.KickedLeaderRequest;
 import com.ptithcm.intern_project.dto.response.PhaseResponse;
 import com.ptithcm.intern_project.dto.response.ProjectStatisticResponse;
 import com.ptithcm.intern_project.exception.enums.ErrorCodes;
 import com.ptithcm.intern_project.exception.AppExc;
+import com.ptithcm.intern_project.jpa.model.UserInfo;
 import com.ptithcm.intern_project.mapper.PhaseMapper;
 import com.ptithcm.intern_project.mapper.ProjectMapper;
 import com.ptithcm.intern_project.mapper.ProjectRoleMapper;
@@ -18,6 +20,7 @@ import com.ptithcm.intern_project.jpa.model.ProjectRole;
 import com.ptithcm.intern_project.jpa.model.Task;
 import com.ptithcm.intern_project.jpa.model.enums.RoleOnEntity;
 import com.ptithcm.intern_project.jpa.repository.ProjectRepository;
+import com.ptithcm.intern_project.mapper.UserInfoMapper;
 import com.ptithcm.intern_project.security.service.JwtService;
 import com.ptithcm.intern_project.service.interfaces.IProjectService;
 import lombok.AccessLevel;
@@ -46,6 +49,7 @@ public class ProjectService implements IProjectService {
     ProjectRoleMapper projectRoleMapper;
     PhaseService phaseService;
     PhaseMapper phaseMapper;
+    UserInfoMapper userInfoMapper;
 
     @Override
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
@@ -176,13 +180,7 @@ public class ProjectService implements IProjectService {
     @Override
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public List<ProjectRoleResponse> getLeaders(String token, Long id) {
-        String username = jwtService.readPayload(token).get("sub");
-        var project = projectRepository.findById(id)
-            .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
-
-        var isProjectOwner = project.getUserInfoCreated().getAccount().getUsername().equals(username);
-        if (!isProjectOwner)    throw new AppExc(ErrorCodes.FORBIDDEN_USER);
-
+        var project = this.getProjectByOwner(id, token);
         return project.getProjectUsers().stream()
             .map(projectRoleMapper::toResponse)
             .toList();
@@ -241,5 +239,29 @@ public class ProjectService implements IProjectService {
         }
         response.setTotalProjects(relatedProjects.size());
         return response;
+    }
+
+    @Override
+    @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
+    public List<ShortUserInfoDTO> getLeadersToAddIntoProject(Long projectId, String query, String token) {
+        var project = this.getProjectByOwner(projectId, token);
+        var existsLeaderEmailList = project.getProjectUsers().stream()
+            .map(projectRole -> projectRole.getUserInfo().getEmail())
+            .toList();
+        List<UserInfo> newLeaders = userInfoService.searchAllLeaderByNotEmailIn(existsLeaderEmailList, query);
+        return newLeaders.stream()
+            .map(userInfoMapper::shortenUserInfo)
+            .toList();
+    }
+
+    private Project getProjectByOwner(Long projectId, String token) {
+        String username = jwtService.readPayload(token).get("sub");
+        var project = projectRepository.findById(projectId)
+            .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
+
+        var isOwner = project.getUserInfoCreated().getAccount().getUsername().equals(username);
+        if (!isOwner)    throw new AppExc(ErrorCodes.FORBIDDEN_USER);
+
+        return project;
     }
 }

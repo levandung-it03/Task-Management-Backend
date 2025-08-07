@@ -299,7 +299,7 @@ public class TaskService implements ITaskService {
         var hasHighRoleOnProject = collection.getPhase().getProject().getProjectUsers().stream()
             .anyMatch(projectRole -> projectRole.getUserInfo().getAccount().getUsername().equals(username));
         if (hasHighRoleOnProject)
-            return taskRepository.findAllByCollectionId(collection.getId());
+            return taskRepository.findAllByCollectionIdAndRootTaskIsNull(collection.getId());
 
         return taskRepository.findAllByAssignedUsernameAndCollectionId(collection.getId(), username);
     }

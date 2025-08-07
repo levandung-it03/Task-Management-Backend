@@ -17,7 +17,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     boolean existsByCollectionId(Long id);
 
-    List<Task> findAllByCollectionId(Long collectionId);
+    List<Task> findAllByCollectionIdAndRootTaskIsNull(Long collectionId);
 
     @Query("""
         SELECT DISTINCT t FROM TaskForUsers tfu
@@ -25,6 +25,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
         JOIN t.collection c
         WHERE c.id = :collectionId
         AND tfu.assignedUser.account.username = :username
+        AND t.rootTask IS NULL
     """)
     List<Task> findAllByAssignedUsernameAndCollectionId(
         @Param("collectionId") Long collectionId,
