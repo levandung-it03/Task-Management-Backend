@@ -41,4 +41,16 @@ public interface UserInfoRepository extends JpaRepository<UserInfo, Long> {
     boolean existsByEmail(String email);
 
     Optional<UserInfo> findByEmail(String addedUserEmail);
+
+    @Query("""
+        SELECT DISTINCT u FROM UserInfo u
+        JOIN u.account.authorities auth
+        WHERE NOT u.email IN :emails
+        AND (LOWER(u.fullName) LIKE CONCAT('%',LOWER(:query),'%')
+            OR LOWER(u.email) LIKE CONCAT('%',LOWER(:query),'%'))
+        AND auth.name = 'ROLE_LEAD'
+    """)
+    List<UserInfo> searchAllLeaderByNotEmailIn(
+        @Param("emails") List<String> emails,
+        @Param("query") String query);
 }

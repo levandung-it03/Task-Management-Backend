@@ -15,7 +15,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     boolean existsByCollectionId(Long id);
 
-    List<Task> findAllByCollectionId(Long collectionId);
+    List<Task> findAllByCollectionIdAndRootTaskIsNull(Long collectionId);
 
     @Query("""
         SELECT DISTINCT t FROM TaskForUsers tfu

@@ -1,5 +1,6 @@
 package com.ptithcm.intern_project.service.interfaces;
 
+import com.ptithcm.intern_project.dto.general.ShortUserInfoDTO;
 import com.ptithcm.intern_project.dto.request.AddedLeaderRequest;
 import com.ptithcm.intern_project.dto.request.KickedLeaderRequest;
 import com.ptithcm.intern_project.dto.request.PhaseRequest;
@@ -35,4 +36,6 @@ public interface IProjectService {
     List<PhaseResponse> getAllRelatedPhases(Long projectId, String token);
 
     ProjectStatisticResponse getProjectStatistic(String token);
+
+    List<ShortUserInfoDTO> getLeadersToAddIntoProject(Long projectId, String query, String token);
 }

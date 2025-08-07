@@ -89,7 +89,7 @@ public class PhaseService implements IPhaseService {
         if (!isOwner)   throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
         var hasRelatedData = collectionService.existsByPhaseId(id);
-        if (!hasRelatedData) throw new AppExc(ErrorCodes.CANT_DELETE_PHASE);
+        if (hasRelatedData) throw new AppExc(ErrorCodes.CANT_DELETE_PHASE_WITH_COLLECTION);
 
         phaseRepository.delete(deletedPhase);
     }

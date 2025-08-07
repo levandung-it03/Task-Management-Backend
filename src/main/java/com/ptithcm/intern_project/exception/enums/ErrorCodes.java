@@ -63,6 +63,10 @@ public enum ErrorCodes {
     END_AFTER_PHASE(17002, "Cannot end after Phase", BAD_REQUEST),
     //--UserInfo(18)
     INVALID_EMAIL(18000, "Email not found or is invalid", BAD_REQUEST),
+    //--Collection(18)
+    CANT_DELETE_COLLECTION_WITH_TASKS(18000, "Collection still has tasks, cannot be deleted", BAD_REQUEST),
+    CANT_DELETE_PHASE_WITH_COLLECTION(18001, "Phase still has collections, cannot be deleted", BAD_REQUEST),
+
     ;
     int code;
     String msg;

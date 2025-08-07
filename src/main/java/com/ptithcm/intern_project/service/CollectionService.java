@@ -56,6 +56,7 @@ public class CollectionService implements ICollectionService {
     }
 
     @Override
+    @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public void update(Long id, CollectionRequest request, String token) {
         String username = jwtService.readPayload(token).get("sub");
         var collection = collectionRepository.findById(id)
@@ -70,6 +71,7 @@ public class CollectionService implements ICollectionService {
         if (!isOwner)   throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
         collectionMapper.update(collection, request);
+        collectionRepository.save(collection);
     }
 
     @Override
@@ -85,7 +87,7 @@ public class CollectionService implements ICollectionService {
         if (!isOwner)   throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
         var hasRelatedData = taskService.existsByCollectionId(id);
-        if (!hasRelatedData) throw new AppExc(ErrorCodes.CANT_DELETE_PHASE);
+        if (hasRelatedData) throw new AppExc(ErrorCodes.CANT_DELETE_COLLECTION_WITH_TASKS);
 
         collectionRepository.delete(deletedCollection);
     }

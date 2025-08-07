@@ -112,4 +112,8 @@ public class UserInfoService implements IUserInfoService {
     public Optional<UserInfo> findByEmail(String addedUserEmail) {
         return userInfoRepository.findByEmail(addedUserEmail);
     }
+
+    public List<UserInfo> searchAllLeaderByNotEmailIn(List<String> emails, String query) {
+        return userInfoRepository.searchAllLeaderByNotEmailIn(emails, query);
+    }
 }
