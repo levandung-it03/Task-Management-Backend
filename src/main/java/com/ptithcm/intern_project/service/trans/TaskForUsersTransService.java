@@ -2,6 +2,7 @@ package com.ptithcm.intern_project.service.trans;
 
 import com.ptithcm.intern_project.exception.enums.ErrorCodes;
 import com.ptithcm.intern_project.exception.AppExc;
+import com.ptithcm.intern_project.jpa.model.TaskForUsers;
 import com.ptithcm.intern_project.jpa.model.enums.UserTaskStatus;
 import com.ptithcm.intern_project.jpa.repository.TaskForUsersRepository;
 import com.ptithcm.intern_project.security.service.JwtService;
@@ -22,7 +23,7 @@ public class TaskForUsersTransService {
     JwtService jwtService;
 
     @Transactional(rollbackFor = RuntimeException.class)
-    public void updateTaskUserStatus(Long taskUserId, String token, UserTaskStatus userTaskStatus) {
+    public TaskForUsers updateTaskUserStatus(Long taskUserId, String token, UserTaskStatus userTaskStatus) {
         String username = jwtService.readPayload(token).get("sub");
         var foundUserTask = taskForUsersRepository.findById(taskUserId)
             .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
@@ -38,6 +39,7 @@ public class TaskForUsersTransService {
 
         foundUserTask.setUserTaskStatus(userTaskStatus);
         foundUserTask.setUpdatedTime(LocalDateTime.now());
-        taskForUsersRepository.save(foundUserTask);
+
+        return foundUserTask;
     }
 }

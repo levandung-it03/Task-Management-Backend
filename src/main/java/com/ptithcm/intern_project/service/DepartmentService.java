@@ -66,4 +66,13 @@ public class DepartmentService implements IDepartmentService {
     public List<Department> getAll() {
         return departmentRepository.findAll().stream().toList();
     }
+
+    public Department findById(Long departmentId) {
+        return departmentRepository.findById(departmentId)
+            .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
+    }
+
+    public List<Department> findAll() {
+        return departmentRepository.findAll();
+    }
 }

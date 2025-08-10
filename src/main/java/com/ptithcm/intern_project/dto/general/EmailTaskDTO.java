@@ -5,13 +5,12 @@ import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ShortUserInfoDTO {
-    String email;
-    String fullName;
-    String role;
-    String department;
+public class EmailTaskDTO {
+    String to;
+    String subject;
+    String body;
 }

@@ -1,14 +1,11 @@
 package com.ptithcm.intern_project.jpa.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
@@ -24,20 +21,20 @@ public class UserInfo {
     @Column(name = "full_name", nullable = false, length = 200)
     String fullName;
 
-    @Column(name = "email", nullable = false, unique = true)
+    @Column(name = "email", nullable = false)
     String email;
 
-    @Column(name = "phone")
+    @Column(name = "phone", nullable = false)
     String phone;
 
-    @Column(name = "identity")
+    @Column(name = "identity", nullable = false)
     String identity;
 
     @ManyToOne
     @JoinColumn(name = "department_id", referencedColumnName = "id", nullable = false)
     Department department;
 
-    @OneToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id", referencedColumnName = "id", nullable = false)
     @JsonIgnore
     Account account;

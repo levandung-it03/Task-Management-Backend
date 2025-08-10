@@ -1,5 +1,6 @@
 package com.ptithcm.intern_project.dto.general;
 
+import com.ptithcm.intern_project.security.enums.AuthorityEnum;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -9,9 +10,14 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ShortUserInfoDTO {
+public class AccountCreationDTO {
+
+    String username;
     String email;
+    String password;
     String fullName;
-    String role;
-    String department;
+    String identity;
+    String phone;
+    AuthorityEnum authority;
+    Long departmentId;
 }

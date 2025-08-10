@@ -31,7 +31,7 @@ public class Account {
     Long id;
 
     @Column(name = "username", nullable = false)
-    @Length(min = 6, max = 50)
+    @Length(min = 3)
     String username;
 
     @Column(name = "password", nullable = false)

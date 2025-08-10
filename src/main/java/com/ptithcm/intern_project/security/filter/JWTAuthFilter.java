@@ -73,7 +73,7 @@ public class JWTAuthFilter extends OncePerRequestFilter {
 
                     break;
                 case REFRESH, OAUTH2_REFRESH:
-                    var isNotRequestWithRefTok = !request.getRequestURI().contains("/auth/private/");
+                    var isNotRequestWithRefTok = !request.getRequestURI().contains("/private/auth/");
                     if (isNotRequestWithRefTok) throw new AppExc(ErrorCodes.INVALID_TOKEN);
 
                     var isNotLoggedInSession = !refreshTokenCrud.existsById(jwtClaimsSet.getJWTID());

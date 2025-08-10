@@ -14,7 +14,8 @@ public class UserTaskResponse {
     Long id;
     String email;
     String fullName;
+    String department;
     String role;
     UserTaskStatus userTaskStatus;
-    boolean wasDone;
+    Boolean wasDone;
 }

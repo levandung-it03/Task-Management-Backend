@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.ArrayList;
 
 @Service
 @RequiredArgsConstructor
@@ -51,18 +51,29 @@ public class TaskTransService {
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public boolean canSeeTask(Task task, String username) {
         var isTaskOwner = task.getUserInfoCreated().getAccount().getUsername().equals(username);
-        var isTaskAssigned = task.getTaskForUsers().stream()    //--Task Owner, will own the collection.
-            .anyMatch(rel -> {
-                var isAssigned = rel.getAssignedUser().getAccount().getUsername().equals(username);
-                var isNotKicked = !rel.getUserTaskStatus().equals(UserTaskStatus.KICKED_OUT);
-                return isAssigned && isNotKicked;
-            });
+
         //--Project Member absolutely has ProjectRole.ADMIN for PM, and he/she owns Phase, Collection too.
         var isProjectMember = task.getCollection().getPhase().getProject()
             .getProjectUsers().stream()
             .anyMatch(projectUser -> projectUser.getUserInfo().getAccount().getUsername().equals(username));
         return isTaskOwner
-            || isTaskAssigned
+            || this.isTaskAssigned(task, username)
             || isProjectMember;
+    }
+
+    @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
+    public boolean isTaskAssigned(Task task, String username) {
+        var usersTask = new ArrayList<>(task.getTaskForUsers());
+        var subTasks = taskRepository.findAllByRootTaskId(task.getId());
+        if (!subTasks.isEmpty())
+            usersTask.addAll(subTasks.stream()
+                .flatMap(subTask -> subTask.getTaskForUsers().stream())
+                .toList());
+        return usersTask.stream()    //--Task Owner, will own the collection.
+            .anyMatch(rel -> {
+                var isAssigned = rel.getAssignedUser().getAccount().getUsername().equals(username);
+                var isNotKicked = !rel.getUserTaskStatus().equals(UserTaskStatus.KICKED_OUT);
+                return isAssigned && isNotKicked;
+            });
     }
 }

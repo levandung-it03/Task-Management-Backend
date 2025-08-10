@@ -1,6 +1,7 @@
 ```java
 package com.ptithcm.intern_project.service;
 
+import com.ptithcm.intern_project.dto.request.RegisterRequest;
 import com.ptithcm.intern_project.dto.request.*;
 import com.ptithcm.intern_project.exception.AppExc;
 import com.ptithcm.intern_project.dto.general.GeneralTokenClaims;
@@ -21,7 +22,8 @@ import com.ptithcm.intern_project.redis.model.enums.OtpTypes;
 import com.ptithcm.intern_project.security.enums.TokenClaimNames;
 import com.ptithcm.intern_project.security.enums.TokenTypes;
 import com.ptithcm.intern_project.security.service.JwtService;
-import com.ptithcm.intern_project.security.service.OtpService;
+import com.ptithcm.intern_project.security.service.OtpHelper;
+import com.ptithcm.intern_project.service.supports.EmailService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
@@ -48,7 +50,7 @@ public class AccountService {
     private final EmailService emailService;
     private final RegisterOtpCrud registerOtpCrud;
     private final LostPassOtpCrud lostPassOtpCrud;
-    private final ChangePassOtpCrud changePassOtpCrud;
+    private final AuthorizedEmailOtpCrud authorizedEmailOtpCrud;
     private final UserInfoRepository userInfoRepository;
 
     public AuthResponse authenticate(AuthRequest dto) {
@@ -132,8 +134,8 @@ public class AccountService {
         if (changePassOtpCrud.existsById(email))
             throw new AppExc(ErrorCodes.OTP_HAS_NOT_EXPIRED);
 
-        String otp = OtpService.randOTP();
-        changePassOtpCrud.save(ChangePassOtp.builder()
+        String otp = OtpHelper.randOTP();
+        changePassOtpCrud.save(AuthorizedEmailOtp.builder()
             .email(email)
             .otp(otp)
             .build());
@@ -141,12 +143,12 @@ public class AccountService {
             email,
             String.format(emailCustom.get("subject"), "Register OTP"),
             String.format(emailCustom.get("msg"), email, otp));
-        return VerifyEmailResponse.builder().otpAgeInSeconds(ChangePassOtp.OTP_AGE).build();
+        return VerifyEmailResponse.builder().otpAgeInSeconds(AuthorizedEmailOtp.OTP_AGE).build();
     }
 
     public VerifyEmailResponse verifyEmailByOtp(VerifyEmailRequest dto) {
         Map<String, String> emailCustom = emailService.getMailContentCustom();
-        String otp = OtpService.randOTP();
+        String otp = OtpHelper.randOTP();
         switch (OtpTypes.valueOf(dto.getOtpType())) {
             case OtpTypes.REGISTER:
                 if (accountRepository.existsByUsername(dto.getEmail()))
@@ -275,7 +277,7 @@ public class AccountService {
         if (!account.isStatus() || Objects.nonNull(account.getOauth2ServiceEnum()))
             throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
-        String newPassword = OtpService.randOTP();
+        String newPassword = OtpHelper.randOTP();
         account.setPassword(userPasswordEncoder.encode(newPassword));
         accountRepository.save(account);
 

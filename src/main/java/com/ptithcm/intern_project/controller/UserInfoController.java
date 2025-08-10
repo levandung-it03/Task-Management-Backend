@@ -65,8 +65,7 @@ public class UserInfoController {
     @GetMapping(ROLE_PM + "/v1/user-info/search-for-new-task/{query}")
     public ResponseEntity<RestApiResponse<List<ShortUserInfoDTO>>> pmFastSearchUsersForNewTask(
         @PathVariable("query") String query,
-        @RequestHeader("Authorization") String token
-    ) {
+        @RequestHeader("Authorization") String token) {
         return RestApiResponse.fromScs(SuccessCodes.GET_LIST, userInfoService.fastSearchUsers(query, token));
     }
 
@@ -74,8 +73,7 @@ public class UserInfoController {
     @GetMapping(ROLE_LEAD + "/v1/user-info/search-for-new-task/{query}")
     public ResponseEntity<RestApiResponse<List<ShortUserInfoDTO>>> leadFastSearchUsersForNewTask(
         @PathVariable("query") String query,
-        @RequestHeader("Authorization") String token
-    ) {
+        @RequestHeader("Authorization") String token) {
         return RestApiResponse.fromScs(SuccessCodes.GET_LIST,
             userInfoService.leadFastSearchUsersForNewTask(query, token));
     }
@@ -84,8 +82,7 @@ public class UserInfoController {
     @GetMapping(ROLE_LEAD + "/v1/user-info/search-for-new-project/{query}")
     public ResponseEntity<RestApiResponse<List<ShortUserInfoDTO>>> pmFastSearchUsersForNewProject(
         @PathVariable("query") String query,
-        @RequestHeader("Authorization") String token
-    ) {
+        @RequestHeader("Authorization") String token) {
         return RestApiResponse.fromScs(SuccessCodes.GET_LIST,
             userInfoService.pmFastSearchUsersForNewProject(query, token));
     }

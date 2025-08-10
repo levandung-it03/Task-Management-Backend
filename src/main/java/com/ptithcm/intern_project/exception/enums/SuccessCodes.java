@@ -22,11 +22,12 @@ public enum SuccessCodes {
     REFRESH_TOKEN(21004, "Refresh Token successfully"),
     LOGOUT(21005, "Log-out successfully"),
     CHANGE_PASSWORD(22006, "Change your password successfully"),
+    CREATED_ACCOUNTS(22007, "Created successfully! Cached Accounts available in %s, download to see!"),
     //--UserInfo(22)
     GET_USER_INFO(22000, "Get User Info successfully"),
     UPDATE_USER_INFO(22001, "Update your info successfully"),
     //--Task(23)
-    CREATED_TASK(23000, "Task has been created, you can delete it in 12 hours")
+    CREATED_TASK(23000, "Task has been created, you can delete it in 12 hours"),
     ;
     int code;
     String msg;

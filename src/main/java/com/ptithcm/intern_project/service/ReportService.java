@@ -1,5 +1,6 @@
 package com.ptithcm.intern_project.service;
 
+import com.ptithcm.intern_project.dto.general.EmailTaskDTO;
 import com.ptithcm.intern_project.dto.response.CommentResponse;
 import com.ptithcm.intern_project.exception.enums.ErrorCodes;
 import com.ptithcm.intern_project.exception.AppExc;
@@ -12,6 +13,9 @@ import com.ptithcm.intern_project.mapper.CommentOfReportMapper;
 import com.ptithcm.intern_project.security.enums.AuthorityEnum;
 import com.ptithcm.intern_project.security.service.JwtService;
 import com.ptithcm.intern_project.service.interfaces.IReportService;
+import com.ptithcm.intern_project.service.messages.CommentOfReportMsg;
+import com.ptithcm.intern_project.service.messages.ReportMsg;
+import com.ptithcm.intern_project.service.supports.EmailService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -31,6 +35,7 @@ public class ReportService implements IReportService {
     JwtService jwtService;
     CommentOfReportMapper commentOfReportMapper;
     UserInfoService userInfoService;
+    EmailService emailService;
 
     @Override
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
@@ -38,13 +43,21 @@ public class ReportService implements IReportService {
         var report = this.findUpdatableReport(reportId, token);
 
         String username = jwtService.readPayload(token).get("sub");
+
         var isReportOwner = report.getUserTaskCreated().getAssignedUser().getAccount().getUsername().equals(username);
-        if (!isReportOwner)
-            throw new AppExc(ErrorCodes.INVALID_TOKEN);
+        if (!isReportOwner)     throw new AppExc(ErrorCodes.INVALID_TOKEN);
 
         report.setContent(newContent);
         report.setUpdatedTime(LocalDateTime.now());
         reportRepository.save(report);
+
+        var taskOwnerInfo = report.getUserTaskCreated().getTask().getUserInfoCreated();
+        var userAssignedInfo = report.getUserTaskCreated().getAssignedUser();
+        this.notifyViaEmail(
+            taskOwnerInfo.getEmail(),
+            userAssignedInfo.getFullName() + "/" + userAssignedInfo.getEmail(),
+            report,
+            ReportMsg.UPDATED_REPORT);
     }
 
     @Override
@@ -67,6 +80,14 @@ public class ReportService implements IReportService {
 
         report.setReportStatus(ReportStatus.APPROVED);
         report.setReviewedTime(LocalDateTime.now());
+
+        var taskOwnerInfo = report.getUserTaskCreated().getTask().getUserInfoCreated();
+        var userAssignedInfo = report.getUserTaskCreated().getAssignedUser();
+        this.notifyViaEmail(
+            userAssignedInfo.getEmail(),
+            taskOwnerInfo.getFullName() + "/" + taskOwnerInfo.getEmail(),
+            report,
+            ReportMsg.APPROVED_REPORT);
     }
 
     @Override
@@ -77,6 +98,14 @@ public class ReportService implements IReportService {
         report.setReportStatus(ReportStatus.REJECTED);
         report.setReviewedTime(LocalDateTime.now());
         report.setRejectedReason(rejectReason);
+
+        var userTaskOwnerInfo = report.getUserTaskCreated().getTask().getUserInfoCreated();
+        var userAssignedInfo = report.getUserTaskCreated().getAssignedUser();
+        this.notifyViaEmail(
+            userAssignedInfo.getEmail(),
+            userTaskOwnerInfo.getFullName() + "/" + userTaskOwnerInfo.getEmail(),
+            report,
+            ReportMsg.REJECTED_REPORT);
     }
 
     public boolean hasAtLeastOneReport(Long taskId) {
@@ -120,5 +149,29 @@ public class ReportService implements IReportService {
 
     public boolean existsReportByTaskId(Long id) {
         return reportRepository.existsReportByTaskId(id);
+    }
+
+    public boolean existsReportByUserTaskCreatedId(Long userTaskId) {
+        return reportRepository.existsReportByUserTaskCreatedId(userTaskId);
+    }
+
+    @Transactional()
+    public void notifyViaEmail(
+        String target,
+        String specifiedPerson,
+        Report report,
+        ReportMsg msgEnum) {
+        emailService.sendSimpleEmail(EmailTaskDTO.builder()
+            .to(target)
+            .subject(msgEnum.getSubject())
+            .body(msgEnum.format(
+                specifiedPerson,
+                report.getTitle(),
+                report.getUserTaskCreated().getTask().getName(),
+                report.getUserTaskCreated().getTask().getCollection().getName(),
+                report.getUserTaskCreated().getTask().getCollection().getPhase().getName(),
+                report.getUserTaskCreated().getTask().getCollection().getPhase().getProject().getName()
+            ))
+            .build());
     }
 }

@@ -58,6 +58,8 @@ public class CustomExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<RestApiResponse<Void>> handleGlobalException(Exception e) {
         log.info("[HANDLER]_Exception: {}", e.getMessage());
+        e.fillInStackTrace();
+        e.printStackTrace();
         return RestApiResponse.fromErr(ErrorCodes.UNAWARE_ERROR);
     }
 }

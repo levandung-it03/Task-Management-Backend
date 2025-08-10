@@ -1,17 +1,19 @@
 package com.ptithcm.intern_project.service;
 
+import com.ptithcm.intern_project.dto.general.*;
+import com.ptithcm.intern_project.dto.request.RegisterRequest;
 import com.ptithcm.intern_project.dto.request.*;
 import com.ptithcm.intern_project.dto.response.EmailResponse;
+import com.ptithcm.intern_project.dto.response.IdResponse;
 import com.ptithcm.intern_project.exception.AppExc;
-import com.ptithcm.intern_project.dto.general.GeneralTokenClaims;
 import com.ptithcm.intern_project.exception.enums.ErrorCodes;
-import com.ptithcm.intern_project.dto.general.TokenInfoDTO;
-import com.ptithcm.intern_project.dto.general.TokenDTO;
 import com.ptithcm.intern_project.jpa.model.Account;
+import com.ptithcm.intern_project.jpa.model.Authority;
+import com.ptithcm.intern_project.jpa.model.Department;
 import com.ptithcm.intern_project.jpa.model.UserInfo;
+import com.ptithcm.intern_project.mapper.AccountMapper;
 import com.ptithcm.intern_project.security.enums.AuthorityEnum;
 import com.ptithcm.intern_project.jpa.repository.AccountRepository;
-import com.ptithcm.intern_project.jpa.repository.DepartmentRepository;
 import com.ptithcm.intern_project.jpa.repository.UserInfoRepository;
 import com.ptithcm.intern_project.dto.response.AuthResponse;
 import com.ptithcm.intern_project.dto.response.VerifyEmailResponse;
@@ -21,27 +23,45 @@ import com.ptithcm.intern_project.redis.model.enums.OtpTypes;
 import com.ptithcm.intern_project.security.enums.TokenClaimNames;
 import com.ptithcm.intern_project.security.enums.TokenTypes;
 import com.ptithcm.intern_project.security.service.JwtService;
-import com.ptithcm.intern_project.security.service.OtpService;
+import com.ptithcm.intern_project.security.service.OtpHelper;
 import com.ptithcm.intern_project.service.interfaces.IAccountService;
+import com.ptithcm.intern_project.service.messages.AccountMsg;
+import com.ptithcm.intern_project.service.supports.EmailService;
+import com.ptithcm.intern_project.service.supports.ExcelHelper;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @EnableAspectJAutoProxy(exposeProxy = true)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AccountService implements IAccountService {
+    public final String DATA_FILE_ROOT_PATH = "data";
+    public final String ACCOUNT_INFO_CREATION_EX_FILE = "/accounts_creation.xlsx";
+    public final String CREATED_ACCOUNTS_TEMP_FILE = "/created_accounts.txt";
+    public final int EXPIRED_CACHED_ACCOUNTS_MINUTES = 15;
     @Getter
     AccountRepository accountRepository;
     AuthorityService authorityService;
@@ -52,10 +72,12 @@ public class AccountService implements IAccountService {
     EmailService emailService;
     RegisterOtpCrud registerOtpCrud;
     LostPassOtpCrud lostPassOtpCrud;
-    ChangePassOtpCrud changePassOtpCrud;
+    AuthorizedEmailOtpCrud authorizedEmailOtpCrud;
     UserInfoRepository userInfoRepository;
-    DepartmentRepository departmentRepository;
+    DepartmentService departmentService;
     UserInfoService userInfoService;
+    AccountMapper accountMapper;
+    ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
     @Override
     public AuthResponse authenticate(AuthRequest dto) {
@@ -131,23 +153,24 @@ public class AccountService implements IAccountService {
     }
 
     @Override
-    public VerifyEmailResponse authorizeEmailByOtp(String token) {
-        Map<String, String> mailCustom = emailService.getMailContentCustom();
+    public VerifyEmailResponse authorizeLoggingInEmail(String token) {
         UserInfo userInfo = userInfoService.getUserInfo(token);
 
-        if (changePassOtpCrud.existsById(userInfo.getEmail()))
+        if (authorizedEmailOtpCrud.existsById(userInfo.getEmail()))
             throw new AppExc(ErrorCodes.OTP_HAS_NOT_EXPIRED);
 
-        String otp = OtpService.randOTP();
-        changePassOtpCrud.save(ChangePassOtp.builder()
+        String otp = OtpHelper.randOTP();
+        authorizedEmailOtpCrud.save(AuthorizedEmailOtp.builder()
             .email(userInfo.getEmail())
             .otp(otp)
             .build());
-        emailService.sendSimpleEmail(
-            userInfo.getEmail(),
-            String.format(mailCustom.get("subject"), "Register OTP"),
-            String.format(mailCustom.get("msg"), userInfo.getEmail(), otp));
-        return VerifyEmailResponse.builder().otpAgeInSeconds(ChangePassOtp.OTP_AGE).build();
+
+        emailService.sendSimpleEmail(EmailTaskDTO.builder()
+            .to(userInfo.getEmail())
+            .subject(AccountMsg.AUTH_EMAIL_OTP_MSG.getSubject())
+            .body(AccountMsg.AUTH_EMAIL_OTP_MSG.format(userInfo.getEmail(), otp))
+            .build());
+        return VerifyEmailResponse.builder().otpAgeInSeconds(AuthorizedEmailOtp.OTP_AGE).build();
     }
 
     @Override
@@ -160,10 +183,14 @@ public class AccountService implements IAccountService {
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
+    @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public void registerNewAccount(RegisterRequest dto) {
-        var department = departmentRepository.findById(dto.getDepartmentId())
-            .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
+        var foundOtp = registerOtpCrud.findById(dto.getEmail())
+            .orElseThrow(() -> new AppExc(ErrorCodes.OTP_NOT_FOUND));
+        if (!foundOtp.getOtp().equals(dto.getOtp()))
+            throw new AppExc(ErrorCodes.OTP_NOT_CORRECT);
+
+        var department = departmentService.findById(dto.getDepartmentId());
         var authorities = List.of(authorityService.findByEnumStr(AuthorityEnum.ROLE_PM));
         var savedAccount = accountRepository.save(Account.builder()
             .authorities(authorities)
@@ -181,52 +208,61 @@ public class AccountService implements IAccountService {
             .fullName(dto.getFullName())
             .account(savedAccount)
             .build());
+        registerOtpCrud.deleteById(dto.getEmail());
     }
 
     @Override
     public void lostPassword(LostPassRequest dto) {
-        Map<String, String> emailCustom = emailService.getMailContentCustom();
         var account = accountRepository.findByUsername(dto.getUsername())
             .orElseThrow(() -> new AppExc(ErrorCodes.EMAIL_NOT_FOUND));
         var userInfo = userInfoService.findByAccountUsername(account.getUsername())
             .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_CREDENTIALS));
 
-        LostPassOtp otp = lostPassOtpCrud.findById(dto.getUsername())
+        LostPassOtp otp = lostPassOtpCrud.findById(userInfo.getEmail())
             .orElseThrow(() -> new AppExc(ErrorCodes.OTP_NOT_FOUND));
         if (!otp.getOtp().equals(dto.getOtp()))
             throw new AppExc(ErrorCodes.OTP_NOT_CORRECT);
 
-        String newPassword = OtpService.randOTP();
+        String newPassword = OtpHelper.randOTP();
         account.setPassword(userPasswordEncoder.encode(newPassword));
         accountRepository.save(account);
 
-        emailService.sendSimpleEmail(
-            userInfo.getEmail(),
-            String.format(emailCustom.get("subject"), "New Password"),
-            String.format(emailCustom.get("msg"), userInfo.getEmail(), newPassword));
+        lostPassOtpCrud.deleteById(userInfo.getEmail());
+
+        emailService.sendSimpleEmail(EmailTaskDTO.builder()
+            .to(userInfo.getEmail())
+            .subject(AccountMsg.NEW_PASS_OTP_MSG.getSubject())
+            .body(AccountMsg.NEW_PASS_OTP_MSG.format(userInfo.getEmail(), otp))
+            .build());
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
+    @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public void changePassword(String token, ChangePassRequest dto) {
-        var userInfo = userInfoRepository.findByAccountUsername(token)
+        var username = jwtService.readPayload(token).get("sub");
+        var userInfo = userInfoRepository.findByAccountUsername(username)
             .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_TOKEN));
-        var account = userInfo.getAccount();
 
-        account.setPassword(userPasswordEncoder.encode(dto.getPassword()));
-        accountRepository.save(account);
+        System.out.println(userInfo.getEmail());
+        AuthorizedEmailOtp otp = authorizedEmailOtpCrud.findById(userInfo.getEmail())
+            .orElseThrow(() -> new AppExc(ErrorCodes.OTP_NOT_FOUND));
+        if (!otp.getOtp().equals(dto.getOtp()))
+            throw new AppExc(ErrorCodes.OTP_NOT_CORRECT);
+
+        authorizedEmailOtpCrud.deleteById(userInfo.getEmail());
+        userInfo.getAccount().setPassword(userPasswordEncoder.encode(dto.getPassword()));
+        accountRepository.save(userInfo.getAccount());
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
+    @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public EmailResponse getEmail(String token) {
         var userInfo = userInfoService.getUserInfo(token);
         return EmailResponse.builder().email(userInfo.getEmail()).build();
     }
 
     private VerifyEmailResponse verifyEmailByRegisterOtp(VerifyEmailRequest request) {
-        Map<String, String> mailCustom = emailService.getMailContentCustom();
-        String otp = OtpService.randOTP();
+        String otp = OtpHelper.randOTP();
 
         if (userInfoService.existsByEmail(request.getEmail()))
             throw new AppExc(ErrorCodes.DUPLICATED_EMAIL);
@@ -236,16 +272,17 @@ public class AccountService implements IAccountService {
             .email(request.getEmail())
             .otp(otp)
             .build());
-        emailService.sendSimpleEmail(
-            request.getEmail(),
-            String.format(mailCustom.get("subject"), "Register OTP"),
-            String.format(mailCustom.get("msg"), request.getEmail(), otp));
+
+        emailService.sendSimpleEmail(EmailTaskDTO.builder()
+            .to(request.getEmail())
+            .subject(AccountMsg.REGISTER_OTP_MSG.getSubject())
+            .body(AccountMsg.REGISTER_OTP_MSG.format(request.getEmail(), otp))
+            .build());
         return VerifyEmailResponse.builder().otpAgeInSeconds(RegisterOtp.OTP_AGE).build();
     }
 
     private VerifyEmailResponse verifyEmailByLostPassOtp(VerifyEmailRequest request) {
-        Map<String, String> mailCustom = emailService.getMailContentCustom();
-        String otp = OtpService.randOTP();
+        String otp = OtpHelper.randOTP();
 
         if (!userInfoService.existsByEmail(request.getEmail()))
             throw new AppExc(ErrorCodes.EMAIL_NOT_FOUND);
@@ -255,11 +292,132 @@ public class AccountService implements IAccountService {
             .email(request.getEmail())
             .otp(otp)
             .build());
-        emailService.sendSimpleEmail(
-            request.getEmail(),
-            String.format(mailCustom.get("subject"), "Lost Password OTP"),
-            String.format(mailCustom.get("msg"), request.getEmail(), otp));
+
+        emailService.sendSimpleEmail(EmailTaskDTO.builder()
+            .to(request.getEmail())
+            .subject(AccountMsg.LOST_PASS_OTP_MSG.getSubject())
+            .body(AccountMsg.LOST_PASS_OTP_MSG.format())
+            .build());
         return VerifyEmailResponse.builder().otpAgeInSeconds(LostPassOtp.OTP_AGE).build();
     }
 
+    public void switchAccountActive(Long accountId) {
+        var account = accountRepository.findById(accountId)
+            .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
+        account.setStatus(!account.isStatus());
+        account.setUpdatedTime(LocalDateTime.now());
+        accountRepository.save(account);
+
+        var userInfo = userInfoService
+            .findByAccountUsername(account.getUsername())
+            .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_CREDENTIALS));
+
+        var accountMsgEnum = account.isStatus()
+            ? AccountMsg.STATUS_UPDATED_TRUE
+            : AccountMsg.STATUS_UPDATED_FALSE;
+        emailService.sendSimpleEmail(EmailTaskDTO.builder()
+            .to(userInfo.getEmail())
+            .subject(accountMsgEnum.getSubject())
+            .body(accountMsgEnum.format())
+            .build());
+    }
+
+    @Override
+    @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
+    public List<IdResponse> createAccounts(MultipartFile file) {
+        Object[][] accountInfo = ExcelHelper.readExcel(file);
+        Map<AuthorityEnum, Authority> authorityMap = authorityService.findAll().stream()
+            .collect(Collectors.toMap(
+                auth -> AuthorityEnum.valueOf(auth.getName()),
+                auth -> auth));
+        Map<Long, Department> departments = departmentService.findAll().stream()
+            .collect(Collectors.toMap(Department::getId, dep -> dep));
+        List<UserInfo> usersInfoRequest = new ArrayList<>();
+        List<AccountCreationDTO> responses = new ArrayList<>();
+
+        for (int row = 1; row < accountInfo.length; row++) {
+            var registerReq = accountMapper.toRegisterRequest(accountInfo[row]);
+            responses.add(registerReq);
+
+            var account = Account.builder()
+                .username(registerReq.getUsername())
+                .password(userPasswordEncoder.encode(registerReq.getPassword()))
+                .authorities(List.of(authorityMap.get(registerReq.getAuthority())))
+                .createdTime(LocalDateTime.now())
+                .updatedTime(LocalDateTime.now())
+                .status(true)
+                .build();
+            usersInfoRequest.add(UserInfo.builder()
+                .account(account)
+                .email(registerReq.getEmail())
+                .department(departments.get(registerReq.getDepartmentId()))
+                .fullName(registerReq.getFullName())
+                .phone(registerReq.getPhone())
+                .identity(registerReq.getIdentity())
+                .build());
+        }
+        var savedUsers = userInfoService.saveAll(usersInfoRequest);
+        this.saveCreatedAccountsIntoServer(responses);
+        return savedUsers.stream().map(user -> IdResponse.builder().id(user.getId()).build()).toList();
+    }
+
+    private void saveCreatedAccountsIntoServer(List<AccountCreationDTO> accounts) {
+        try (var writer = new FileWriter(DATA_FILE_ROOT_PATH + CREATED_ACCOUNTS_TEMP_FILE)) {
+            var content = new StringBuilder();
+            content
+                .append("fullName,identity,username,password")
+                .append(System.lineSeparator());
+            for (AccountCreationDTO account : accounts)
+                content
+                    .append(account.getFullName()).append(",")
+                    .append(account.getIdentity()).append(",")
+                    .append(account.getUsername()).append(",")
+                    .append(account.getPassword()).append(",")
+                    .append(account.getAuthority()).append(System.lineSeparator());
+            writer.write(content.toString());
+        } catch (Exception e) {
+            throw new AppExc(ErrorCodes.INVALID_DATA_FILE);
+        }
+        scheduler.schedule(this::clearCachedAccountCreation, EXPIRED_CACHED_ACCOUNTS_MINUTES, TimeUnit.MINUTES);
+    }
+
+    @Override
+    public Resource getAccountCreationExample() {
+        try {
+            var file = Path.of(DATA_FILE_ROOT_PATH + ACCOUNT_INFO_CREATION_EX_FILE).toFile();
+            return new InputStreamResource(new FileInputStream(file));
+        } catch (Exception e) {
+            throw new AppExc(ErrorCodes.INVALID_FILE);
+        }
+    }
+
+    @Override
+    public Map<String, Boolean> checkExistsCachedCreatedAccounts() {
+        try {
+            File file = Path.of(DATA_FILE_ROOT_PATH + CREATED_ACCOUNTS_TEMP_FILE).toFile();
+            Scanner scanner = new Scanner(file);
+            return Map.of("result", scanner.hasNext());
+        } catch (Exception e) {
+            throw new AppExc(ErrorCodes.INVALID_FILE);
+        }
+    }
+
+    @Override
+    public Resource getCachedAccountCreation() {
+        try {
+            var file = Path.of(DATA_FILE_ROOT_PATH + CREATED_ACCOUNTS_TEMP_FILE).toFile();
+            return new InputStreamResource(new FileInputStream(file));
+        } catch (Exception e) {
+            throw new AppExc(ErrorCodes.INVALID_FILE);
+        }
+    }
+
+    @Override
+    public void clearCachedAccountCreation() {
+        try (var writer = new FileWriter(DATA_FILE_ROOT_PATH + CREATED_ACCOUNTS_TEMP_FILE)) {
+            writer.write("");
+        } catch (Exception e) {
+            throw new AppExc(ErrorCodes.INVALID_FILE);
+        }
+    }
 }

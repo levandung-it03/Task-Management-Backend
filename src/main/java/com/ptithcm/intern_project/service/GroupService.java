@@ -1,8 +1,11 @@
 package com.ptithcm.intern_project.service;
 
+import com.ptithcm.intern_project.dto.general.EmailTaskDTO;
 import com.ptithcm.intern_project.dto.response.*;
 import com.ptithcm.intern_project.exception.enums.ErrorCodes;
 import com.ptithcm.intern_project.exception.AppExc;
+import com.ptithcm.intern_project.jpa.model.GroupHasUsers;
+import com.ptithcm.intern_project.jpa.model.enums.GroupRole;
 import com.ptithcm.intern_project.mapper.GroupHasUserMapper;
 import com.ptithcm.intern_project.mapper.GroupMapper;
 import com.ptithcm.intern_project.mapper.UserInfoMapper;
@@ -15,6 +18,8 @@ import com.ptithcm.intern_project.jpa.model.Group;
 import com.ptithcm.intern_project.jpa.repository.GroupRepository;
 import com.ptithcm.intern_project.security.service.JwtService;
 import com.ptithcm.intern_project.service.interfaces.IGroupService;
+import com.ptithcm.intern_project.service.messages.GroupMsg;
+import com.ptithcm.intern_project.service.supports.EmailQueueService;
 import com.ptithcm.intern_project.service.supports.PaginationService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +46,7 @@ public class GroupService implements IGroupService {
     JwtService jwtService;
     GroupHasUsersService groupHasUsersService;
     UserInfoMapper userInfoMapper;
+    EmailQueueService emailQueueService;
 
     @Override
     public PaginationResponse<GroupResponse> getPaginatedGroups(PaginationRequest request, String token) {
@@ -70,7 +77,9 @@ public class GroupService implements IGroupService {
             .toList());
 
         groupUserRelationships.add(groupHasUserMapper.newAdminModel(savedGroup, curUser));
-        groupUsersService.saveAll(groupUserRelationships);
+        var usersGroup = groupUsersService.saveAll(groupUserRelationships);
+
+        this.notifyViaEmail(usersGroup, GroupMsg.ADDED_INTO_GROUP);
 
         return IdResponse.builder().id(savedGroup.getId()).build();
     }
@@ -97,7 +106,12 @@ public class GroupService implements IGroupService {
     @Transactional(rollbackFor = RuntimeException.class)
     public void update(Long id, UpdatedGroupRequest request, String token) {
         var curUser = userInfoService.getUserInfo(token);
-        var changedGroup = groupRepository.findById(id).orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
+        var changedGroup = groupRepository.findById(id)
+            .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
+        var existsUsersGroupMap = changedGroup.getGroupUsers().stream()
+            .collect(Collectors.toMap(
+                userGroup -> userGroup.getJoinedUserInfo().getEmail(),
+                userGroup -> userGroup));
 
         if (groupUsersService.isNotAdminOnGroup(id, curUser.getEmail()))
             throw new AppExc(ErrorCodes.FORBIDDEN_USER);
@@ -107,10 +121,14 @@ public class GroupService implements IGroupService {
             throw new AppExc(ErrorCodes.INVALID_IDS);
 
         var newGroupUsers = addedUsers.stream()
+            .filter(userGroup -> !existsUsersGroupMap.containsKey(userGroup.getEmail()))
             .map(user -> groupHasUserMapper.newMemberModel(changedGroup, user))
             .toList();
         changedGroup.getGroupUsers().addAll(newGroupUsers); //--Update Hibernate OneToMany cache
         changedGroup.setUpdatedTime(LocalDateTime.now());
+
+        this.notifyViaEmail(newGroupUsers, GroupMsg.ADDED_INTO_GROUP);
+
         groupUsersService.saveAll(newGroupUsers);
     }
 
@@ -158,5 +176,20 @@ public class GroupService implements IGroupService {
             groupUser.getJoinedUserInfo().getEmail().equals(email)
         );
         return userCreatedGroup || userRelatedToGroup;
+    }
+
+    @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
+    public void notifyViaEmail(List<GroupHasUsers> usersGroup, GroupMsg msgEnum) {
+        var group = usersGroup.getFirst().getGroup();
+        for (var userGroup: usersGroup) {
+            if (userGroup.getRole().equals(GroupRole.ADMIN))
+                continue;
+            emailQueueService.addToQueue(EmailTaskDTO.builder()
+                .to(userGroup.getJoinedUserInfo().getEmail())
+                .subject(msgEnum.getSubject())
+                .body(msgEnum.format(group.getName()))
+                .build());
+        }
+        emailQueueService.processQueue();
     }
 }

@@ -1,14 +1,11 @@
 package com.ptithcm.intern_project.dto.request;
 
-import com.ptithcm.intern_project.annotation.constraint.DobConstraint;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.validator.constraints.Length;
-
-import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
@@ -20,10 +17,15 @@ public class UpdatedUserInfoRequest {
     @NotNull
     @NotEmpty
     @Length(max = 200)
-    @Pattern(regexp = "^[\\p{L} ]+$")
     String fullName;
 
     @NotNull
-    @DobConstraint
-    LocalDate dob;
+    @NotEmpty
+    @Pattern(regexp = "\\d+")
+    String identity;
+
+    @NotNull
+    @NotEmpty
+    @Pattern(regexp = "\\d+")
+    String phone;
 }

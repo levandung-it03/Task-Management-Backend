@@ -1,6 +1,5 @@
 package com.ptithcm.intern_project.dto.request;
 
-import com.ptithcm.intern_project.annotation.constraint.DobConstraint;
 import com.ptithcm.intern_project.annotation.constraint.OtpConstraint;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
@@ -9,8 +8,6 @@ import jakarta.validation.constraints.Pattern;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.validator.constraints.Length;
-
-import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor

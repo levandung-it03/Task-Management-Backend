@@ -26,9 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -131,10 +129,6 @@ public class TaskForUsersService implements ITaskForUsersService {
             .toList();
     }
 
-    public void deleteAll(List<TaskForUsers> taskForUsers) {
-        taskForUsersRepository.deleteAll(taskForUsers);
-    }
-
     public void saveAll(List<TaskForUsers> restUsersOfRootTask) {
         taskForUsersRepository.saveAll(restUsersOfRootTask);
     }
@@ -147,7 +141,7 @@ public class TaskForUsersService implements ITaskForUsersService {
         return taskForUsersRepository.findAllByTaskId(taskId);
     }
 
-    public Optional<Task> findByRootIdAndAssignedUsername(Long rootTaskId, String username) {
+    public List<Task> findByRootIdAndAssignedUsername(Long rootTaskId, String username) {
         return taskForUsersRepository.findByRootIdAndAssignedUsername(rootTaskId, username);
     }
 
@@ -156,18 +150,26 @@ public class TaskForUsersService implements ITaskForUsersService {
     }
 
     public void kickUser(Long taskUserId, String token) {
-        taskForUsersTransService.updateTaskUserStatus(taskUserId, token, UserTaskStatus.KICKED_OUT);
+        var kickedUserTask = taskForUsersTransService.updateTaskUserStatus(taskUserId, token, UserTaskStatus.KICKED_OUT);
+
+        var isAssignedUserHasReport = reportService.existsReportByUserTaskCreatedId(kickedUserTask.getId());
+        if (isAssignedUserHasReport) {
+            taskForUsersRepository.save(kickedUserTask);
+        } else {
+            taskForUsersRepository.delete(kickedUserTask);
+        }
     }
 
     public void reAddUser(Long taskUserId, String token) {
-        taskForUsersTransService.updateTaskUserStatus(taskUserId, token, UserTaskStatus.JOINED);
+        var reAddedUserTask = taskForUsersTransService.updateTaskUserStatus(taskUserId, token, UserTaskStatus.JOINED);
+        taskForUsersRepository.save(reAddedUserTask);
     }
 
     public boolean existsByProjectIdAndAssignedUsername(Long projectId, String username) {
         return taskForUsersRepository.existsByProjectIdAndAssignedUsername(projectId, username);
     }
 
-    public UserTaskResponse getUserOfTask(Long taskId, String username) {
+    public Optional<UserTaskResponse> getUserOfTask(Long taskId, String username) {
         return taskForUsersRepository.findByTaskIdAndAssignedUsername(taskId, username);
     }
 }

@@ -20,6 +20,8 @@ public enum ErrorCodes {
     WEIRD_ENUM(10007, "Enum value is invalid", BAD_REQUEST),
     INVALID_ID(10008, "Id is not existed in Database", BAD_REQUEST),
     INVALID_IDS(10009, "Some Id in list is not existed in Database", BAD_REQUEST),
+    INVALID_DATA_FILE(10010, "Invalid data in sent file", BAD_REQUEST),
+    INVALID_FILE(10011, "File is crashed, or invalid type!", BAD_REQUEST),
     //--Account(11)
     FORBIDDEN_USER(11000, "User not found or access denied", FORBIDDEN),
     INVALID_CREDENTIALS(11001, "Invalid Credentials", BAD_REQUEST),
@@ -66,7 +68,6 @@ public enum ErrorCodes {
     //--Collection(18)
     CANT_DELETE_COLLECTION_WITH_TASKS(18000, "Collection still has tasks, cannot be deleted", BAD_REQUEST),
     CANT_DELETE_PHASE_WITH_COLLECTION(18001, "Phase still has collections, cannot be deleted", BAD_REQUEST),
-
     ;
     int code;
     String msg;

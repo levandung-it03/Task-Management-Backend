@@ -11,7 +11,7 @@ import org.springframework.data.redis.core.RedisHash;
 @Builder
 @RedisHash(value = "ChangePassOtp", timeToLive = 300)
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ChangePassOtp {
+public class AuthorizedEmailOtp {
     public static int OTP_AGE = 300;
     @Id
     String email;

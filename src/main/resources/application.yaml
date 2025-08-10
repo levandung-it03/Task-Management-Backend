@@ -19,10 +19,10 @@ spring:
       name: none
       password: none
   datasource:
-    url: ${DBMS_CONNECTION:jdbc:mysql://localhost:3307/task_management?createDatabaseIfNotExist=true&autoReconnect=true&characterEncoding=UTF-8&allowPublicKeyRetrieval=true&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Ho_Chi_Minh&useSSL=false}
+    url: jdbc:${DBMS_CONNECTION:mysql://localhost:3306}/${DB_NAME:task_management}?createDatabaseIfNotExist=true&autoReconnect=true&characterEncoding=UTF-8&allowPublicKeyRetrieval=true&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Ho_Chi_Minh&useSSL=false
     driver-class-name: "com.mysql.cj.jdbc.Driver"
     username: ${DBMS_USERNAME:root}
-    password: ${DBMS_PASSWORD:123456}
+    password: ${DBMS_PASSWORD:sa}
   jpa:
     defer-datasource-initialization: true   # Tell Spring to init Schema firstly, before Data is init
     database: mysql

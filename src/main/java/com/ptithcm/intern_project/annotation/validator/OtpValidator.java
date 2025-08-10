@@ -1,7 +1,7 @@
 package com.ptithcm.intern_project.annotation.validator;
 
 import com.ptithcm.intern_project.annotation.constraint.OtpConstraint;
-import com.ptithcm.intern_project.security.service.OtpService;
+import com.ptithcm.intern_project.security.service.OtpHelper;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
@@ -13,6 +13,6 @@ public class OtpValidator implements ConstraintValidator<OtpConstraint, String> 
     public boolean isValid(String value, ConstraintValidatorContext context) {
         if (Objects.isNull(value))    return true;
         if (value.isEmpty())    return true;
-        return OtpService.isValidOtp(value);
+        return OtpHelper.isValidOtp(value);
     }
 }

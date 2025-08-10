@@ -41,7 +41,7 @@ public class UserInfoService implements IUserInfoService {
         UserInfo originInfo = userInfoRepository.findByAccountUsername(claims.get("sub"))
             .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_TOKEN));
 
-        originInfo.setFullName(dto.getFullName());
+        userInfoMapper.updateUserInfo(originInfo, dto);
         userInfoRepository.save(originInfo);
     }
     @Override
@@ -115,5 +115,13 @@ public class UserInfoService implements IUserInfoService {
 
     public List<UserInfo> searchAllLeaderByNotEmailIn(List<String> emails, String query) {
         return userInfoRepository.searchAllLeaderByNotEmailIn(emails, query);
+    }
+
+    public List<UserInfo> saveAll(List<UserInfo> usersInfoRequest) {
+        return userInfoRepository.saveAll(usersInfoRequest);
+    }
+
+    public void save(UserInfo userInfo) {
+        userInfoRepository.save(userInfo);
     }
 }

@@ -1,12 +1,17 @@
 package com.ptithcm.intern_project.service.interfaces;
 
+import com.ptithcm.intern_project.dto.request.RegisterRequest;
 import com.ptithcm.intern_project.dto.general.TokenDTO;
 import com.ptithcm.intern_project.dto.request.*;
 import com.ptithcm.intern_project.dto.response.AuthResponse;
 import com.ptithcm.intern_project.dto.response.EmailResponse;
+import com.ptithcm.intern_project.dto.response.IdResponse;
 import com.ptithcm.intern_project.dto.response.VerifyEmailResponse;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.core.io.Resource;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+import java.util.Map;
 
 public interface IAccountService {
     AuthResponse authenticate(AuthRequest dto);
@@ -15,7 +20,7 @@ public interface IAccountService {
 
     void logout(String refreshToken, String accessToken);
 
-    VerifyEmailResponse authorizeEmailByOtp(String token);
+    VerifyEmailResponse authorizeLoggingInEmail(String token);
 
     VerifyEmailResponse verifyEmailByOtp(VerifyEmailRequest dto);
 
@@ -25,6 +30,15 @@ public interface IAccountService {
 
     void changePassword(String token, ChangePassRequest dto);
 
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
     EmailResponse getEmail(String token);
+
+    List<IdResponse> createAccounts(MultipartFile file);
+
+    Resource getAccountCreationExample();
+
+    Map<String, Boolean> checkExistsCachedCreatedAccounts();
+
+    Resource getCachedAccountCreation();
+
+    void clearCachedAccountCreation();
 }

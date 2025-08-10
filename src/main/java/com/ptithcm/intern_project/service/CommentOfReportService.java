@@ -1,11 +1,15 @@
 package com.ptithcm.intern_project.service;
 
+import com.ptithcm.intern_project.dto.general.EmailTaskDTO;
 import com.ptithcm.intern_project.exception.enums.ErrorCodes;
 import com.ptithcm.intern_project.exception.AppExc;
 import com.ptithcm.intern_project.dto.request.CommentCreationRequest;
 import com.ptithcm.intern_project.jpa.model.CommentOfReport;
 import com.ptithcm.intern_project.jpa.model.Report;
+import com.ptithcm.intern_project.jpa.model.UserInfo;
 import com.ptithcm.intern_project.jpa.repository.CommentOfRequestRepository;
+import com.ptithcm.intern_project.service.messages.CommentOfReportMsg;
+import com.ptithcm.intern_project.service.supports.EmailService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -21,6 +25,7 @@ import java.time.LocalDateTime;
 public class CommentOfReportService {
     CommentOfRequestRepository commentOfRequestRepository;
     UserInfoService userInfoService;
+    EmailService emailService;
 
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public CommentOfReport create(Report report, CommentCreationRequest request, String token) {
@@ -58,12 +63,46 @@ public class CommentOfReportService {
             .createdTime(LocalDateTime.now())
             .build();
 
-        if (request.getRepliedCommentId() != null) {
+        var isReplyingComment = request.getRepliedCommentId() != null;
+        if (isReplyingComment) {
             var repliedComment = commentOfRequestRepository.findById(request.getRepliedCommentId())
                 .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
             comment.setRepliedComment(repliedComment);
-        }
+            this.notifyViaEmail(
+                repliedComment.getUserInfoCreated().getEmail(),
+                userInfoCreating,
+                report,
+                CommentOfReportMsg.REPLIED_COMMENT);
 
+        } else {
+            this.notifyViaEmail(
+                report.getUserTaskCreated().getAssignedUser().getEmail(),
+                userInfoCreating,
+                report,
+                CommentOfReportMsg.CREATED_COMMENT);
+        }
         return commentOfRequestRepository.save(comment);
+    }
+
+    @Transactional()
+    public void notifyViaEmail(
+        String target,
+        UserInfo userCreating,
+        Report report,
+        CommentOfReportMsg msgEnum) {
+        emailService.sendSimpleEmail(EmailTaskDTO.builder()
+            .to(target)
+            .subject(msgEnum.getSubject())
+            .body(msgEnum.format(
+                userCreating.getFullName() + "/" + userCreating.getEmail(),
+                report.getUserTaskCreated().getAssignedUser().getFullName()
+                    + "/" + report.getUserTaskCreated().getAssignedUser().getEmail(),
+                report.getTitle(),
+                report.getUserTaskCreated().getTask().getName(),
+                report.getUserTaskCreated().getTask().getCollection().getName(),
+                report.getUserTaskCreated().getTask().getCollection().getPhase().getName(),
+                report.getUserTaskCreated().getTask().getCollection().getPhase().getProject().getName()
+            ))
+            .build());
     }
 }

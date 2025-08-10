@@ -1,5 +1,6 @@
 package com.ptithcm.intern_project.service;
 
+import com.ptithcm.intern_project.dto.general.EmailTaskDTO;
 import com.ptithcm.intern_project.dto.general.ShortUserInfoDTO;
 import com.ptithcm.intern_project.dto.request.KickedLeaderRequest;
 import com.ptithcm.intern_project.dto.response.PhaseResponse;
@@ -23,6 +24,9 @@ import com.ptithcm.intern_project.jpa.repository.ProjectRepository;
 import com.ptithcm.intern_project.mapper.UserInfoMapper;
 import com.ptithcm.intern_project.security.service.JwtService;
 import com.ptithcm.intern_project.service.interfaces.IProjectService;
+import com.ptithcm.intern_project.service.messages.ProjectMsg;
+import com.ptithcm.intern_project.service.supports.EmailQueueService;
+import com.ptithcm.intern_project.service.supports.EmailService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -50,6 +54,8 @@ public class ProjectService implements IProjectService {
     PhaseService phaseService;
     PhaseMapper phaseMapper;
     UserInfoMapper userInfoMapper;
+    EmailQueueService emailQueueService;
+    EmailService emailService;
 
     @Override
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
@@ -65,6 +71,7 @@ public class ProjectService implements IProjectService {
                 .role(RoleOnEntity.OWNER)
                 .build())
         );
+        project.setProjectUsers(projectRoles);
 
         savedProject.setProjectUsers(new ArrayList<>(projectRoles));
         return IdResponse.builder().id(savedProject.getId()).build();
@@ -74,9 +81,14 @@ public class ProjectService implements IProjectService {
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public void addLeaders(Long id, AddedLeaderRequest request, String token) {
         var project = this.getUpdatableProject(id, token);
+        var existsProjectRoleMap = project.getProjectUsers().stream()
+            .collect(Collectors.toMap(
+                projRole -> projRole.getUserInfo().getEmail(),
+                projRole -> projRole));
 
         var newLeadersInfo = userInfoService.findAllByEmailIn(request.getAssignedEmails());
         var newProjectRoles = newLeadersInfo.stream()
+            .filter(projectRole -> !existsProjectRoleMap.containsKey(projectRole.getEmail()))
             .map(user -> ProjectRole.builder()
                 .project(project)
                 .role(RoleOnEntity.MEMBER)
@@ -84,8 +96,10 @@ public class ProjectService implements IProjectService {
                 .build()
             ).toList();
 
-        projectRoleService.saveAll(newProjectRoles);
         project.getProjectUsers().addAll(newProjectRoles);
+        projectRepository.save(project);
+
+        this.notifyViaEmail(newProjectRoles, ProjectMsg.ADDED_INTO_PROJECT);
     }
 
     @Override
@@ -94,7 +108,9 @@ public class ProjectService implements IProjectService {
         var project = this.getUpdatableProject(id, token);
 
         projectMapper.updateModel(project, request);
-        projectRepository.save(project);
+        var updatedProject = projectRepository.save(project);
+
+        this.notifyViaEmail(updatedProject.getProjectUsers(), ProjectMsg.UPDATED_PROJECT);
     }
 
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
@@ -120,7 +136,13 @@ public class ProjectService implements IProjectService {
             .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_TOKEN));
 
         project.getProjectUsers().remove(kickedLeader);
-        projectRoleService.delete(kickedLeader);
+        projectRepository.save(project);
+
+        emailService.sendSimpleEmail(EmailTaskDTO.builder()
+            .to(kickedLeader.getUserInfo().getEmail())
+            .subject(ProjectMsg.KICKED_LEADER.getSubject())
+            .body(ProjectMsg.KICKED_LEADER.format(project.getName()))
+            .build());
     }
 
     /**
@@ -196,6 +218,8 @@ public class ProjectService implements IProjectService {
 
         updatedProject.setEndDate(LocalDate.now());
         projectRepository.save(updatedProject);
+
+        this.notifyViaEmail(updatedProject.getProjectUsers(), ProjectMsg.COMPLETED_PROJECT);
     }
 
     @Override
@@ -266,5 +290,19 @@ public class ProjectService implements IProjectService {
         if (!isOwner)    throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
         return project;
+    }
+
+    @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
+    public void notifyViaEmail(List<ProjectRole> projectRoles, ProjectMsg projectMsg) {
+        var project = projectRoles.getFirst().getProject();
+        for (var projectRole: projectRoles) {
+            if (projectRole.getRole().equals(RoleOnEntity.OWNER))
+                continue;
+            emailQueueService.addToQueue(EmailTaskDTO.builder()
+                .to(projectRole.getUserInfo().getEmail())
+                .subject(projectMsg.getSubject())
+                .body(projectMsg.format(project.getName()))
+                .build());
+        }
     }
 }

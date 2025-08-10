@@ -8,7 +8,6 @@ import com.ptithcm.intern_project.dto.request.ChangeGroupStatusRequest;
 import com.ptithcm.intern_project.dto.request.GroupRequest;
 import com.ptithcm.intern_project.dto.request.PaginationRequest;
 import com.ptithcm.intern_project.dto.request.UpdatedGroupRequest;
-import com.ptithcm.intern_project.jpa.model.Group;
 import com.ptithcm.intern_project.service.GroupService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;

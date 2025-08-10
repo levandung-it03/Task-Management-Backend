@@ -23,11 +23,11 @@ public class GroupHasUsersController {
 
     @Operation(description = "Update Group-Role of joined User by Group-User-Id")
     @PutMapping({ROLE_PM + "/v1/group-user/{id}", ROLE_LEAD + "/v1/group-user/{id}"})
-    public ResponseEntity<RestApiResponse<Void>> update(
+    public ResponseEntity<RestApiResponse<Void>> updateGroupRole(
         @PathVariable("id") Long id,
         @RequestHeader("Authorization") String token,
         @Valid @RequestBody ChangeGroupRoleRequest request) {
-        groupHasUsersService.update(id, request.getGroupRole(), token);
+        groupHasUsersService.updateGroupRole(id, request.getGroupRole(), token);
         return RestApiResponse.fromScs(SuccessCodes.UPDATED);
     }
 

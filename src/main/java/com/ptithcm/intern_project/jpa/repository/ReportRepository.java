@@ -32,4 +32,6 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
             AND r.userTaskCreated.task.id = :taskId)
     """)
     boolean existsReportByTaskId(@Param("taskId") Long id);
+
+    boolean existsReportByUserTaskCreatedId(Long userTaskId);
 }

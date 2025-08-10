@@ -32,6 +32,7 @@ public interface TaskForUsersRepository extends JpaRepository<TaskForUsers, Long
             tfu.id,
             tfu.assignedUser.email,
             tfu.assignedUser.fullName,
+            tfu.assignedUser.department.name,
             auth.name,
             tfu.userTaskStatus,
             CASE WHEN (
@@ -47,11 +48,12 @@ public interface TaskForUsersRepository extends JpaRepository<TaskForUsers, Long
     List<UserTaskResponse> findAllByTaskId(Long taskId);
 
     @Query("""
-        SELECT t.task FROM TaskForUsers t
-        WHERE t.task.id = :rootId
-        AND t.assignedUser.account.username = :assignedUsername
+        SELECT DISTINCT t FROM TaskForUsers tfu
+        JOIN tfu.task t
+        WHERE t.rootTask IS NOT NULL AND t.rootTask.id = :rootId
+        AND tfu.assignedUser.account.username = :assignedUsername
     """)
-    Optional<Task> findByRootIdAndAssignedUsername(@Param("rootId") Long rootId, @Param("assignedUsername") String username);
+    List<Task> findByRootIdAndAssignedUsername(@Param("rootId") Long rootId, @Param("assignedUsername") String username);
 
     @Query("""
         SELECT tfu.assignedUser FROM TaskForUsers tfu
@@ -82,6 +84,7 @@ public interface TaskForUsersRepository extends JpaRepository<TaskForUsers, Long
             tfu.id,
             tfu.assignedUser.email,
             tfu.assignedUser.fullName,
+            tfu.assignedUser.department.name,
             auth.name,
             tfu.userTaskStatus,
             CASE WHEN (
@@ -95,5 +98,5 @@ public interface TaskForUsersRepository extends JpaRepository<TaskForUsers, Long
         WHERE tfu.task.id = :taskId
         AND tfu.assignedUser.account.username = :username
     """)
-    UserTaskResponse findByTaskIdAndAssignedUsername(@Param("taskId") Long taskId, @Param("username") String username);
+    Optional<UserTaskResponse> findByTaskIdAndAssignedUsername(@Param("taskId") Long taskId, @Param("username") String username);
 }

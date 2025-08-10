@@ -1,5 +1,6 @@
 package com.ptithcm.intern_project.service;
 
+import com.ptithcm.intern_project.dto.general.EmailTaskDTO;
 import com.ptithcm.intern_project.dto.general.StatusDTO;
 import com.ptithcm.intern_project.dto.response.UserTaskResponse;
 import com.ptithcm.intern_project.security.enums.AuthorityEnum;
@@ -22,6 +23,9 @@ import com.ptithcm.intern_project.jpa.model.enums.UserTaskStatus;
 import com.ptithcm.intern_project.jpa.repository.TaskRepository;
 import com.ptithcm.intern_project.security.service.JwtService;
 import com.ptithcm.intern_project.service.interfaces.ITaskService;
+import com.ptithcm.intern_project.service.messages.GroupMsg;
+import com.ptithcm.intern_project.service.messages.TaskMsg;
+import com.ptithcm.intern_project.service.supports.EmailQueueService;
 import com.ptithcm.intern_project.service.trans.TaskTransService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -49,6 +53,7 @@ public class TaskService implements ITaskService {
     TaskMapper taskMapper;
     TaskForUsersMapper taskForUsersMapper;
     JwtService jwtService;
+    EmailQueueService emailQueueService;
 
     @Transactional(rollbackFor = RuntimeException.class)
     public IdResponse create(Collection collection, TaskRequest request, String token) {
@@ -71,7 +76,9 @@ public class TaskService implements ITaskService {
             .build());
         this.validateTask(rootTask);
         var savedRootTask = taskRepository.save(rootTask);
-        taskForUsersService.saveAllByEmails(request.getAssignedEmails(), savedRootTask);
+        var usersTaskList = taskForUsersService.saveAllByEmails(request.getAssignedEmails(), savedRootTask);
+
+        this.notifyViaEmail(usersTaskList, TaskMsg.ASSIGNED_TO_TASK);
 
         return IdResponse.builder().id(savedRootTask.getId()).build();
     }
@@ -118,6 +125,8 @@ public class TaskService implements ITaskService {
         rootTask.getTaskForUsers().removeAll(removedUsersOfRootTask);
         taskRepository.save(rootTask);
 
+        this.notifyViaEmail(removedUsersOfRootTask, TaskMsg.MOVED_TO_SUB_TASK);
+
         return IdResponse.builder().id(savedSubTask.getId()).build();
     }
 
@@ -136,6 +145,7 @@ public class TaskService implements ITaskService {
     }
 
     @Override
+    @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public void updateDescription(Long id, String description, String token) {
         Task foundTask = taskTransService.findUpdatableTaskByOwner(id, token);
 
@@ -145,6 +155,8 @@ public class TaskService implements ITaskService {
         foundTask.setDescription(description);
         foundTask.setUpdatedTime(LocalDateTime.now());
         taskRepository.save(foundTask);
+
+        this.notifyViaEmail(foundTask.getTaskForUsers(), TaskMsg.UPDATED_TASK_DESC);
     }
 
     @Override
@@ -157,6 +169,8 @@ public class TaskService implements ITaskService {
         foundTask.setReportFormat(reportFormat);
         foundTask.setUpdatedTime(LocalDateTime.now());
         taskRepository.save(foundTask);
+
+        this.notifyViaEmail(foundTask.getTaskForUsers(), TaskMsg.UPDATED_TASK_REPORT_FORMAT);
     }
 
     @Override
@@ -164,9 +178,6 @@ public class TaskService implements ITaskService {
     public void update(Long id, UpdatedTaskRequest request, String token) {
         String username = jwtService.readPayload(token).get("sub");
         var foundTask = taskTransService.findTaskByOwner(id, username);
-
-        var isKickedLeaderProject = ProjectService.isKickedLeader(foundTask, username);
-        if (isKickedLeaderProject) throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
         var existsDoneReport = reportService.existsReportByTaskId(id);
         if (existsDoneReport) throw new AppExc(ErrorCodes.AT_LEAST_ONE_REPORT_ON_TASK);
@@ -203,7 +214,7 @@ public class TaskService implements ITaskService {
         var currentAuthority = userInfo.getAccount().getAuthorities().getFirst().getAuthority();
         if (currentAuthority.equals(AuthorityEnum.ROLE_EMP.toString())) {
             var justAssignedEmployee = taskForUsersService.getUserOfTask(taskId, username);
-            return List.of(justAssignedEmployee);
+            return justAssignedEmployee.map(List::of).orElseGet(List::of);
         }
         return taskForUsersService.getAllUsersOfTask(taskId);
     }
@@ -225,6 +236,8 @@ public class TaskService implements ITaskService {
         updatedTask.setEndDate(LocalDate.now());
         updatedTask.setUpdatedTime(LocalDateTime.now());
         taskRepository.save(updatedTask);
+
+        this.notifyViaEmail(updatedTask.getTaskForUsers(), TaskMsg.COMPLETED_TASK);
     }
 
     @Override
@@ -233,32 +246,37 @@ public class TaskService implements ITaskService {
 
         lockedTask.setLocked(request.isStatus());
         taskRepository.save(lockedTask);
+
+        this.notifyViaEmail(lockedTask.getTaskForUsers(), TaskMsg.LOCKED_TASK);
     }
 
     @Override
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public List<ShortTaskResponse> getSubTasksOfRootTask(Long rootTaskId, String token) {
         var username = jwtService.readPayload(token).get("sub");
-        var userInfo = userInfoService
-            .findByAccountUsername(jwtService.readPayload(token).get("sub"))
-            .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_TOKEN));
         var rootTask = taskRepository.findById(rootTaskId).orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
 
         var isSubTaskQuerying = rootTask.getRootTask() != null;
         if (isSubTaskQuerying) return List.of();
 
-        var canSeeTask = taskTransService.canSeeTask(rootTask, username);
-        if (!canSeeTask)
-            throw new AppExc(ErrorCodes.FORBIDDEN_USER);
+        var userInfo = userInfoService
+            .findByAccountUsername(jwtService.readPayload(token).get("sub"))
+            .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_TOKEN));
 
-        var isEmployee = userInfo.getAccount()
-            .getAuthorities().getFirst()
-            .getAuthority().equals(AuthorityEnum.ROLE_EMP.toString());
-        if (isEmployee) {
-            var assignedUserSubTask = taskForUsersService
+        var isTaskOwner = rootTask.getUserInfoCreated().getAccount().getUsername().equals(username);
+        var isAssignedUser = taskTransService.isTaskAssigned(rootTask, username);
+        //--Project Member absolutely has ProjectRole.ADMIN for PM, and he/she owns Phase, Collection too.
+        var isProjectMember = rootTask.getCollection().getPhase().getProject()
+            .getProjectUsers().stream()
+            .anyMatch(projectUser -> projectUser.getUserInfo().getAccount().getUsername().equals(username));
+        var canSeeTask = isTaskOwner || isProjectMember || isAssignedUser;
+        if (!canSeeTask) throw new AppExc(ErrorCodes.FORBIDDEN_USER);
+
+        if (isAssignedUser) {
+            return taskForUsersService
                 .findByRootIdAndAssignedUsername(rootTaskId, userInfo.getAccount().getUsername())
-                .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
-            return List.of(taskMapper.shortenTaskResponse(assignedUserSubTask));
+                .stream().map(taskMapper::shortenTaskResponse)
+                .toList();
         }
         return taskRepository.findAllByRootTaskId(rootTaskId)
             .stream().map(taskMapper::shortenTaskResponse)
@@ -333,6 +351,8 @@ public class TaskService implements ITaskService {
             this.deleteSubTask(task);
         else
             this.deleteRootTask(task);
+
+        this.notifyViaEmail(task.getTaskForUsers(), TaskMsg.DELETED_TASK);
     }
 
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
@@ -379,5 +399,21 @@ public class TaskService implements ITaskService {
 
         if (task.getDeadline().isAfter(task.getRootTask().getDeadline()))
             throw new AppExc(ErrorCodes.INVALID_SUB_TASK_DEADLINE);
+    }
+
+    @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
+    public void notifyViaEmail(List<TaskForUsers> userTasks, TaskMsg msgEnum) {
+        var task = userTasks.getFirst().getTask();
+        for (var userTask : userTasks)
+            emailQueueService.addToQueue(EmailTaskDTO.builder()
+                .to(userTask.getAssignedUser().getEmail())
+                .subject(msgEnum.getSubject())
+                .body(msgEnum.format(
+                    task.getName(),
+                    task.getCollection().getName(),
+                    task.getCollection().getPhase().getName(),
+                    task.getCollection().getPhase().getProject().getName()
+                ))
+                .build());
     }
 }

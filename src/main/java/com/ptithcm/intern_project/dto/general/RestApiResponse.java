@@ -50,6 +50,17 @@ public class RestApiResponse<T> implements Serializable {
         return ResponseEntity.ok().body(result);
     }
 
+    public static <T> ResponseEntity<RestApiResponse<T>> fromScs(SuccessCodes successEnum, String replacedMsg, T body) {
+        var result = new RestApiResponse<T>();
+        result.code = successEnum.getCode();
+        result.msg = replacedMsg;
+        result.status = HttpStatus.OK.value();
+        result.body = body;
+        result.time = LocalDateTime.now().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        return ResponseEntity.ok().body(result);
+    }
+
+
     @Overloads
     public static ResponseEntity<RestApiResponse<Void>> fromScs(SuccessCodes successEnum) {
         return RestApiResponse.fromScs(successEnum, null);

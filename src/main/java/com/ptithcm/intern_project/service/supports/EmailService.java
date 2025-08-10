@@ -1,5 +1,6 @@
-package com.ptithcm.intern_project.service;
+package com.ptithcm.intern_project.service.supports;
 
+import com.ptithcm.intern_project.dto.general.EmailTaskDTO;
 import com.ptithcm.intern_project.exception.enums.ErrorCodes;
 import com.ptithcm.intern_project.exception.AppExc;
 import jakarta.mail.internet.MimeMessage;
@@ -10,8 +11,6 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
-
-import java.util.Map;
 
 @Service
 @EnableAsync
@@ -24,32 +23,22 @@ public class EmailService {
     private String mailSender;
 
     @Async("taskExecutor")
-    public void sendSimpleEmail(String to, String subject, String text) throws AppExc {
+    public void sendSimpleEmail(EmailTaskDTO request) throws AppExc {
         try {
             MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message, true);
 
             mimeMessageHelper.setFrom(mailSender);
-            mimeMessageHelper.setTo(to);
+            var subject = request.getSubject();
+            if (subject.contains("%s"))
+                subject = String.format(subject, APP_NAME);
+            mimeMessageHelper.setTo(request.getTo());
             mimeMessageHelper.setSubject(subject);
-            mimeMessageHelper.setText(text, true);
+            mimeMessageHelper.setText(request.getBody(), true);
 
             javaMailSender.send(message);
         } catch (Exception e) {
             throw new AppExc(ErrorCodes.SENDING_EMAIL);
         }
-    }
-
-    public Map<String, String> getMailContentCustom() {
-        return Map.of(
-            "msg", """
-                <div>
-                    <p style="font-size: 18px">This information is <b>PRIVATE</b> so that do not show it to anyone</p>
-                    <h2>Account: <b>%s</b></h2>
-                    <h2>OTP: <b>%s</b></h2>
-                </div>
-            """,
-            "subject", "%s from " + this.APP_NAME
-        );
     }
 }

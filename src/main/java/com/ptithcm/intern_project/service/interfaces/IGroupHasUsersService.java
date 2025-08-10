@@ -4,7 +4,7 @@ import com.ptithcm.intern_project.jpa.model.enums.GroupRole;
 
 public interface IGroupHasUsersService {
 
-    void update(Long id, GroupRole role, String token);
+    void updateGroupRole(Long id, GroupRole role, String token);
 
     void kickUser(Long id, String token);
 

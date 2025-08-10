@@ -10,6 +10,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -19,5 +22,9 @@ public class AuthorityService {
     public Authority findByEnumStr(AuthorityEnum authorityEnum) {
         return authorityRepository.findByEnumStr(authorityEnum.toString())
             .orElseThrow(() -> new AppExc(ErrorCodes.UNAWARE_ERROR));
+    }
+
+    public List<Authority> findAll() {
+        return authorityRepository.findAll();
     }
 }
