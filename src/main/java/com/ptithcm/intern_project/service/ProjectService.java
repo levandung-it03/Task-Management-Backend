@@ -167,8 +167,7 @@ public class ProjectService implements IProjectService {
     public void delete(Long id, String token) {
         var project = this.getUpdatableProject(id, token);
 
-        var canDeleteProject = project.getProjectUsers().isEmpty()
-            || phaseService.existsByProjectId(project.getId());
+        var canDeleteProject = project.getProjectUsers().isEmpty() && !phaseService.existsByProjectId(project.getId());
         if (canDeleteProject) {
             projectRepository.delete(project);
             return;
