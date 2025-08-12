@@ -26,4 +26,11 @@ public interface PhaseRepository extends JpaRepository<Phase, Long> {
         @Param("username") String username);
 
     boolean existsByProjectId(Long id);
+
+    @Query("""
+        SELECT CASE WHEN COUNT(p) > 0 THEN TRUE ELSE FALSE END FROM Phase p
+        WHERE p.project.id = :projectId
+        AND p.endDate IS NULL
+    """)
+    boolean existsNotCompleteByProjectId(@Param("projectId") Long projectId);
 }

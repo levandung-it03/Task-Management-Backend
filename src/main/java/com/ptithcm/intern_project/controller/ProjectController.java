@@ -1,17 +1,12 @@
 package com.ptithcm.intern_project.controller;
 
 import com.ptithcm.intern_project.dto.general.ShortUserInfoDTO;
-import com.ptithcm.intern_project.dto.response.PhaseResponse;
-import com.ptithcm.intern_project.dto.response.ProjectStatisticResponse;
+import com.ptithcm.intern_project.dto.general.UserStatisticDTO;
+import com.ptithcm.intern_project.dto.request.*;
+import com.ptithcm.intern_project.dto.response.*;
 import com.ptithcm.intern_project.exception.enums.SuccessCodes;
 import com.ptithcm.intern_project.dto.general.RestApiResponse;
-import com.ptithcm.intern_project.dto.request.AddedLeaderRequest;
-import com.ptithcm.intern_project.dto.request.PhaseRequest;
-import com.ptithcm.intern_project.dto.request.ProjectRequest;
-import com.ptithcm.intern_project.dto.response.IdResponse;
-import com.ptithcm.intern_project.dto.response.ProjectRoleResponse;
 import com.ptithcm.intern_project.jpa.model.Project;
-import com.ptithcm.intern_project.dto.request.KickedLeaderRequest;
 import com.ptithcm.intern_project.service.ProjectService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -22,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 import static com.ptithcm.intern_project.security.constvalues.AuthorityValues.*;
 
@@ -70,7 +66,7 @@ public class ProjectController {
         return RestApiResponse.fromScs(SuccessCodes.CREATED);
     }
 
-    @Operation(description = "Delete, or in-activate the specified Project by PM")
+    @Operation(description = "Delete the specified Project by PM")
     @DeleteMapping(ROLE_PM + "/v1/project/{id}")
     public ResponseEntity<RestApiResponse<Void>> delete(
         @PathVariable("id") Long id,
@@ -129,9 +125,9 @@ public class ProjectController {
 
     @Operation(description = "Get statistic of all related Projects")
     @GetMapping({
-        ROLE_PM + "/v1/project/get-statistic",
-        ROLE_LEAD + "/v1/project/get-statistic",
-        ROLE_EMP + "/v1/project/get-statistic",
+        ROLE_PM + "/v1/project/short-projects",
+        ROLE_LEAD + "/v1/project/short-projects",
+        ROLE_EMP + "/v1/project/short-projects",
     })
     public ResponseEntity<RestApiResponse<ProjectStatisticResponse>> getProjectStatistic(
         @RequestHeader("Authorization") String token) {
@@ -141,10 +137,56 @@ public class ProjectController {
     @Operation(description = "Get new Leaders (by name or email) of specified Project to add")
     @GetMapping(ROLE_PM + "/v1/project/{projectId}/search-new-leaders/{query}")
     public ResponseEntity<RestApiResponse<List<ShortUserInfoDTO>>> getLeadersToAddIntoProject(
-            @PathVariable("projectId") Long projectId,
-            @PathVariable("query") String query,
-            @RequestHeader("Authorization") String token) {
+        @PathVariable("projectId") Long projectId,
+        @PathVariable("query") String query,
+        @RequestHeader("Authorization") String token) {
         return RestApiResponse.fromScs(SuccessCodes.GET_DETAIL,
-                projectService.getLeadersToAddIntoProject(projectId, query, token));
+            projectService.getLeadersToAddIntoProject(projectId, query, token));
     }
+
+    @Operation(description = "Get Project Overview")
+    @GetMapping(ROLE_PM + "/v1/project/{projectId}/overview")
+    public ResponseEntity<RestApiResponse<ProjectOverviewResponse>> getProjectOverview(
+        @PathVariable("projectId") Long projectId) {
+        return RestApiResponse.fromScs(SuccessCodes.GET_DETAIL,
+            projectService.getProjectOverview(projectId));
+    }
+
+    @Operation(description = "Get simple Phases to support statistic")
+    @GetMapping(ROLE_PM + "/v1/project/{projectId}/simple-phases")
+    public ResponseEntity<RestApiResponse<Map<Long, String>>> getSimplePhases(
+        @PathVariable("projectId") Long projectId) {
+        return RestApiResponse.fromScs(SuccessCodes.GET_LIST,
+            projectService.getSimplePhases(projectId));
+    }
+
+    @Operation(description = "Get Project Overview")
+    @GetMapping(ROLE_PM + "/v1/project/{projectId}/users-statistic")
+    public ResponseEntity<RestApiResponse<List<UserStatisticDTO>>> getUsersStatistic(
+        @PathVariable("projectId") Long projectId) {
+        return RestApiResponse.fromScs(SuccessCodes.GET_DETAIL,
+            projectService.getUsersStatistic(projectId));
+    }
+
+    @Operation(description = "Mark Project to be started")
+    @PutMapping(ROLE_PM + "/v1/project/{projectId}/status-start")
+    public ResponseEntity<RestApiResponse<Void>> updateInProgressStatus(
+        @PathVariable("projectId") Long projectId,
+        @RequestHeader("Authorization") String token) {
+        projectService.updateInProgressStatus(projectId, token);
+        return RestApiResponse.fromScs(SuccessCodes.UPDATED);
+    }
+
+    @Operation(description = "Get Project Detail (to support Phase Page)")
+    @GetMapping({
+        ROLE_PM + "/v1/project/{projectId}/detail",
+        ROLE_LEAD + "/v1/project/{projectId}/detail",
+        ROLE_EMP + "/v1/project/{projectId}/detail"})
+    public ResponseEntity<RestApiResponse<ProjectDetailResponse>> getProjectDetail(
+        @PathVariable("projectId") Long projectId,
+        @RequestHeader("Authorization") String token) {
+        return RestApiResponse.fromScs(SuccessCodes.GET_DETAIL,
+            projectService.getProjectDetail(projectId, token));
+    }
+
 }

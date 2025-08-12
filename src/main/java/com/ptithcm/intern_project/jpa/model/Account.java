@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.Check;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
     uniqueConstraints = {@UniqueConstraint(columnNames = {"username"})}
 )
 @Entity
+@Check(constraints = "updated_time >= created_time")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Account {
     static final String SCOPES_DELIMITER = " "; //--static fields will not be included when there is a new instance.

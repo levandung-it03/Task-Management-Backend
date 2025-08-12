@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.Check;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -13,9 +14,16 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "phase")
+@Table(
+    name = "phase",
+    uniqueConstraints = {@UniqueConstraint(columnNames = {"project_id", "name"})})
+@Check(constraints = """
+    updated_time >= created_time
+    AND (end_date IS NULL OR end_date >= start_date)
+    AND due_date >= start_date
+""")
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Phase {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

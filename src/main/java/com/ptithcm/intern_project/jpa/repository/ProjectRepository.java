@@ -1,6 +1,7 @@
 package com.ptithcm.intern_project.jpa.repository;
 
 import com.ptithcm.intern_project.jpa.model.Project;
+import com.ptithcm.intern_project.jpa.model.TaskForUsers;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -27,4 +28,10 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
         WHERE tfu.assignedUser.account.username = :username
     """)
     List<Project> findAllByUsernameLowRole(@Param("username") String username);
+
+    @Query("""
+        SELECT DISTINCT tfu FROM TaskForUsers tfu
+        WHERE tfu.task.collection.phase.project.id = :projectId
+    """)
+    List<TaskForUsers> findAllUsersTaskByProjectId(@Param("projectId") Long projectId);
 }

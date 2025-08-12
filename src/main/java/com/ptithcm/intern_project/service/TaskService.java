@@ -2,7 +2,9 @@ package com.ptithcm.intern_project.service;
 
 import com.ptithcm.intern_project.dto.general.EmailTaskDTO;
 import com.ptithcm.intern_project.dto.general.StatusDTO;
-import com.ptithcm.intern_project.dto.response.UserTaskResponse;
+import com.ptithcm.intern_project.dto.response.*;
+import com.ptithcm.intern_project.jpa.model.enums.ProjectStatus;
+import com.ptithcm.intern_project.jpa.model.enums.RoleOnEntity;
 import com.ptithcm.intern_project.security.enums.AuthorityEnum;
 import com.ptithcm.intern_project.exception.enums.ErrorCodes;
 import com.ptithcm.intern_project.exception.AppExc;
@@ -12,10 +14,7 @@ import com.ptithcm.intern_project.mapper.UserInfoMapper;
 import com.ptithcm.intern_project.dto.general.TaskCreationDTO;
 import com.ptithcm.intern_project.dto.request.TaskRequest;
 import com.ptithcm.intern_project.dto.request.UpdatedTaskRequest;
-import com.ptithcm.intern_project.dto.response.IdResponse;
 import com.ptithcm.intern_project.dto.general.ShortUserInfoDTO;
-import com.ptithcm.intern_project.dto.response.ShortTaskResponse;
-import com.ptithcm.intern_project.dto.response.TaskResponse;
 import com.ptithcm.intern_project.jpa.model.Collection;
 import com.ptithcm.intern_project.jpa.model.Task;
 import com.ptithcm.intern_project.jpa.model.TaskForUsers;
@@ -23,7 +22,6 @@ import com.ptithcm.intern_project.jpa.model.enums.UserTaskStatus;
 import com.ptithcm.intern_project.jpa.repository.TaskRepository;
 import com.ptithcm.intern_project.security.service.JwtService;
 import com.ptithcm.intern_project.service.interfaces.ITaskService;
-import com.ptithcm.intern_project.service.messages.GroupMsg;
 import com.ptithcm.intern_project.service.messages.TaskMsg;
 import com.ptithcm.intern_project.service.supports.EmailQueueService;
 import com.ptithcm.intern_project.service.trans.TaskTransService;
@@ -57,8 +55,14 @@ public class TaskService implements ITaskService {
 
     @Transactional(rollbackFor = RuntimeException.class)
     public IdResponse create(Collection collection, TaskRequest request, String token) {
-        var isProjectActive = collection.getPhase().getProject().isActive();
-        if (!isProjectActive) throw new AppExc(ErrorCodes.PROJECT_WAS_CLOSED);
+        var isInProgressProject = collection.getPhase().getProject().getStatus().equals(ProjectStatus.IN_PROGRESS);
+        if (!isInProgressProject)   throw new AppExc(ErrorCodes.PROJECT_IS_NOT_IN_PROGRESS);
+
+        var isPhaseEnded = collection.getPhase().getEndDate() != null;
+        if (isPhaseEnded) throw new AppExc(ErrorCodes.PHASE_ENDED);
+
+        var isCollectionEnded = collection.getEndDate() != null;
+        if (isCollectionEnded) throw new AppExc(ErrorCodes.PHASE_ENDED);
 
         var userCreated = userInfoService.getUserInfo(token);
         var isProjectMemberOrAdmin = collection.getPhase().getProject()
@@ -87,11 +91,11 @@ public class TaskService implements ITaskService {
     @Transactional(rollbackFor = RuntimeException.class)
     public IdResponse createSubTask(Long rootId, TaskRequest request, String token) {
         var userCreated = userInfoService.getUserInfo(token);
-        var rootTask = taskRepository.findById(rootId)
-            .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
-
-        var taskWasEnded = rootTask.getEndDate() != null;
-        if (taskWasEnded) throw new AppExc(ErrorCodes.TASK_ENDED);
+        var rootTask = taskTransService.findUpdatableTaskByOwner(rootId, token);
+        //--Checked project in-progress by "rootTask"
+        //--Checked phase is ended by "rootTask"
+        //--Checked collection is ended by "rootTask"
+        //--Checked task is ended by "rootTask"
 
         var isRootTaskOwner = rootTask.getUserInfoCreated().getEmail().equals(userCreated.getEmail());
         if (!isRootTaskOwner) throw new AppExc(ErrorCodes.FORBIDDEN_USER);
@@ -100,7 +104,7 @@ public class TaskService implements ITaskService {
         if (isKickedLeaderProject) throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
         var existsReportOnUsers = reportService.existsByEmailsInAndTaskId(request.getAssignedEmails(), rootTask.getId());
-        if (existsReportOnUsers) throw new AppExc(ErrorCodes.AT_LEAST_ONE_REPORT_ON_TASK);
+        if (existsReportOnUsers) throw new AppExc(ErrorCodes.USER_SUBMITTED_REPORT);
 
         var subTask = taskMapper.newModel(TaskCreationDTO.builder()
             .collectionOfTask(rootTask.getCollection())
@@ -147,10 +151,11 @@ public class TaskService implements ITaskService {
     @Override
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public void updateDescription(Long id, String description, String token) {
-        Task foundTask = taskTransService.findUpdatableTaskByOwner(id, token);
-
-        var existsDoneReport = reportService.existsReportByTaskId(id);
-        if (existsDoneReport) throw new AppExc(ErrorCodes.AT_LEAST_ONE_REPORT_ON_TASK);
+        var foundTask = this.findUpdatableTaskNotHasReport(id, token);
+        //--Checked project in-progress by "rootTask"
+        //--Checked phase is ended by "rootTask"
+        //--Checked collection is ended by "rootTask"
+        //--Checked task is ended by "rootTask"
 
         foundTask.setDescription(description);
         foundTask.setUpdatedTime(LocalDateTime.now());
@@ -160,11 +165,9 @@ public class TaskService implements ITaskService {
     }
 
     @Override
+    @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public void updateReportFormat(Long id, String reportFormat, String token) {
-        Task foundTask = taskTransService.findUpdatableTaskByOwner(id, token);
-
-        var existsDoneReport = reportService.existsReportByTaskId(id);
-        if (existsDoneReport) throw new AppExc(ErrorCodes.AT_LEAST_ONE_REPORT_ON_TASK);
+        Task foundTask = this.findUpdatableTaskNotHasReport(id, token);
 
         foundTask.setReportFormat(reportFormat);
         foundTask.setUpdatedTime(LocalDateTime.now());
@@ -176,11 +179,7 @@ public class TaskService implements ITaskService {
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
     public void update(Long id, UpdatedTaskRequest request, String token) {
-        String username = jwtService.readPayload(token).get("sub");
-        var foundTask = taskTransService.findTaskByOwner(id, username);
-
-        var existsDoneReport = reportService.existsReportByTaskId(id);
-        if (existsDoneReport) throw new AppExc(ErrorCodes.AT_LEAST_ONE_REPORT_ON_TASK);
+        var foundTask = this.findUpdatableTaskNotHasReport(id, token);
 
         taskMapper.mappingBaseInfo(foundTask, request);
 
@@ -198,6 +197,19 @@ public class TaskService implements ITaskService {
         }
         foundTask.setUpdatedTime(LocalDateTime.now());
         taskRepository.save(foundTask);
+    }
+
+    private Task findUpdatableTaskNotHasReport(Long id, String token) {
+        Task foundTask = taskTransService.findUpdatableTaskByOwner(id, token);
+        //--Checked project in-progress by "foundTask"
+        //--Checked phase is ended by "foundTask"
+        //--Checked collection is ended by "foundTask"
+        //--Checked task is ended by "foundTask"
+
+        var existsDoneReport = reportService.existsReportByTaskId(id);
+        if (existsDoneReport) throw new AppExc(ErrorCodes.EXISTS_REPORT_ON_TASK);
+
+        return foundTask;
     }
 
     @Override
@@ -223,6 +235,10 @@ public class TaskService implements ITaskService {
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public void updateDoneTask(Long id, String token) {
         Task updatedTask = taskTransService.findUpdatableTaskByOwner(id, token);
+        //--Checked project in-progress by "updatedTask"
+        //--Checked phase is ended by "updatedTask"
+        //--Checked collection is ended by "updatedTask"
+        //--Checked task is ended by "updatedTask"
 
         var isNotStartedTask = LocalDate.now().isBefore(updatedTask.getStartDate());
         if (isNotStartedTask) throw new AppExc(ErrorCodes.TASK_HASNT_STARTED);
@@ -241,8 +257,13 @@ public class TaskService implements ITaskService {
     }
 
     @Override
+    @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public void updateLockedStatusTask(Long id, StatusDTO request, String token) {
         Task lockedTask = taskTransService.findUpdatableTaskByOwner(id, token);
+        //--Checked project in-progress by "lockedTask"
+        //--Checked phase is ended by "lockedTask"
+        //--Checked collection is ended by "lockedTask"
+        //--Checked task is ended by "lockedTask"
 
         lockedTask.setLocked(request.isStatus());
         taskRepository.save(lockedTask);
@@ -333,11 +354,11 @@ public class TaskService implements ITaskService {
     @Override
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public void delete(Long id, String token) {
-        String username = jwtService.readPayload(token).get("sub");
-        var task = taskRepository.findById(id).orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
-
-        var isOwner = task.getUserInfoCreated().getAccount().getUsername().equals(username);
-        if (!isOwner) throw new AppExc(ErrorCodes.FORBIDDEN_USER);
+        var task = taskTransService.findUpdatableTaskByOwner(id, token);
+        //--Checked project is in-progress by "task"
+        //--Checked phase is ended by "task"
+        //--Checked collection is ended by "task"
+        //--Checked task is ended by "task"
 
         var hasValidTimeForDeletion = task.getCreatedTime().plusHours(12).isAfter(LocalDateTime.now());
         if (!hasValidTimeForDeletion) throw new AppExc(ErrorCodes.TASK_CREATED_IN_LENGTHY_TIME);
@@ -345,7 +366,7 @@ public class TaskService implements ITaskService {
         var existsReportOnUsers = reportService.existsByEmailsInAndTaskId(
             task.getTaskForUsers().stream().map(userTask -> userTask.getAssignedUser().getEmail()).toList(),
             task.getId());
-        if (existsReportOnUsers) throw new AppExc(ErrorCodes.AT_LEAST_ONE_REPORT_ON_TASK);
+        if (existsReportOnUsers) throw new AppExc(ErrorCodes.EXISTS_REPORT_ON_TASK);
 
         if (task.getRootTask() != null)
             this.deleteSubTask(task);
@@ -380,9 +401,25 @@ public class TaskService implements ITaskService {
         return taskRepository.existsByCollectionId(id);
     }
 
+    @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public List<Task> getAllRelatedTasks(Collection collection, String token) {
         String username = jwtService.readPayload(token).get("sub");
-        return taskRepository.findAllByRelatedByCollectionIdAndUsername(collection.getId(), username);
+        return taskRepository
+            .findAllDistinctByCollectionIdAndRootTaskIsNull(collection.getId())
+            .stream().filter(task -> {
+                var isOwner = task.getUserInfoCreated().getAccount().getUsername().equals(username);
+                var isRelatedPM = task.getCollection().getPhase().getProject().getProjectUsers()
+                    .stream().anyMatch(projectRole ->
+                        projectRole.getUserInfo().getAccount().getUsername().equals(username)
+                            && projectRole.getRole().equals(RoleOnEntity.OWNER)
+                    );
+                var isAssignedUser = task.getTaskForUsers().stream()
+                    .anyMatch(userTask -> userTask.getAssignedUser()
+                        .getAccount()
+                        .getUsername().equals(username));
+                return isOwner || isRelatedPM || isAssignedUser;
+            })
+            .toList();
     }
 
     private void validateTask(Task task) {
@@ -415,5 +452,39 @@ public class TaskService implements ITaskService {
                     task.getCollection().getPhase().getProject().getName()
                 ))
                 .build());
+    }
+
+    public int countAllInProjectDoneOnTime(Long projectId) {
+        return taskRepository.countAllInProjectDoneOnTime(projectId);
+    }
+
+    public int countAllInProjectLate(Long projectId) {
+        return taskRepository.countAllInProjectLate(projectId);
+    }
+
+    public boolean existsTaskNotCompletedByCollectionId(Long collectionId) {
+        return taskRepository.existsTaskNotCompletedByCollectionId(collectionId);
+    }
+
+    @Override
+    public TaskDetailResponse getRootTaskDetail(Long taskId, String token) {
+        var username = jwtService.readPayload(token).get("sub");
+        var task = taskRepository.findById(taskId).orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
+
+        var canSeeTask = taskTransService.canSeeTask(task, username);
+        if (!canSeeTask)    throw new AppExc(ErrorCodes.FORBIDDEN_USER);
+
+        return taskMapper.toDetail(task);
+    }
+
+    @Override
+    public TaskDelegatorResponse getTaskDelegator(Long taskId, String token) {
+        var username = jwtService.readPayload(token).get("sub");
+        var task = taskRepository.findById(taskId).orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
+
+        var canSeeTask = taskTransService.canSeeTask(task, username);
+        if (!canSeeTask)    throw new AppExc(ErrorCodes.FORBIDDEN_USER);
+
+        return taskMapper.toDelegator(task);
     }
 }

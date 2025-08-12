@@ -1,17 +1,13 @@
 package com.ptithcm.intern_project.service.interfaces;
 
 import com.ptithcm.intern_project.dto.general.ShortUserInfoDTO;
-import com.ptithcm.intern_project.dto.request.AddedLeaderRequest;
-import com.ptithcm.intern_project.dto.request.KickedLeaderRequest;
-import com.ptithcm.intern_project.dto.request.PhaseRequest;
-import com.ptithcm.intern_project.dto.request.ProjectRequest;
-import com.ptithcm.intern_project.dto.response.IdResponse;
-import com.ptithcm.intern_project.dto.response.PhaseResponse;
-import com.ptithcm.intern_project.dto.response.ProjectRoleResponse;
-import com.ptithcm.intern_project.dto.response.ProjectStatisticResponse;
+import com.ptithcm.intern_project.dto.general.UserStatisticDTO;
+import com.ptithcm.intern_project.dto.request.*;
+import com.ptithcm.intern_project.dto.response.*;
 import com.ptithcm.intern_project.jpa.model.Project;
 
 import java.util.List;
+import java.util.Map;
 
 public interface IProjectService {
 
@@ -38,4 +34,14 @@ public interface IProjectService {
     ProjectStatisticResponse getProjectStatistic(String token);
 
     List<ShortUserInfoDTO> getLeadersToAddIntoProject(Long projectId, String query, String token);
+
+    ProjectOverviewResponse getProjectOverview(Long projectId);
+
+    Map<Long, String> getSimplePhases(Long projectId);
+
+    List<UserStatisticDTO> getUsersStatistic(Long projectId);
+
+    void updateInProgressStatus(Long projectId, String token);
+
+    ProjectDetailResponse getProjectDetail(Long projectId, String token);
 }

@@ -35,15 +35,15 @@ public interface TaskForUsersRepository extends JpaRepository<TaskForUsers, Long
             tfu.assignedUser.department.name,
             auth.name,
             tfu.userTaskStatus,
-            CASE WHEN (
-                SELECT COUNT(r) FROM Report r
-                JOIN r.userTaskCreated utc
-                WHERE utc.id = tfu.id
-                AND r.reportStatus = 'APPROVED'
-            ) > 0 THEN TRUE ELSE FALSE END
-        ) FROM TaskForUsers tfu
+            CASE WHEN SUM(CASE WHEN r.reportStatus = 'APPROVED' THEN 1 ELSE 0 END) > 0
+                 THEN TRUE ELSE FALSE END
+        )
+        FROM TaskForUsers tfu
         JOIN tfu.assignedUser.account.authorities auth
+        LEFT JOIN tfu.reports r
         WHERE tfu.task.id = :taskId
+        GROUP BY tfu.id, tfu.assignedUser.email, tfu.assignedUser.fullName,
+                 tfu.assignedUser.department.name, auth.name, tfu.userTaskStatus
     """)
     List<UserTaskResponse> findAllByTaskId(Long taskId);
 
@@ -80,23 +80,26 @@ public interface TaskForUsersRepository extends JpaRepository<TaskForUsers, Long
     boolean existsByProjectIdAndAssignedUsername(@Param("projectId") Long projectId, @Param("username") String username);
 
     @Query("""
-        SELECT DISTINCT new com.ptithcm.intern_project.dto.response.UserTaskResponse(
+        SELECT new com.ptithcm.intern_project.dto.response.UserTaskResponse(
             tfu.id,
             tfu.assignedUser.email,
             tfu.assignedUser.fullName,
             tfu.assignedUser.department.name,
             auth.name,
             tfu.userTaskStatus,
-            CASE WHEN (
-                SELECT COUNT(r) FROM Report r
-                JOIN r.userTaskCreated utc
-                WHERE utc.id = tfu.id
-                AND r.reportStatus = 'APPROVED'
-            ) > 0 THEN TRUE ELSE FALSE END
-        ) FROM TaskForUsers tfu
+            CASE WHEN COUNT(r) > 0 THEN TRUE ELSE FALSE END
+        )
+        FROM TaskForUsers tfu
         JOIN tfu.assignedUser.account.authorities auth
+        LEFT JOIN tfu.reports r ON r.reportStatus = 'APPROVED'
         WHERE tfu.task.id = :taskId
-        AND tfu.assignedUser.account.username = :username
+          AND tfu.assignedUser.account.username = :username
+        GROUP BY tfu.id, tfu.assignedUser.email, tfu.assignedUser.fullName,
+                 tfu.assignedUser.department.name, auth.name, tfu.userTaskStatus
     """)
-    Optional<UserTaskResponse> findByTaskIdAndAssignedUsername(@Param("taskId") Long taskId, @Param("username") String username);
+    Optional<UserTaskResponse> findByTaskIdAndAssignedUsername(
+        @Param("taskId") Long taskId,
+        @Param("username") String username
+    );
+
 }

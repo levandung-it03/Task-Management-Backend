@@ -5,6 +5,7 @@ import com.ptithcm.intern_project.jpa.model.enums.ReportStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.Check;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -15,9 +16,13 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "report")
+@Check(constraints = """
+    updated_time >= created_time
+    AND (reviewed_time IS NULL OR reviewed_time >= created_time)
+""")
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Report {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -53,5 +58,5 @@ public class Report {
     @OneToMany(mappedBy = "report", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonIgnore
     @Builder.Default    //--Keep default value is our manually set value (or will be null)
-    List<CommentOfReport> commentOfReports = new ArrayList<>();    //--OneToMany must receive a list, and init by ArrayList
+    final List<CommentOfReport> commentOfReports = new ArrayList<>();    //--OneToMany must receive a list, and init by ArrayList
 }

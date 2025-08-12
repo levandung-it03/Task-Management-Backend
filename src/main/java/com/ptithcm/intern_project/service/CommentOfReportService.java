@@ -29,6 +29,9 @@ public class CommentOfReportService {
 
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public CommentOfReport create(Report report, CommentCreationRequest request, String token) {
+        //--Checked project in-progress by "report"
+        //--Checked phase is not ended by "report"
+        //--Checked collection is not ended by "report"
         var userInfoCreating = userInfoService.getUserInfo(token);
 
         var isAssignedUser = userInfoCreating.getAccount().getUsername().equals(

@@ -1,8 +1,10 @@
 package com.ptithcm.intern_project.service;
 
+import com.ptithcm.intern_project.dto.response.CollectionDetailResponse;
 import com.ptithcm.intern_project.dto.response.ShortTaskResponse;
 import com.ptithcm.intern_project.exception.enums.ErrorCodes;
 import com.ptithcm.intern_project.exception.AppExc;
+import com.ptithcm.intern_project.jpa.model.enums.ProjectStatus;
 import com.ptithcm.intern_project.mapper.CollectionMapper;
 import com.ptithcm.intern_project.dto.request.CollectionRequest;
 import com.ptithcm.intern_project.dto.request.TaskRequest;
@@ -21,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 
@@ -41,7 +44,27 @@ public class CollectionService implements ICollectionService {
         var collectionHasTask = collectionRepository.findById(collectionId)
             .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
 
+        if (request.getStartDate().isBefore(collectionHasTask.getStartDate()))
+            throw new AppExc(ErrorCodes.START_BEFORE_COLLECTION);
+
+        if (request.getDeadline().isAfter(collectionHasTask.getDueDate()))
+            throw new AppExc(ErrorCodes.END_AFTER_COLLECTION);
+
+        this.validateEndedParentEntities(collectionHasTask);
+
         return taskService.create(collectionHasTask, request, token);
+    }
+
+    private void validateEndedParentEntities(Collection collectionHasTask) {
+        var isProjectInProgress = !collectionHasTask.getPhase().getProject().getStatus()
+            .equals(ProjectStatus.IN_PROGRESS);
+        if (!isProjectInProgress)   throw new AppExc(ErrorCodes.PROJECT_IS_NOT_IN_PROGRESS);
+
+        var isPhaseEnded = collectionHasTask.getPhase().getEndDate() != null;
+        if (isPhaseEnded)   throw new AppExc(ErrorCodes.PHASE_ENDED);
+
+        var isCollectionEnded = collectionHasTask.getEndDate() != null;
+        if (isCollectionEnded)   throw new AppExc(ErrorCodes.COLLECTION_ENDED);
     }
 
     @Override
@@ -63,9 +86,7 @@ public class CollectionService implements ICollectionService {
             .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
 
         this.validateCollection(request, collection.getPhase());
-
-        var isEndedProject = collection.getPhase().getProject().getEndDate() != null;
-        if (isEndedProject) throw new AppExc(ErrorCodes.PROJECT_WAS_CLOSED);
+        this.validateEndedParentEntities(collection);
 
         var isOwner = collection.getUserInfoCreated().getAccount().getUsername().equals(username);
         if (!isOwner)   throw new AppExc(ErrorCodes.FORBIDDEN_USER);
@@ -85,6 +106,8 @@ public class CollectionService implements ICollectionService {
             .getAccount()
             .getUsername().equals(username);
         if (!isOwner)   throw new AppExc(ErrorCodes.FORBIDDEN_USER);
+
+        this.validateEndedParentEntities(deletedCollection);
 
         var hasRelatedData = taskService.existsByCollectionId(id);
         if (hasRelatedData) throw new AppExc(ErrorCodes.CANT_DELETE_COLLECTION_WITH_TASKS);
@@ -116,6 +139,8 @@ public class CollectionService implements ICollectionService {
 
     public IdResponse createCollection(Phase phase, CollectionRequest request, String token) {
         var createdUser = userInfoService.getUserInfo(token);
+        //--Checked project in-progress by "phase"
+        //--Checked phase is not ended
 
         this.validateCollection(request, phase);
 
@@ -127,11 +152,11 @@ public class CollectionService implements ICollectionService {
     }
     
     public void validateCollection(CollectionRequest request, Phase phase) {
-        var isStartingBeforeProject = request.getStartDate().isBefore(phase.getStartDate());
-        if (isStartingBeforeProject)    throw new AppExc(ErrorCodes.START_BEFORE_PROJECT);
+        var isStartingBeforePhase = request.getStartDate().isBefore(phase.getStartDate());
+        if (isStartingBeforePhase)    throw new AppExc(ErrorCodes.START_BEFORE_PHASE);
 
-        var isEndingAfterProject = request.getDueDate().isAfter(phase.getDueDate());
-        if (isEndingAfterProject)    throw new AppExc(ErrorCodes.END_AFTER_PROJECT);
+        var isEndingAfterPhase = request.getDueDate().isAfter(phase.getDueDate());
+        if (isEndingAfterPhase)    throw new AppExc(ErrorCodes.END_AFTER_PHASE);
     }
 
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
@@ -144,5 +169,42 @@ public class CollectionService implements ICollectionService {
             return collectionRepository.findAllByPhaseId(phase.getId());
 
         return collectionRepository.findAllByAssignedUsernameAndPhaseId(phase.getId(), username);
+    }
+
+    public List<Collection> findAllByPhaseId(Long phaseId) {
+        return collectionRepository.findAllByPhaseId(phaseId);
+    }
+
+    @Override
+    public void completeCollection(Long id, String token) {
+        String username = jwtService.readPayload(token).get("sub");
+        var collection = collectionRepository.findById(id).orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
+
+        var isOwner = collection.getUserInfoCreated().getAccount().getUsername().equals(username);
+        if (!isOwner)   throw new AppExc(ErrorCodes.FORBIDDEN_USER);
+
+        this.validateEndedParentEntities(collection);
+
+        var existsTaskNotCompleted = taskService.existsTaskNotCompletedByCollectionId(collection.getId());
+        if (existsTaskNotCompleted)   throw new AppExc(ErrorCodes.CANT_COMPLETE_COLLECTION);
+
+        collection.setEndDate(LocalDate.now());
+        collectionRepository.save(collection);
+    }
+
+    @Override
+    public CollectionDetailResponse getCollectionDetail(Long collectionId, String token) {
+        String username = jwtService.readPayload(token).get("sub");
+        var collection = collectionRepository.findById(collectionId)
+            .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
+
+        var canSeeCollection = collectionTransService.canSeeCollections(collection.getPhase().getProject(), username);
+        if (!canSeeCollection)  throw new AppExc(ErrorCodes.FORBIDDEN_USER);
+
+        return collectionMapper.toDetail(collection);
+    }
+
+    public boolean existsCollectionNotCompletedByPhaseId(Long phaseId) {
+        return collectionRepository.existsCollectionNotCompletedByPhaseId(phaseId);
     }
 }

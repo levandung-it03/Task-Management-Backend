@@ -3,11 +3,8 @@ package com.ptithcm.intern_project.service.interfaces;
 import com.ptithcm.intern_project.dto.general.StatusDTO;
 import com.ptithcm.intern_project.dto.request.TaskRequest;
 import com.ptithcm.intern_project.dto.request.UpdatedTaskRequest;
-import com.ptithcm.intern_project.dto.response.IdResponse;
+import com.ptithcm.intern_project.dto.response.*;
 import com.ptithcm.intern_project.dto.general.ShortUserInfoDTO;
-import com.ptithcm.intern_project.dto.response.ShortTaskResponse;
-import com.ptithcm.intern_project.dto.response.TaskResponse;
-import com.ptithcm.intern_project.dto.response.UserTaskResponse;
 
 import java.util.List;
 
@@ -38,4 +35,8 @@ public interface ITaskService {
     List<ShortUserInfoDTO> searchRootTaskUsers(Long rootId, String query, String token);
 
     void delete(Long id, String token);
+
+    TaskDetailResponse getRootTaskDetail(Long taskId, String token);
+
+    TaskDelegatorResponse getTaskDelegator(Long taskId, String token);
 }

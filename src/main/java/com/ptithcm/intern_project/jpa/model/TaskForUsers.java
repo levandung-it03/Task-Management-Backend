@@ -1,11 +1,14 @@
 package com.ptithcm.intern_project.jpa.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ptithcm.intern_project.jpa.model.enums.UserTaskStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -37,4 +40,9 @@ public class TaskForUsers {
 
     @Column(name = "updated_time", nullable = false)
     LocalDateTime updatedTime = LocalDateTime.now();
+
+    @OneToMany(mappedBy = "userTaskCreated", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnore
+    @Builder.Default    //--Keep default value is our manually set value (or will be null)
+    final List<Report> reports = new ArrayList<>();
 }

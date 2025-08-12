@@ -85,7 +85,8 @@ public class GroupHasUsersService implements IGroupHasUsersService {
     }
 
     public boolean isNotAdminOnGroup(Long groupId, String userEmailOnGroup) {
-        var currentUserInGroup = groupUserRepository.findByGroupIdAndJoinedUserInfoEmail(groupId, userEmailOnGroup)
+        var currentUserInGroup = groupUserRepository
+            .findByGroupIdAndJoinedUserInfoEmail(groupId, userEmailOnGroup)
             .orElseThrow(() -> new AppExc(ErrorCodes.FORBIDDEN_USER));
         return !currentUserInGroup.getRole().equals(GroupRole.ADMIN);
     }
@@ -98,12 +99,12 @@ public class GroupHasUsersService implements IGroupHasUsersService {
         return groupUserRepository.findAllUsersGroupToAssign(id, username);
     }
 
-    public GroupHasUsers updateGroupUserStatus(Long groupId, String token, boolean status) {
+    public GroupHasUsers updateGroupUserStatus(Long userGroupId, String token, boolean status) {
         var curUser = userInfoService.getUserInfo(token);
-        var updatedGroupUser = groupUserRepository.findById(groupId)
+        var updatedGroupUser = groupUserRepository.findById(userGroupId)
             .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
 
-        if (this.isNotAdminOnGroup(groupId, curUser.getEmail()))
+        if (this.isNotAdminOnGroup(updatedGroupUser.getGroup().getId(), curUser.getEmail()))
             throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
         if (updatedGroupUser.getJoinedUserInfo().getEmail().equals(curUser.getEmail()))

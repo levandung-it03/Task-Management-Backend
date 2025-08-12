@@ -4,6 +4,7 @@ import com.ptithcm.intern_project.dto.response.UserTaskResponse;
 import com.ptithcm.intern_project.exception.enums.ErrorCodes;
 import com.ptithcm.intern_project.exception.AppExc;
 import com.ptithcm.intern_project.jpa.model.UserInfo;
+import com.ptithcm.intern_project.jpa.model.enums.ProjectStatus;
 import com.ptithcm.intern_project.mapper.ReportMapper;
 import com.ptithcm.intern_project.mapper.UserInfoMapper;
 import com.ptithcm.intern_project.dto.general.ShortUserInfoDTO;
@@ -61,7 +62,7 @@ public class TaskForUsersService implements ITaskForUsersService {
                 .build()
             ).toList()
         );
-        task.setTaskForUsers(savedRelationships);
+        task.getTaskForUsers().addAll(savedRelationships);
         return savedRelationships;
     }
 
@@ -80,8 +81,7 @@ public class TaskForUsersService implements ITaskForUsersService {
         if (!isAssignedUser || isKickedOut)
             throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
-        var isProjectActive = taskUserCreating.getTask().getCollection().getPhase().getProject().isActive();
-        if (!isProjectActive)   throw new AppExc(ErrorCodes.PROJECT_WAS_CLOSED);
+        taskForUsersTransService.validateEndedParentEntities(taskUserCreating);
 
         var isNotStartedTask = LocalDate.now().isBefore(taskUserCreating.getTask().getStartDate());
         if (isNotStartedTask)   throw new AppExc(ErrorCodes.TASK_HASNT_STARTED);
@@ -151,6 +151,10 @@ public class TaskForUsersService implements ITaskForUsersService {
 
     public void kickUser(Long taskUserId, String token) {
         var kickedUserTask = taskForUsersTransService.updateTaskUserStatus(taskUserId, token, UserTaskStatus.KICKED_OUT);
+        //--Checked project in-progress by "kickedUserTask"
+        //--Checked phase is not ended by "reAddedUserTask"
+        //--Checked collection is not ended by "reAddedUserTask"
+        //--Checked task is not ended by "reAddedUserTask"
 
         var isAssignedUserHasReport = reportService.existsReportByUserTaskCreatedId(kickedUserTask.getId());
         if (isAssignedUserHasReport) {
@@ -162,6 +166,11 @@ public class TaskForUsersService implements ITaskForUsersService {
 
     public void reAddUser(Long taskUserId, String token) {
         var reAddedUserTask = taskForUsersTransService.updateTaskUserStatus(taskUserId, token, UserTaskStatus.JOINED);
+        //--Checked project in-progress by "reAddedUserTask"
+        //--Checked phase is not ended by "reAddedUserTask"
+        //--Checked collection is not ended by "reAddedUserTask"
+        //--Checked task is not ended by "reAddedUserTask"
+
         taskForUsersRepository.save(reAddedUserTask);
     }
 

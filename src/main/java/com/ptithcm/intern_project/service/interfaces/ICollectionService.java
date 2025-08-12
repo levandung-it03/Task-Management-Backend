@@ -2,7 +2,9 @@ package com.ptithcm.intern_project.service.interfaces;
 
 import com.ptithcm.intern_project.dto.request.CollectionRequest;
 import com.ptithcm.intern_project.dto.request.TaskRequest;
+import com.ptithcm.intern_project.dto.response.CollectionDetailResponse;
 import com.ptithcm.intern_project.dto.response.IdResponse;
+import com.ptithcm.intern_project.dto.response.ProjectDetailResponse;
 import com.ptithcm.intern_project.dto.response.ShortTaskResponse;
 import com.ptithcm.intern_project.jpa.model.Collection;
 
@@ -19,4 +21,8 @@ public interface ICollectionService {
     void delete(Long id, String token);
 
     List<ShortTaskResponse> getAllRelatedTasks(Long collectionId, String token);
+
+    void completeCollection(Long id, String token);
+
+    CollectionDetailResponse getCollectionDetail(Long collectionId, String token);
 }

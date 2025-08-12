@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.Check;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -14,9 +15,10 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "`group`")
+@Check(constraints = "updated_time >= created_time")
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Group {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

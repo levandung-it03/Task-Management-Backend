@@ -1,5 +1,6 @@
 package com.ptithcm.intern_project.dto.request;
 
+import com.ptithcm.intern_project.annotation.constraint.FutureDateConstraint;
 import com.ptithcm.intern_project.jpa.model.enums.TaskLevel;
 import com.ptithcm.intern_project.jpa.model.enums.TaskPriority;
 import com.ptithcm.intern_project.jpa.model.enums.TaskType;
@@ -26,6 +27,7 @@ public class UpdatedTaskRequest {
     TaskPriority priority;
 
     @NotNull
+    @FutureDateConstraint
     LocalDate deadline;
 
     String addedUserEmail;

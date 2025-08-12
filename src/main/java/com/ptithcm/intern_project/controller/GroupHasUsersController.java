@@ -37,7 +37,7 @@ public class GroupHasUsersController {
         @PathVariable("id") Long id,
         @RequestHeader("Authorization") String token) {
         groupHasUsersService.kickUser(id, token);
-        return RestApiResponse.fromScs(SuccessCodes.GET_DETAIL);
+        return RestApiResponse.fromScs(SuccessCodes.UPDATED);
     }
 
     @Operation(description = "Re-add User by Group-User-Id")
@@ -46,7 +46,7 @@ public class GroupHasUsersController {
         @PathVariable("id") Long id,
         @RequestHeader("Authorization") String token) {
         groupHasUsersService.reAddUser(id, token);
-        return RestApiResponse.fromScs(SuccessCodes.GET_DETAIL);
+        return RestApiResponse.fromScs(SuccessCodes.UPDATED);
     }
 
 }

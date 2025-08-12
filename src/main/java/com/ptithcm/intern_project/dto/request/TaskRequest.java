@@ -1,5 +1,6 @@
 package com.ptithcm.intern_project.dto.request;
 
+import com.ptithcm.intern_project.annotation.constraint.FutureDateConstraint;
 import com.ptithcm.intern_project.annotation.constraint.ListTypeConstraint;
 import com.ptithcm.intern_project.jpa.model.enums.TaskLevel;
 import com.ptithcm.intern_project.jpa.model.enums.TaskPriority;
@@ -25,9 +26,11 @@ public class TaskRequest {
     String name;
 
     @NotNull
+    @FutureDateConstraint
     LocalDate deadline;
 
     @NotNull
+    @FutureDateConstraint
     LocalDate startDate;
 
     @NotNull

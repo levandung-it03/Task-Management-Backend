@@ -4,6 +4,7 @@ import com.ptithcm.intern_project.dto.request.CollectionRequest;
 import com.ptithcm.intern_project.dto.request.PhaseRequest;
 import com.ptithcm.intern_project.dto.response.CollectionResponse;
 import com.ptithcm.intern_project.dto.response.IdResponse;
+import com.ptithcm.intern_project.dto.response.PhaseDetailResponse;
 import com.ptithcm.intern_project.jpa.model.Phase;
 
 import java.util.List;
@@ -19,4 +20,8 @@ public interface IPhaseService {
     IdResponse createCollection(Long phaseId, CollectionRequest request, String token);
 
     List<CollectionResponse> getAllRelatedCollections(Long phaseId, String token);
+
+    void completePhase(Long id, String token);
+
+    PhaseDetailResponse getPhaseDetail(Long phaseId, String token);
 }

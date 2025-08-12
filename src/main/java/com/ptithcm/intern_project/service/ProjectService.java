@@ -2,23 +2,17 @@ package com.ptithcm.intern_project.service;
 
 import com.ptithcm.intern_project.dto.general.EmailTaskDTO;
 import com.ptithcm.intern_project.dto.general.ShortUserInfoDTO;
-import com.ptithcm.intern_project.dto.request.KickedLeaderRequest;
-import com.ptithcm.intern_project.dto.response.PhaseResponse;
-import com.ptithcm.intern_project.dto.response.ProjectStatisticResponse;
+import com.ptithcm.intern_project.dto.general.UserStatisticDTO;
+import com.ptithcm.intern_project.dto.request.*;
+import com.ptithcm.intern_project.dto.response.*;
 import com.ptithcm.intern_project.exception.enums.ErrorCodes;
 import com.ptithcm.intern_project.exception.AppExc;
-import com.ptithcm.intern_project.jpa.model.UserInfo;
+import com.ptithcm.intern_project.jpa.model.*;
+import com.ptithcm.intern_project.jpa.model.enums.ProjectStatus;
+import com.ptithcm.intern_project.jpa.model.enums.ReportStatus;
 import com.ptithcm.intern_project.mapper.PhaseMapper;
 import com.ptithcm.intern_project.mapper.ProjectMapper;
 import com.ptithcm.intern_project.mapper.ProjectRoleMapper;
-import com.ptithcm.intern_project.dto.request.AddedLeaderRequest;
-import com.ptithcm.intern_project.dto.request.PhaseRequest;
-import com.ptithcm.intern_project.dto.request.ProjectRequest;
-import com.ptithcm.intern_project.dto.response.IdResponse;
-import com.ptithcm.intern_project.dto.response.ProjectRoleResponse;
-import com.ptithcm.intern_project.jpa.model.Project;
-import com.ptithcm.intern_project.jpa.model.ProjectRole;
-import com.ptithcm.intern_project.jpa.model.Task;
 import com.ptithcm.intern_project.jpa.model.enums.RoleOnEntity;
 import com.ptithcm.intern_project.jpa.repository.ProjectRepository;
 import com.ptithcm.intern_project.mapper.UserInfoMapper;
@@ -35,10 +29,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -56,6 +47,9 @@ public class ProjectService implements IProjectService {
     UserInfoMapper userInfoMapper;
     EmailQueueService emailQueueService;
     EmailService emailService;
+    ReportService reportService;
+    TaskService taskService;
+    TaskForUsersService taskForUsersService;
 
     @Override
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
@@ -71,9 +65,9 @@ public class ProjectService implements IProjectService {
                 .role(RoleOnEntity.OWNER)
                 .build())
         );
-        project.setProjectUsers(projectRoles);
+        project.getProjectUsers().addAll(projectRoles);
 
-        savedProject.setProjectUsers(new ArrayList<>(projectRoles));
+        savedProject.getProjectUsers().addAll(new ArrayList<>(projectRoles));
         return IdResponse.builder().id(savedProject.getId()).build();
     }
 
@@ -85,6 +79,9 @@ public class ProjectService implements IProjectService {
             .collect(Collectors.toMap(
                 projRole -> projRole.getUserInfo().getEmail(),
                 projRole -> projRole));
+
+        var isProjectInProgress = project.getStatus().equals(ProjectStatus.IN_PROGRESS);
+        if (!isProjectInProgress) throw new AppExc(ErrorCodes.PROJECT_IS_NOT_IN_PROGRESS);
 
         var newLeadersInfo = userInfoService.findAllByEmailIn(request.getAssignedEmails());
         var newProjectRoles = newLeadersInfo.stream()
@@ -106,6 +103,7 @@ public class ProjectService implements IProjectService {
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public void update(Long id, ProjectRequest request, String token) {
         var project = this.getUpdatableProject(id, token);
+        //--Checked in progress by "project"
 
         projectMapper.updateModel(project, request);
         var updatedProject = projectRepository.save(project);
@@ -115,15 +113,10 @@ public class ProjectService implements IProjectService {
 
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public Project getUpdatableProject(Long id, String token) {
-        String username = jwtService.readPayload(token).get("sub");
-        var project = projectRepository.findById(id)
-            .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_TOKEN));
+        var project = this.getProjectByOwner(id, token);
 
-        var isProjectOwner = project.getUserInfoCreated().getAccount().getUsername().equals(username);
-        if (!isProjectOwner)    throw new AppExc(ErrorCodes.FORBIDDEN_USER);
-
-        var isEndedProject = project.getEndDate() != null;
-        if (isEndedProject)     throw new AppExc(ErrorCodes.FORBIDDEN_USER);
+        var isProjectInProgress = project.getStatus().equals(ProjectStatus.IN_PROGRESS);
+        if (!isProjectInProgress) throw new AppExc(ErrorCodes.PROJECT_IS_NOT_IN_PROGRESS);
 
         return project;
     }
@@ -132,6 +125,8 @@ public class ProjectService implements IProjectService {
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public void kickLeader(Long id, KickedLeaderRequest request, String token) {
         var project = this.getUpdatableProject(id, token);
+        //--Checked in progress by "project"
+
         var kickedLeader = projectRoleService.findByUserInfoEmail(request.getKickedEmail())
             .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_TOKEN));
 
@@ -165,15 +160,14 @@ public class ProjectService implements IProjectService {
     @Override
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public void delete(Long id, String token) {
-        var project = this.getUpdatableProject(id, token);
+        var project = this.getProjectByOwner(id, token);
 
-        var canDeleteProject = project.getProjectUsers().isEmpty() && !phaseService.existsByProjectId(project.getId());
-        if (canDeleteProject) {
-            projectRepository.delete(project);
-            return;
-        }
-        project.setActive(false);
-        projectRepository.save(project);
+        var canDeleteProject = project.getProjectUsers().isEmpty()
+            && !phaseService.existsByProjectId(project.getId());
+        if (!canDeleteProject)
+            throw new AppExc(ErrorCodes.CANT_DELETE_PROJECT_WITH_PHASE);
+
+        projectRepository.delete(project);
     }
 
     @Override
@@ -215,7 +209,11 @@ public class ProjectService implements IProjectService {
     public void complete(String token, Long id) {
         var updatedProject = this.getUpdatableProject(id, token);
 
+        var existNotCompletePhase = phaseService.existsNotCompleteByProjectId(updatedProject.getId());
+        if (existNotCompletePhase)  throw new AppExc(ErrorCodes.CANT_COMPLETE_PROJECT);
+
         updatedProject.setEndDate(LocalDate.now());
+        updatedProject.setStatus(ProjectStatus.CLOSED);
         projectRepository.save(updatedProject);
 
         this.notifyViaEmail(updatedProject.getProjectUsers(), ProjectMsg.COMPLETED_PROJECT);
@@ -303,5 +301,65 @@ public class ProjectService implements IProjectService {
                 .body(projectMsg.format(project.getName()))
                 .build());
         }
+    }
+
+    @Override
+    public ProjectOverviewResponse getProjectOverview(Long projectId) {
+        var project = projectRepository.findById(projectId)
+            .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
+        var approvedReports = reportService.countAllInProjectByStatus(projectId, ReportStatus.APPROVED.toString());
+        var rejectedReports = reportService.countAllInProjectByStatus(projectId, ReportStatus.REJECTED.toString());
+        var doneTaskOnTime = taskService.countAllInProjectDoneOnTime(projectId);
+        var doneTaskLate = taskService.countAllInProjectLate(projectId);
+
+        var response = projectMapper.toResponse(project);
+        response.setTotalApproved(approvedReports);
+        response.setTotalRejected(rejectedReports);
+        response.setTotalDoneTaskOnTime(doneTaskOnTime);
+        response.setTotalDoneTaskLate(doneTaskLate);
+        return response;
+    }
+
+    @Override
+    public Map<Long, String> getSimplePhases(Long projectId) {
+        return phaseService.findAllProjectId(projectId).stream()
+            .collect(Collectors.toMap(Phase::getId, Phase::getName));
+    }
+
+    @Override
+    @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
+    public List<UserStatisticDTO> getUsersStatistic(Long projectId) {
+        List<TaskForUsers> usersTask = projectRepository.findAllUsersTaskByProjectId(projectId);
+        return usersTask.stream()
+            .map(userTask -> userInfoMapper.toStatisticUser(userTask.getReports()))
+            .toList();
+    }
+
+    @Override
+    public void updateInProgressStatus(Long projectId, String token) {
+        Project project = this.getProjectByOwner(projectId, token);
+
+        project.setStatus(ProjectStatus.IN_PROGRESS);
+        projectRepository.save(project);
+    }
+
+    @Override
+    @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
+    public ProjectDetailResponse getProjectDetail(Long projectId, String token) {
+        String username = jwtService.readPayload(token).get("sub");
+        var project = projectRepository.findById(projectId)
+            .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
+
+        var isProjectMember = project.getProjectUsers().stream()
+            .anyMatch(projectRole -> projectRole.getUserInfo()
+                .getAccount()
+                .getUsername().equals(username));
+        var isAssignedUser = taskForUsersService
+            .existsByProjectIdAndAssignedUsername(project.getId(), username);
+
+        var canSeeProject = isProjectMember || isAssignedUser;
+        if (!canSeeProject) throw new AppExc(ErrorCodes.FORBIDDEN_USER);
+
+        return projectMapper.toDetail(project);
     }
 }

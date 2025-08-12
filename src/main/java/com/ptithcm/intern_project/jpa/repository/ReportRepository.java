@@ -34,4 +34,12 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
     boolean existsReportByTaskId(@Param("taskId") Long id);
 
     boolean existsReportByUserTaskCreatedId(Long userTaskId);
+
+    @Query("""
+    SELECT COUNT(r)
+        FROM Report r
+        WHERE r.userTaskCreated.task.collection.phase.project.id = :projectId
+          AND CAST(r.reportStatus AS string) LIKE CONCAT('%', :status, '%')
+    """)
+    int countAllInProjectByStatus(@Param("projectId") Long projectId, @Param("status") String status);
 }

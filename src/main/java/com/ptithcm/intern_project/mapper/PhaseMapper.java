@@ -1,17 +1,20 @@
 package com.ptithcm.intern_project.mapper;
 
+import com.ptithcm.intern_project.dto.general.EntityDelegatorDTO;
 import com.ptithcm.intern_project.dto.request.PhaseRequest;
+import com.ptithcm.intern_project.dto.response.PhaseDetailResponse;
 import com.ptithcm.intern_project.dto.response.PhaseResponse;
 import com.ptithcm.intern_project.jpa.model.Phase;
 import com.ptithcm.intern_project.jpa.model.UserInfo;
-import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
 @Component
-@NoArgsConstructor
+@AllArgsConstructor
 public class PhaseMapper {
+    UserInfoMapper userInfoMapper;
 
     public Phase newModel(PhaseRequest request, UserInfo userInfoCreated) {
         return Phase.builder()
@@ -43,6 +46,24 @@ public class PhaseMapper {
             .endDate(phase.getEndDate())
             .createdTime(phase.getCreatedTime())
             .updatedTime(phase.getUpdatedTime())
+            .build();
+    }
+
+    public PhaseDetailResponse toDetail(Phase phase) {
+        return PhaseDetailResponse.builder()
+            .id(phase.getId())
+            .userInfoCreated(userInfoMapper.shortenUserInfo(phase.getUserInfoCreated()))
+            .name(phase.getName())
+            .description(phase.getDescription())
+            .startDate(phase.getStartDate())
+            .dueDate(phase.getDueDate())
+            .endDate(phase.getEndDate())
+            .createdTime(phase.getCreatedTime())
+            .updatedTime(phase.getUpdatedTime())
+            .projectInfo(EntityDelegatorDTO.builder()
+                .id(phase.getProject().getId())
+                .name(phase.getProject().getName())
+                .build())
             .build();
     }
 }

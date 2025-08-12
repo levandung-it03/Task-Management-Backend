@@ -1,8 +1,11 @@
 package com.ptithcm.intern_project.mapper;
 
+import com.ptithcm.intern_project.dto.general.EntityDelegatorDTO;
 import com.ptithcm.intern_project.dto.general.TaskCreationDTO;
 import com.ptithcm.intern_project.dto.request.UpdatedTaskRequest;
 import com.ptithcm.intern_project.dto.response.ShortTaskResponse;
+import com.ptithcm.intern_project.dto.response.TaskDelegatorResponse;
+import com.ptithcm.intern_project.dto.response.TaskDetailResponse;
 import com.ptithcm.intern_project.dto.response.TaskResponse;
 import com.ptithcm.intern_project.jpa.model.Task;
 import lombok.AllArgsConstructor;
@@ -73,5 +76,63 @@ public class TaskMapper {
             .updatedTime(foundTask.getUpdatedTime())
             .hasAtLeastOneReport(hasAtLeastOneReport)
             .build();
+    }
+
+    public TaskDetailResponse toDetail(Task task) {
+        return TaskDetailResponse.builder()
+            .id(task.getId())
+            .userInfoCreated(userInfoMapper.shortenUserInfo(task.getUserInfoCreated()))
+            .name(task.getName())
+            .level(task.getLevel())
+            .taskType(task.getTaskType())
+            .priority(task.getPriority())
+            .isLocked(task.isLocked())
+            .startDate(task.getStartDate())
+            .endDate(task.getEndDate())
+            .deadline(task.getDeadline())
+            .createdTime(task.getCreatedTime())
+            .updatedTime(task.getUpdatedTime())
+            .taskInfo(EntityDelegatorDTO.builder()
+                .id(task.getRootTask().getId())
+                .name(task.getRootTask().getName())
+                .build())
+            .collectionInfo(EntityDelegatorDTO.builder()
+                .id(task.getCollection().getId())
+                .name(task.getCollection().getName())
+                .build())
+            .phaseInfo(EntityDelegatorDTO.builder()
+                .id(task.getCollection().getPhase().getId())
+                .name(task.getCollection().getPhase().getName())
+                .build())
+            .projectInfo(EntityDelegatorDTO.builder()
+                .id(task.getCollection().getPhase().getProject().getId())
+                .name(task.getCollection().getPhase().getProject().getName())
+                .build())
+            .build();
+    }
+
+    public TaskDelegatorResponse toDelegator(Task task) {
+        var response = TaskDelegatorResponse.builder()
+            .collectionInfo(EntityDelegatorDTO.builder()
+                .id(task.getCollection().getId())
+                .name(task.getCollection().getName())
+                .build())
+            .phaseInfo(EntityDelegatorDTO.builder()
+                .id(task.getCollection().getPhase().getId())
+                .name(task.getCollection().getPhase().getName())
+                .build())
+            .projectInfo(EntityDelegatorDTO.builder()
+                .id(task.getCollection().getPhase().getProject().getId())
+                .name(task.getCollection().getPhase().getProject().getName())
+                .build())
+            .build();
+
+        if (task.getRootTask() != null)
+            response.setTaskInfo(EntityDelegatorDTO.builder()
+                .id(task.getRootTask().getId())
+                .name(task.getRootTask().getName())
+                .build());
+
+        return response;
     }
 }

@@ -3,6 +3,7 @@ package com.ptithcm.intern_project.service.trans;
 import com.ptithcm.intern_project.exception.enums.ErrorCodes;
 import com.ptithcm.intern_project.exception.AppExc;
 import com.ptithcm.intern_project.jpa.model.Task;
+import com.ptithcm.intern_project.jpa.model.enums.ProjectStatus;
 import com.ptithcm.intern_project.jpa.model.enums.UserTaskStatus;
 import com.ptithcm.intern_project.jpa.repository.TaskRepository;
 import com.ptithcm.intern_project.security.service.JwtService;
@@ -27,6 +28,17 @@ public class TaskTransService {
     public Task findUpdatableTaskByOwner(Long id, String tokenOwner) {
         String username = jwtService.readPayload(tokenOwner).get("sub");
         var foundTask = this.findTaskByOwner(id, username);
+
+        var isInProgressProject = foundTask
+            .getCollection().getPhase().getProject()
+            .getStatus().equals(ProjectStatus.IN_PROGRESS);
+        if (!isInProgressProject)   throw new AppExc(ErrorCodes.PROJECT_IS_NOT_IN_PROGRESS);
+
+        var isPhaseEnded = foundTask.getCollection().getPhase().getEndDate() != null;
+        if (isPhaseEnded) throw new AppExc(ErrorCodes.PHASE_ENDED);
+
+        var isCollectionEnded = foundTask.getCollection().getEndDate() != null;
+        if (isCollectionEnded) throw new AppExc(ErrorCodes.COLLECTION_ENDED);
 
         if (foundTask.getEndDate() != null)
             throw new AppExc(ErrorCodes.TASK_ENDED);

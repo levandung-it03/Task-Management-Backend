@@ -2,9 +2,7 @@ package com.ptithcm.intern_project.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ptithcm.intern_project.dto.general.ShortUserInfoDTO;
-import com.ptithcm.intern_project.jpa.model.enums.TaskLevel;
-import com.ptithcm.intern_project.jpa.model.enums.TaskPriority;
-import com.ptithcm.intern_project.jpa.model.enums.TaskType;
+import com.ptithcm.intern_project.jpa.model.enums.ProjectStatus;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -17,17 +15,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class TaskResponse {
-    long id;
-    ShortUserInfoDTO userInfo;
-    Long rootTaskId;
+public class ProjectDetailResponse {
+    Long id;
     String name;
     String description;
-    String reportFormat;
-    TaskLevel level;
-    TaskType taskType;
-    TaskPriority priority;
-    boolean isLocked;
+
+    ShortUserInfoDTO userInfoCreated;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     LocalDate startDate;
@@ -36,13 +29,13 @@ public class TaskResponse {
     LocalDate endDate;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    LocalDate deadline;
+    LocalDate dueDate;
+
+    ProjectStatus status;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime createdTime;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime updatedTime;
-
-    boolean hasAtLeastOneReport;
 }

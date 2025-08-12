@@ -7,6 +7,7 @@ import com.ptithcm.intern_project.jpa.model.enums.TaskType;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.Check;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -18,9 +19,16 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "task")
+@Table(
+    name = "task",
+    uniqueConstraints = {@UniqueConstraint(columnNames = {"collection_id", "name"})})
+@Check(constraints = """
+    updated_time >= created_time
+    AND (end_date IS NULL OR end_date >= start_date)
+    AND deadline >= start_date
+""")
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -82,5 +90,5 @@ public class Task {
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonIgnore
     @Builder.Default    //--Keep default value is our manually set value (or will be null)
-    List<TaskForUsers> taskForUsers = new ArrayList<>();    //--OneToMany must receive a list, and init by ArrayList
+    final List<TaskForUsers> taskForUsers = new ArrayList<>();    //--OneToMany must receive a list, and init by ArrayList
 }

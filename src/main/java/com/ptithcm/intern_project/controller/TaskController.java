@@ -1,16 +1,13 @@
 package com.ptithcm.intern_project.controller;
 
 import com.ptithcm.intern_project.dto.general.StatusDTO;
-import com.ptithcm.intern_project.dto.response.UserTaskResponse;
+import com.ptithcm.intern_project.dto.response.*;
 import com.ptithcm.intern_project.exception.enums.SuccessCodes;
 import com.ptithcm.intern_project.dto.general.RestApiResponse;
 import com.ptithcm.intern_project.dto.request.TaskRequest;
 import com.ptithcm.intern_project.dto.request.UpdatedContentRequest;
 import com.ptithcm.intern_project.dto.request.UpdatedTaskRequest;
-import com.ptithcm.intern_project.dto.response.IdResponse;
 import com.ptithcm.intern_project.dto.general.ShortUserInfoDTO;
-import com.ptithcm.intern_project.dto.response.ShortTaskResponse;
-import com.ptithcm.intern_project.dto.response.TaskResponse;
 import com.ptithcm.intern_project.service.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -178,5 +175,17 @@ public class TaskController {
         @RequestHeader("Authorization") String token) {
         taskService.delete(id, token);
         return RestApiResponse.fromScs(SuccessCodes.DELETED);
+    }
+
+    @Operation(description = "Get Task Detail (to support Create-Task Page)")
+    @GetMapping({
+        ROLE_EMP + "/v1/task/{taskId}/delegator",
+        ROLE_PM + "/v1/task/{taskId}/delegator",
+        ROLE_LEAD + "/v1/task/{taskId}/delegator"})
+    public ResponseEntity<RestApiResponse<TaskDelegatorResponse>> getTaskDelegator(
+        @PathVariable("taskId") Long taskId,
+        @RequestHeader("Authorization") String token) {
+        return RestApiResponse.fromScs(SuccessCodes.GET_DETAIL,
+            taskService.getTaskDelegator(taskId, token));
     }
 }

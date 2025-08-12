@@ -1,9 +1,11 @@
 package com.ptithcm.intern_project.jpa.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.ptithcm.intern_project.jpa.model.enums.ProjectStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.Check;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -15,9 +17,14 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "project")
+@Check(constraints = """
+    updated_time >= created_time
+    AND (end_date IS NULL OR end_date >= start_date)
+    AND due_date >= start_date
+""")
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Project {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,8 +50,9 @@ public class Project {
     @Column(name = "due_date", nullable = false)
     LocalDate dueDate;
 
-    @Column(name = "active", columnDefinition = "BIT", nullable = false)
-    boolean active = true;
+    @Column(name = "status", nullable = false)
+    @Enumerated(EnumType.STRING)
+    ProjectStatus status;
 
     @Column(name = "created_time", nullable = false)
     LocalDateTime createdTime = LocalDateTime.now();
@@ -55,5 +63,5 @@ public class Project {
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonIgnore
     @Builder.Default    //--Keep default value is our manually set value (or will be null)
-    List<ProjectRole> projectUsers = new ArrayList<>();    //--OneToMany must receive a list, and init by ArrayList
+    final List<ProjectRole> projectUsers = new ArrayList<>();    //--OneToMany must receive a list, and init by ArrayList
 }

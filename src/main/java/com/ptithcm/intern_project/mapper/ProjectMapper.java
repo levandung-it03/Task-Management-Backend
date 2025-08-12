@@ -1,16 +1,20 @@
 package com.ptithcm.intern_project.mapper;
 
 import com.ptithcm.intern_project.dto.request.ProjectRequest;
+import com.ptithcm.intern_project.dto.response.ProjectDetailResponse;
+import com.ptithcm.intern_project.dto.response.ProjectOverviewResponse;
 import com.ptithcm.intern_project.jpa.model.Project;
 import com.ptithcm.intern_project.jpa.model.UserInfo;
-import lombok.NoArgsConstructor;
+import com.ptithcm.intern_project.jpa.model.enums.ProjectStatus;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
 @Component
-@NoArgsConstructor
+@AllArgsConstructor
 public class ProjectMapper {
+    UserInfoMapper userInfoMapper;
 
     public Project newModel(ProjectRequest request, UserInfo userInfoCreated) {
         return Project.builder()
@@ -21,7 +25,7 @@ public class ProjectMapper {
             .dueDate(request.getDueDate())
             .createdTime(LocalDateTime.now())
             .updatedTime(LocalDateTime.now())
-            .active(true)
+            .status(ProjectStatus.CREATED)
             .build();
     }
 
@@ -31,5 +35,36 @@ public class ProjectMapper {
         project.setStartDate(request.getStartDate());
         project.setDueDate(request.getDueDate());
         project.setUpdatedTime(LocalDateTime.now());
+        project.setStatus(request.getStatus());
+    }
+
+    public ProjectOverviewResponse toResponse(Project project) {
+        return ProjectOverviewResponse.builder()
+            .id(project.getId())
+            .userInfoCreated(userInfoMapper.shortenUserInfo(project.getUserInfoCreated()))
+            .name(project.getName())
+            .description(project.getDescription())
+            .startDate(project.getStartDate())
+            .endDate(project.getDueDate())
+            .dueDate(project.getDueDate())
+            .createdTime(project.getCreatedTime())
+            .updatedTime(project.getUpdatedTime())
+            .status(project.getStatus())
+            .build();
+    }
+
+    public ProjectDetailResponse toDetail(Project project) {
+        return ProjectDetailResponse.builder()
+            .id(project.getId())
+            .userInfoCreated(userInfoMapper.shortenUserInfo(project.getUserInfoCreated()))
+            .name(project.getName())
+            .description(project.getDescription())
+            .startDate(project.getStartDate())
+            .endDate(project.getDueDate())
+            .dueDate(project.getDueDate())
+            .createdTime(project.getCreatedTime())
+            .updatedTime(project.getUpdatedTime())
+            .status(project.getStatus())
+            .build();
     }
 }

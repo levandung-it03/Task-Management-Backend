@@ -3,6 +3,7 @@ package com.ptithcm.intern_project.jpa.model;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.Check;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,7 +15,14 @@ import java.time.LocalDateTime;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "collection")
+@Check(constraints = """
+    updated_time >= created_time
+    AND (end_date IS NULL OR end_date >= start_date)
+    AND due_date >= start_date
+""")
+@Table(
+    name = "collection",
+    uniqueConstraints = {@UniqueConstraint(columnNames = {"phase_id", "name"})})
 public class Collection {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -46,28 +46,38 @@ public enum ErrorCodes {
     //--Task(14)
     INVALID_TASK_START_DATE(14000, "Invalid task start date", BAD_REQUEST),
     INVALID_TASK_DEADLINE(14001, "Invalid task deadline", BAD_REQUEST),
-    INVALID_SUB_TASK_START_DATE(14002, "Start date on Sub Task cannot be after Root Task", BAD_REQUEST),
-    INVALID_SUB_TASK_DEADLINE(14003, "Deadline on Sub Task cannot be after Root Task", BAD_REQUEST),
-    TASK_ENDED(14004, "Cannot change an ended Task", BAD_REQUEST),
+    INVALID_SUB_TASK_START_DATE(14002, "Start-Date on Sub-Task cannot be AFTER Root-Task", BAD_REQUEST),
+    INVALID_SUB_TASK_DEADLINE(14003, "Deadline on Sub-Task cannot be AFTER Root-Task", BAD_REQUEST),
+    TASK_ENDED(14004, "Task was ended! You cannot do anything more!", BAD_REQUEST),
     TASK_HASNT_STARTED(14005, "Task has not started yet, cannot perform action", BAD_REQUEST),
-    CANNOT_DONE_TASK(14006, "There are Reports still not approved, check Task again", BAD_REQUEST),
-    AT_LEAST_ONE_REPORT_ON_TASK(14007, "At least 1 Report existing on Task, cannot perform action", BAD_REQUEST),
+    CANNOT_DONE_TASK(14006, "Approve all Reports before completing Task!", BAD_REQUEST),
+    EXISTS_REPORT_ON_TASK(14007, "Existing Report on Task, cannot perform action", BAD_REQUEST),
     TASK_CREATED_IN_LENGTHY_TIME(14008, "Task has been created in a lengthy time, cannot perform action", BAD_REQUEST),
+    START_BEFORE_COLLECTION(14009, "Start-Date must be after Collection Start-Date", BAD_REQUEST),
+    END_AFTER_COLLECTION(14009, "End-Date must be before Collection Start-Date", BAD_REQUEST),
+    USER_SUBMITTED_REPORT(14010, "User submitted Report on Root-Task, cannot move them", BAD_REQUEST),
     //--Report(15)
     REPORT_REVIEWED(15000, "Report has been reviewed, cannot perform action", BAD_REQUEST),
     //--Project(16)
     PROJECT_WAS_CLOSED(16000, "Project was closed, cannot perform action", BAD_REQUEST),
-    START_BEFORE_PROJECT(16001, "Cannot start before Project", BAD_REQUEST),
-    END_AFTER_PROJECT(16002, "Cannot end after Project", BAD_REQUEST),
+    START_BEFORE_PROJECT(16001, "Start-Date must be after Project Start-Date", BAD_REQUEST),
+    END_AFTER_PROJECT(16002, "End-Date must be before Project End-Date", BAD_REQUEST),
+    CANT_DELETE_PROJECT_WITH_PHASE(16003, "Project still has phases, cannot be deleted", BAD_REQUEST),
+    PROJECT_IS_NOT_IN_PROGRESS(16004, "Project is not in progress, cannot perform action", BAD_REQUEST),
+    CANT_COMPLETE_PROJECT(16005, "Complete all Phases before completing Project" , BAD_REQUEST ),
     //--Phase(17)
     CANT_DELETE_PHASE(17000, "Phase has already had Collection, cannot perform action", BAD_REQUEST),
-    START_BEFORE_PHASE(17001, "Cannot start before Phase", BAD_REQUEST),
-    END_AFTER_PHASE(17002, "Cannot end after Phase", BAD_REQUEST),
+    START_BEFORE_PHASE(17001, "Start-Date must be after Phase Start-Date", BAD_REQUEST),
+    END_AFTER_PHASE(17002, "End-Date must be before Phase Start-Date", BAD_REQUEST),
+    CANT_DELETE_PHASE_WITH_COLLECTION(17003, "Phase still has collections, cannot be deleted", BAD_REQUEST),
+    CANT_COMPLETE_PHASE(17004, "Complete all Collections before completing Phase!", BAD_REQUEST),
+    PHASE_ENDED(17005, "Phase was ended! You cannot do anything more!", BAD_REQUEST),
     //--UserInfo(18)
     INVALID_EMAIL(18000, "Email not found or is invalid", BAD_REQUEST),
     //--Collection(18)
     CANT_DELETE_COLLECTION_WITH_TASKS(18000, "Collection still has tasks, cannot be deleted", BAD_REQUEST),
-    CANT_DELETE_PHASE_WITH_COLLECTION(18001, "Phase still has collections, cannot be deleted", BAD_REQUEST),
+    CANT_COMPLETE_COLLECTION(18001, "Complete all Tasks before completing Collection", BAD_REQUEST),
+    COLLECTION_ENDED(18002, "Collection was ended! You cannot do anything more!", BAD_REQUEST),
     ;
     int code;
     String msg;

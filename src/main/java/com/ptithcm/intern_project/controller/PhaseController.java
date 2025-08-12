@@ -1,6 +1,8 @@
 package com.ptithcm.intern_project.controller;
 
+import com.ptithcm.intern_project.dto.response.CollectionDetailResponse;
 import com.ptithcm.intern_project.dto.response.CollectionResponse;
+import com.ptithcm.intern_project.dto.response.PhaseDetailResponse;
 import com.ptithcm.intern_project.exception.enums.SuccessCodes;
 import com.ptithcm.intern_project.dto.general.RestApiResponse;
 import com.ptithcm.intern_project.dto.request.CollectionRequest;
@@ -17,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 import static com.ptithcm.intern_project.security.constvalues.AuthorityValues.*;
 
@@ -54,7 +57,7 @@ public class PhaseController {
         @PathVariable("id") Long id,
         @RequestHeader("Authorization") String token) {
         phaseService.delete(id, token);
-        return RestApiResponse.fromScs(SuccessCodes.UPDATED);
+        return RestApiResponse.fromScs(SuccessCodes.DELETED);
     }
 
     @Operation(description = "Create a Collection of specified Phase")
@@ -76,5 +79,35 @@ public class PhaseController {
         @PathVariable("id") Long phaseId,
         @RequestHeader("Authorization") String token) {
         return RestApiResponse.fromScs(SuccessCodes.CREATED, phaseService.getAllRelatedCollections(phaseId, token));
+    }
+
+
+    @Operation(description = "Get simple Collections to support statistic")
+    @GetMapping(ROLE_PM + "/v1/phase/{phaseId}/simple-collections")
+    public ResponseEntity<RestApiResponse<Map<Long, String>>> getSimpleCollections(
+        @PathVariable("phaseId") Long phaseId) {
+        return RestApiResponse.fromScs(SuccessCodes.GET_LIST,
+            phaseService.getSimpleCollections(phaseId));
+    }
+
+    @Operation(description = "Complete specified Phase")
+    @PutMapping(ROLE_PM + "/v1/phase/{id}/complete-phase")
+    public ResponseEntity<RestApiResponse<Void>> completePhase(
+        @PathVariable("id") Long id,
+        @RequestHeader("Authorization") String token) {
+        phaseService.completePhase(id, token);
+        return RestApiResponse.fromScs(SuccessCodes.UPDATED);
+    }
+
+    @Operation(description = "Get Phase Detail (to support Create-Task Page)")
+    @GetMapping({
+        ROLE_PM + "/v1/phase/{phaseId}/detail",
+        ROLE_LEAD + "/v1/phase/{phaseId}/detail",
+        ROLE_EMP + "/v1/phase/{phaseId}/detail"})
+    public ResponseEntity<RestApiResponse<PhaseDetailResponse>> getPhaseDetail(
+        @PathVariable("phaseId") Long phaseId,
+        @RequestHeader("Authorization") String token) {
+        return RestApiResponse.fromScs(SuccessCodes.GET_DETAIL,
+            phaseService.getPhaseDetail(phaseId, token));
     }
 }

@@ -26,4 +26,11 @@ public interface CollectionRepository extends JpaRepository<Collection, Long> {
     List<Collection> findAllByAssignedUsernameAndPhaseId(
         @Param("phaseId") Long phaseId,
         @Param("username") String username);
+
+    @Query("""
+        SELECT CASE WHEN COUNT(c) > 0 THEN TRUE ELSE FALSE END FROM Collection c
+        WHERE c.phase.id = :phaseId
+        AND c.endDate IS NULL
+    """)
+    boolean existsCollectionNotCompletedByPhaseId(@Param("phaseId") Long phaseId);
 }

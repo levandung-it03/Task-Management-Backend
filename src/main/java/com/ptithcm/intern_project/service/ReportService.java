@@ -7,6 +7,7 @@ import com.ptithcm.intern_project.exception.AppExc;
 import com.ptithcm.intern_project.dto.request.CommentCreationRequest;
 import com.ptithcm.intern_project.jpa.model.Report;
 import com.ptithcm.intern_project.jpa.model.UserInfo;
+import com.ptithcm.intern_project.jpa.model.enums.ProjectStatus;
 import com.ptithcm.intern_project.jpa.model.enums.ReportStatus;
 import com.ptithcm.intern_project.jpa.repository.ReportRepository;
 import com.ptithcm.intern_project.mapper.CommentOfReportMapper;
@@ -41,6 +42,10 @@ public class ReportService implements IReportService {
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public void update(Long reportId, String newContent, String token) {
         var report = this.findUpdatableReport(reportId, token);
+        //--Checked project in-progress by "report"
+        //--Checked phase is not ended by "report"
+        //--Checked collection is not ended by "report"
+        //--Checked task is not ended by "report"
 
         String username = jwtService.readPayload(token).get("sub");
 
@@ -60,13 +65,31 @@ public class ReportService implements IReportService {
             ReportMsg.UPDATED_REPORT);
     }
 
+    private void validateEndedParentEntities(Report report) {
+        var isInProgressProject = report.getUserTaskCreated()
+            .getTask().getCollection().getPhase().getProject().getStatus()
+            .equals(ProjectStatus.IN_PROGRESS);
+        if (!isInProgressProject)   throw new AppExc(ErrorCodes.PROJECT_IS_NOT_IN_PROGRESS);
+
+        var isPhaseEnded = report.getUserTaskCreated()
+            .getTask().getCollection().getPhase()
+            .getEndDate() != null;
+        if (isPhaseEnded)   throw new AppExc(ErrorCodes.PHASE_ENDED);
+
+        var isCollectionEnded = report.getUserTaskCreated()
+            .getTask().getCollection().getEndDate() != null;
+        if (isCollectionEnded)   throw new AppExc(ErrorCodes.COLLECTION_ENDED);
+
+        var isTaskEnded = report.getUserTaskCreated().getTask().getEndDate() != null;
+        if (isTaskEnded)   throw new AppExc(ErrorCodes.TASK_ENDED);
+    }
+
     @Override
     public CommentResponse createComment(Long reportId, CommentCreationRequest request, String token) {
         var report = reportRepository.findById(reportId)
             .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
 
-        var isProjectActive = report.getUserTaskCreated().getTask().getCollection().getPhase().getProject().isActive();
-        if (!isProjectActive) throw new AppExc(ErrorCodes.PROJECT_WAS_CLOSED);
+        this.validateEndedParentEntities(report);
 
         return commentOfReportMapper.toResponse(
             commentOfReportService.create(report, request, token)
@@ -77,6 +100,10 @@ public class ReportService implements IReportService {
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public void approveReport(Long reportId, String token) {
         var report = this.findUpdatableReport(reportId, token);
+        //--Checked project in-progress by "report"
+        //--Checked phase is not ended by "report"
+        //--Checked collection is not ended by "report"
+        //--Checked task is not ended by "report"
 
         report.setReportStatus(ReportStatus.APPROVED);
         report.setReviewedTime(LocalDateTime.now());
@@ -94,6 +121,10 @@ public class ReportService implements IReportService {
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public void rejectReport(Long reportId, String rejectReason, String token) {
         var report = this.findUpdatableReport(reportId, token);
+        //--Checked project in-progress by "report"
+        //--Checked phase is not ended by "report"
+        //--Checked collection is not ended by "report"
+        //--Checked task is not ended by "report"
 
         report.setReportStatus(ReportStatus.REJECTED);
         report.setReviewedTime(LocalDateTime.now());
@@ -130,8 +161,7 @@ public class ReportService implements IReportService {
         if (report.getReviewedTime() != null)
             throw new AppExc(ErrorCodes.REPORT_REVIEWED);
 
-        var isProjectActive = report.getUserTaskCreated().getTask().getCollection().getPhase().getProject().isActive();
-        if (!isProjectActive) throw new AppExc(ErrorCodes.PROJECT_WAS_CLOSED);
+        this.validateEndedParentEntities(report);
 
         String curUserRole = curUser.getAccount().getAuthorities().getFirst().getName();
         var isKickedLeader = curUserRole.equals(AuthorityEnum.ROLE_LEAD.toString())
@@ -173,5 +203,9 @@ public class ReportService implements IReportService {
                 report.getUserTaskCreated().getTask().getCollection().getPhase().getProject().getName()
             ))
             .build());
+    }
+
+    public int countAllInProjectByStatus(Long projectId, String status) {
+        return reportRepository.countAllInProjectByStatus(projectId, status);
     }
 }
