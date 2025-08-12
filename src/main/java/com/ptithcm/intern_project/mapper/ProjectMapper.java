@@ -21,7 +21,7 @@ public class ProjectMapper {
             .name(request.getName())
             .description(request.getDescription())
             .userInfoCreated(userInfoCreated)
-            .startDate(request.getStartDate())
+            .expectedStartDate(request.getExpectedStartDate())
             .dueDate(request.getDueDate())
             .createdTime(LocalDateTime.now())
             .updatedTime(LocalDateTime.now())
@@ -32,10 +32,9 @@ public class ProjectMapper {
     public void updateModel(Project project, ProjectRequest request) {
         project.setName(request.getName());
         project.setDescription(request.getDescription());
-        project.setStartDate(request.getStartDate());
+        project.setExpectedStartDate(request.getExpectedStartDate());
         project.setDueDate(request.getDueDate());
         project.setUpdatedTime(LocalDateTime.now());
-        project.setStatus(request.getStatus());
     }
 
     public ProjectOverviewResponse toResponse(Project project) {
@@ -44,6 +43,7 @@ public class ProjectMapper {
             .userInfoCreated(userInfoMapper.shortenUserInfo(project.getUserInfoCreated()))
             .name(project.getName())
             .description(project.getDescription())
+            .expectedStartDate(project.getExpectedStartDate())
             .startDate(project.getStartDate())
             .endDate(project.getDueDate())
             .dueDate(project.getDueDate())
@@ -59,6 +59,7 @@ public class ProjectMapper {
             .userInfoCreated(userInfoMapper.shortenUserInfo(project.getUserInfoCreated()))
             .name(project.getName())
             .description(project.getDescription())
+            .expectedStartDate(project.getExpectedStartDate())
             .startDate(project.getStartDate())
             .endDate(project.getDueDate())
             .dueDate(project.getDueDate())

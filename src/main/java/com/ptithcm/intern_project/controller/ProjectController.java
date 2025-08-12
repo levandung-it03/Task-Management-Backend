@@ -168,15 +168,6 @@ public class ProjectController {
             projectService.getUsersStatistic(projectId));
     }
 
-    @Operation(description = "Mark Project to be started")
-    @PutMapping(ROLE_PM + "/v1/project/{projectId}/status-start")
-    public ResponseEntity<RestApiResponse<Void>> updateInProgressStatus(
-        @PathVariable("projectId") Long projectId,
-        @RequestHeader("Authorization") String token) {
-        projectService.updateInProgressStatus(projectId, token);
-        return RestApiResponse.fromScs(SuccessCodes.UPDATED);
-    }
-
     @Operation(description = "Get Project Detail (to support Phase Page)")
     @GetMapping({
         ROLE_PM + "/v1/project/{projectId}/detail",
@@ -189,4 +180,31 @@ public class ProjectController {
             projectService.getProjectDetail(projectId, token));
     }
 
+    @Operation(description = "Switch Project Status to In-progress and save startDate")
+    @PutMapping(ROLE_PM + "/v1/project/{projectId}/start-project")
+    public ResponseEntity<RestApiResponse<Void>> startProject(
+        @PathVariable("projectId") Long projectId,
+        @RequestHeader("Authorization") String token) {
+        projectService.startProject(projectId, token);
+        return RestApiResponse.fromScs(SuccessCodes.UPDATED);
+    }
+
+    @Operation(description = "Switch Project Status between Pause/In-progress")
+    @PutMapping(ROLE_PM + "/v1/project/{projectId}/switch-pause-in-progress")
+    public ResponseEntity<RestApiResponse<Void>> switchPauseAndInProgressProject(
+        @PathVariable("projectId") Long projectId,
+        @RequestHeader("Authorization") String token) {
+        projectService.switchPauseAndInProgressProject(projectId, token);
+        return RestApiResponse.fromScs(SuccessCodes.UPDATED);
+    }
+
+
+    @Operation(description = "Switch Project Status to In-progress and save startDate")
+    @PutMapping(ROLE_PM + "/v1/project/{projectId}/close-project")
+    public ResponseEntity<RestApiResponse<Void>> closeProject(
+        @PathVariable("projectId") Long projectId,
+        @RequestHeader("Authorization") String token) {
+        projectService.closeProject(projectId, token);
+        return RestApiResponse.fromScs(SuccessCodes.UPDATED);
+    }
 }

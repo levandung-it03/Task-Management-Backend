@@ -90,4 +90,6 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
         AND t.endDate IS NULL
     """)
     boolean existsTaskNotCompletedByCollectionId(@Param("collectionId") Long collectionId);
+
+    List<Task> findAllByCollectionId(Long id);
 }

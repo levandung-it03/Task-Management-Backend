@@ -6,6 +6,7 @@ import com.ptithcm.intern_project.dto.response.IdResponse;
 import com.ptithcm.intern_project.dto.response.ReportCommentsResponse;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ITaskForUsersService {
 
@@ -18,4 +19,6 @@ public interface ITaskForUsersService {
     IdResponse createReport(Long taskUserId, ReportRequest request, String token);
 
     List<ReportCommentsResponse> getReportsAndComments(Long taskUserId, String token);
+
+    Map<String, Boolean> checkIsAssignedUserTask(Long taskUserId, String token);
 }

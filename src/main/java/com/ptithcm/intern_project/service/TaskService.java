@@ -97,6 +97,12 @@ public class TaskService implements ITaskService {
         //--Checked collection is ended by "rootTask"
         //--Checked task is ended by "rootTask"
 
+        var isStartingBeforeRootTask = request.getStartDate().isBefore(rootTask.getStartDate());
+        if (isStartingBeforeRootTask)    throw new AppExc(ErrorCodes.START_BEFORE_ROOT_TASK);
+
+        var isEndingAfterSubTask = request.getDeadline().isAfter(rootTask.getDeadline());
+        if (isEndingAfterSubTask)    throw new AppExc(ErrorCodes.END_AFTER_COLLECTION);
+
         var isRootTaskOwner = rootTask.getUserInfoCreated().getEmail().equals(userCreated.getEmail());
         if (!isRootTaskOwner) throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
@@ -181,6 +187,19 @@ public class TaskService implements ITaskService {
     public void update(Long id, UpdatedTaskRequest request, String token) {
         var foundTask = this.findUpdatableTaskNotHasReport(id, token);
 
+        var isStartingBeforeCollection = request.getStartDate().isBefore(foundTask.getCollection().getStartDate());
+        if (isStartingBeforeCollection)    throw new AppExc(ErrorCodes.START_BEFORE_COLLECTION);
+
+        var isEndingAfterCollection = request.getDeadline().isAfter(foundTask.getCollection().getDueDate());
+        if (isEndingAfterCollection)    throw new AppExc(ErrorCodes.END_AFTER_COLLECTION);
+
+        var subTasks = taskRepository.findAllByRootTaskId(id);
+            for (Task subTask : subTasks) {
+            if (foundTask.getStartDate().isAfter(subTask.getStartDate()))
+                throw new AppExc(ErrorCodes.START_AFTER_SUB_TASK);
+            if (foundTask.getDeadline().isBefore(subTask.getDeadline()))
+                throw new AppExc(ErrorCodes.END_BEFORE_SUB_TASK);
+        }
         taskMapper.mappingBaseInfo(foundTask, request);
 
         if (request.getAddedUserEmail() != null && !request.getAddedUserEmail().isEmpty()) {
@@ -486,5 +505,9 @@ public class TaskService implements ITaskService {
         if (!canSeeTask)    throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
         return taskMapper.toDelegator(task);
+    }
+
+    public List<Task> findAllByCollectionId(Long id) {
+        return taskRepository.findAllByCollectionId(id);
     }
 }

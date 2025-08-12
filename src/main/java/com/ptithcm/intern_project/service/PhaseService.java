@@ -51,6 +51,14 @@ public class PhaseService implements IPhaseService {
 
         this.validatePhase(request, phase.getProject());
 
+        var collections = collectionService.findAllByPhaseId(id);
+        for (Collection collection : collections) {
+            if (phase.getStartDate().isAfter(collection.getStartDate()))
+                throw new AppExc(ErrorCodes.START_AFTER_COLLECTION);
+            if (phase.getDueDate().isBefore(collection.getDueDate()))
+                throw new AppExc(ErrorCodes.END_BEFORE_COLLECTION);
+        }
+
         var isProjectInProgress = phase.getProject().getStatus().equals(ProjectStatus.IN_PROGRESS);
         if (!isProjectInProgress) throw new AppExc(ErrorCodes.PROJECT_IS_NOT_IN_PROGRESS);
 

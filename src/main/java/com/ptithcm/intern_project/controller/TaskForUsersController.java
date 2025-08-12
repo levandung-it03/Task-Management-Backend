@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 import static com.ptithcm.intern_project.security.constvalues.AuthorityValues.*;
 
@@ -86,5 +87,17 @@ public class TaskForUsersController {
         @RequestHeader("Authorization") String token) {
         return RestApiResponse.fromScs(SuccessCodes.GET_LIST,
             taskForUsersService.getReportsAndComments(taskUserId, token));
+    }
+
+    @Operation(description = "Check if user is assigned User by UserTaskId")
+    @GetMapping({
+        ROLE_EMP + "/v1/task-user/{taskUserId}/is-assigned",
+        ROLE_LEAD + "/v1/task-user/{taskUserId}/is-assigned",
+        ROLE_PM + "/v1/task-user/{taskUserId}/is-assigned"})
+    public ResponseEntity<RestApiResponse<Map<String, Boolean>>> checkIsAssignedUserTask(
+        @PathVariable("taskUserId") Long taskUserId,
+        @RequestHeader("Authorization") String token) {
+        return RestApiResponse.fromScs(SuccessCodes.GET_DETAIL,
+            taskForUsersService.checkIsAssignedUserTask(taskUserId, token));
     }
 }

@@ -4,6 +4,7 @@ import com.ptithcm.intern_project.dto.response.CollectionDetailResponse;
 import com.ptithcm.intern_project.dto.response.ShortTaskResponse;
 import com.ptithcm.intern_project.exception.enums.ErrorCodes;
 import com.ptithcm.intern_project.exception.AppExc;
+import com.ptithcm.intern_project.jpa.model.Task;
 import com.ptithcm.intern_project.jpa.model.enums.ProjectStatus;
 import com.ptithcm.intern_project.mapper.CollectionMapper;
 import com.ptithcm.intern_project.dto.request.CollectionRequest;
@@ -88,6 +89,13 @@ public class CollectionService implements ICollectionService {
         this.validateCollection(request, collection.getPhase());
         this.validateEndedParentEntities(collection);
 
+        var tasks = taskService.findAllByCollectionId(id);
+        for (Task task : tasks) {
+            if (collection.getStartDate().isAfter(task.getStartDate()))
+                throw new AppExc(ErrorCodes.START_AFTER_TASK);
+            if (collection.getDueDate().isBefore(task.getDeadline()))
+                throw new AppExc(ErrorCodes.END_BEFORE_COLLECTION);
+        }
         var isOwner = collection.getUserInfoCreated().getAccount().getUsername().equals(username);
         if (!isOwner)   throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 

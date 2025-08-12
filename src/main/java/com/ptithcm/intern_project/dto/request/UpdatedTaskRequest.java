@@ -28,6 +28,10 @@ public class UpdatedTaskRequest {
 
     @NotNull
     @FutureDateConstraint
+    LocalDate startDate;
+
+    @NotNull
+    @FutureDateConstraint
     LocalDate deadline;
 
     String addedUserEmail;

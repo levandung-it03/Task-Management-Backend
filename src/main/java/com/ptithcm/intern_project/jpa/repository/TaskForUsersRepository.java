@@ -102,4 +102,13 @@ public interface TaskForUsersRepository extends JpaRepository<TaskForUsers, Long
         @Param("username") String username
     );
 
+    @Query("""
+        SELECT CASE WHEN COUNT(tfu) > 0 THEN TRUE ELSE FALSE END
+        FROM TaskForUsers tfu
+        WHERE tfu.assignedUser.account.username = :username
+        AND tfu.id = :taskUserId
+    """)
+    boolean existsByTaskUserIdAndAssignedUsername(
+        @Param("taskUserId") Long taskUserId,
+        @Param("username") String username);
 }

@@ -4,7 +4,6 @@ import com.ptithcm.intern_project.dto.response.UserTaskResponse;
 import com.ptithcm.intern_project.exception.enums.ErrorCodes;
 import com.ptithcm.intern_project.exception.AppExc;
 import com.ptithcm.intern_project.jpa.model.UserInfo;
-import com.ptithcm.intern_project.jpa.model.enums.ProjectStatus;
 import com.ptithcm.intern_project.mapper.ReportMapper;
 import com.ptithcm.intern_project.mapper.UserInfoMapper;
 import com.ptithcm.intern_project.dto.general.ShortUserInfoDTO;
@@ -180,5 +179,14 @@ public class TaskForUsersService implements ITaskForUsersService {
 
     public Optional<UserTaskResponse> getUserOfTask(Long taskId, String username) {
         return taskForUsersRepository.findByTaskIdAndAssignedUsername(taskId, username);
+    }
+
+    @Override
+    public Map<String, Boolean> checkIsAssignedUserTask(Long taskUserId, String token) {
+        String username = jwtService.readPayload(token).get("sub");
+        return Map.of(
+            "result",
+            taskForUsersRepository.existsByTaskUserIdAndAssignedUsername(taskUserId, username)
+        );
     }
 }

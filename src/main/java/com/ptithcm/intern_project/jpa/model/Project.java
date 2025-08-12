@@ -41,6 +41,9 @@ public class Project {
     @Column(name = "description", nullable = false)
     String description;
 
+    @Column(name = "expected_start_date", nullable = false)
+    LocalDate expectedStartDate = LocalDate.now();
+
     @Column(name = "start_date", nullable = false)
     LocalDate startDate = LocalDate.now();
 

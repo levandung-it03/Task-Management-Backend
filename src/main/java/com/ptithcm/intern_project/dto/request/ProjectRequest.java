@@ -1,7 +1,6 @@
 package com.ptithcm.intern_project.dto.request;
 
 import com.ptithcm.intern_project.annotation.constraint.FutureDateConstraint;
-import com.ptithcm.intern_project.jpa.model.enums.ProjectStatus;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -26,12 +25,9 @@ public class ProjectRequest {
 
     @NotNull
     @FutureDateConstraint
-    LocalDate startDate;
+    LocalDate expectedStartDate;
 
     @NotNull
     @FutureDateConstraint
     LocalDate dueDate;
-
-    @NotNull
-    ProjectStatus status;
 }

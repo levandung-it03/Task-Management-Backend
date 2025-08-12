@@ -41,7 +41,11 @@ public interface IProjectService {
 
     List<UserStatisticDTO> getUsersStatistic(Long projectId);
 
-    void updateInProgressStatus(Long projectId, String token);
-
     ProjectDetailResponse getProjectDetail(Long projectId, String token);
+
+    void startProject(Long projectId, String token);
+
+    void switchPauseAndInProgressProject(Long projectId, String token);
+
+    void closeProject(Long projectId, String token);
 }
