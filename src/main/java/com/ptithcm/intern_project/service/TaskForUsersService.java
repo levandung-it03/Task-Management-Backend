@@ -193,4 +193,12 @@ public class TaskForUsersService implements ITaskForUsersService {
     public List<TaskForUsers> findAllByTaskCollectionPhaseProjectId(Long projectId) {
         return taskForUsersRepository.findAllByTaskCollectionPhaseProjectId(projectId);
     }
+
+    public List<TaskForUsers> findAllByTaskCollectionPhaseId(Long phaseId) {
+        return taskForUsersRepository.findAllByTaskCollectionPhaseId(phaseId);
+    }
+
+    public List<TaskForUsers> findAllByTaskCollectionId(Long collectionId) {
+        return taskForUsersRepository.findAllByTaskCollectionId(collectionId);
+    }
 }

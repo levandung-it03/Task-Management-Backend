@@ -1,5 +1,6 @@
 package com.ptithcm.intern_project.controller;
 
+import com.ptithcm.intern_project.dto.general.UserStatisticDTO;
 import com.ptithcm.intern_project.dto.response.CollectionDetailResponse;
 import com.ptithcm.intern_project.dto.response.ShortTaskResponse;
 import com.ptithcm.intern_project.exception.enums.SuccessCodes;
@@ -100,5 +101,13 @@ public class CollectionController {
         @RequestHeader("Authorization") String token) {
         return RestApiResponse.fromScs(SuccessCodes.GET_DETAIL,
             collectionService.getCollectionDetail(collectionId, token));
+    }
+
+    @Operation(description = "Get Collection Overview")
+    @GetMapping(ROLE_PM + "/v1/collection/{collectionId}/users-statistic")
+    public ResponseEntity<RestApiResponse<List<UserStatisticDTO>>> getUsersStatistic(
+        @PathVariable("collectionId") Long collectionId) {
+        return RestApiResponse.fromScs(SuccessCodes.GET_DETAIL,
+            collectionService.getUsersStatistic(collectionId));
     }
 }

@@ -1,5 +1,6 @@
 package com.ptithcm.intern_project.controller;
 
+import com.ptithcm.intern_project.dto.response.UserOverviewResponse;
 import com.ptithcm.intern_project.exception.enums.SuccessCodes;
 import com.ptithcm.intern_project.dto.general.RestApiResponse;
 import com.ptithcm.intern_project.dto.general.ShortUserInfoDTO;
@@ -87,4 +88,13 @@ public class UserInfoController {
             userInfoService.pmFastSearchUsersForNewProject(query, token));
     }
 
+    @Operation(description = "Get public User-Info overview")
+    @GetMapping({
+        ROLE_EMP + "/v1/user-info/{email}",
+        ROLE_PM + "/v1/user-info/{email}",
+        ROLE_LEAD + "/v1/user-info/{email}",
+        ROLE_ADMIN + "/v1/user-info/{email}"})
+    public ResponseEntity<RestApiResponse<UserOverviewResponse>> getUserOverview(@PathVariable("email") String email) {
+        return RestApiResponse.fromScs(GET_USER_INFO, userInfoService.getUserOverview(email));
+    }
 }

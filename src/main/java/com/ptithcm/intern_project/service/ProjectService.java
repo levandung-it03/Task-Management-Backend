@@ -107,9 +107,9 @@ public class ProjectService implements IProjectService {
 
         var phases = phaseService.findAllProjectId(project.getId());
         for (Phase phase : phases) {
-            if (project.getExpectedStartDate().isAfter(phase.getStartDate()))
+            if (request.getExpectedStartDate().isAfter(phase.getStartDate()))
                 throw new AppExc(ErrorCodes.START_BEFORE_PHASE);
-            if (project.getDueDate().isBefore(phase.getDueDate()))
+            if (request.getDueDate().isBefore(phase.getDueDate()))
                 throw new AppExc(ErrorCodes.END_BEFORE_PHASE);
         }
         projectMapper.updateModel(project, request);

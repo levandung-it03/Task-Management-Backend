@@ -1,5 +1,6 @@
 package com.ptithcm.intern_project.controller;
 
+import com.ptithcm.intern_project.dto.general.UserStatisticDTO;
 import com.ptithcm.intern_project.dto.response.CollectionDetailResponse;
 import com.ptithcm.intern_project.dto.response.CollectionResponse;
 import com.ptithcm.intern_project.dto.response.PhaseDetailResponse;
@@ -109,5 +110,13 @@ public class PhaseController {
         @RequestHeader("Authorization") String token) {
         return RestApiResponse.fromScs(SuccessCodes.GET_DETAIL,
             phaseService.getPhaseDetail(phaseId, token));
+    }
+
+    @Operation(description = "Get Project Overview")
+    @GetMapping(ROLE_PM + "/v1/phase/{phaseId}/users-statistic")
+    public ResponseEntity<RestApiResponse<List<UserStatisticDTO>>> getUsersStatistic(
+        @PathVariable("phaseId") Long phaseId) {
+        return RestApiResponse.fromScs(SuccessCodes.GET_DETAIL,
+            phaseService.getUsersStatistic(phaseId));
     }
 }

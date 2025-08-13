@@ -1,10 +1,12 @@
 package com.ptithcm.intern_project.service;
 
+import com.ptithcm.intern_project.dto.general.UserStatisticDTO;
 import com.ptithcm.intern_project.dto.response.CollectionDetailResponse;
 import com.ptithcm.intern_project.dto.response.ShortTaskResponse;
 import com.ptithcm.intern_project.exception.enums.ErrorCodes;
 import com.ptithcm.intern_project.exception.AppExc;
 import com.ptithcm.intern_project.jpa.model.Task;
+import com.ptithcm.intern_project.jpa.model.TaskForUsers;
 import com.ptithcm.intern_project.jpa.model.enums.ProjectStatus;
 import com.ptithcm.intern_project.mapper.CollectionMapper;
 import com.ptithcm.intern_project.dto.request.CollectionRequest;
@@ -14,6 +16,7 @@ import com.ptithcm.intern_project.jpa.model.Collection;
 import com.ptithcm.intern_project.jpa.model.Phase;
 import com.ptithcm.intern_project.jpa.repository.CollectionRepository;
 import com.ptithcm.intern_project.mapper.TaskMapper;
+import com.ptithcm.intern_project.mapper.UserInfoMapper;
 import com.ptithcm.intern_project.security.service.JwtService;
 import com.ptithcm.intern_project.service.interfaces.ICollectionService;
 import com.ptithcm.intern_project.service.trans.CollectionTransService;
@@ -39,6 +42,8 @@ public class CollectionService implements ICollectionService {
     TaskService taskService;
     JwtService jwtService;
     TaskMapper taskMapper;
+    TaskForUsersService taskForUsersService;
+    UserInfoMapper userInfoMapper;
 
     @Override
     public IdResponse createTask(Long collectionId, TaskRequest request, String token) {
@@ -214,5 +219,14 @@ public class CollectionService implements ICollectionService {
 
     public boolean existsCollectionNotCompletedByPhaseId(Long phaseId) {
         return collectionRepository.existsCollectionNotCompletedByPhaseId(phaseId);
+    }
+
+    @Override
+    @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
+    public List<UserStatisticDTO> getUsersStatistic(Long collectionId) {
+        List<TaskForUsers> usersTask = taskForUsersService.findAllByTaskCollectionId(collectionId);
+        return usersTask.stream()
+            .map(userTask -> userInfoMapper.toStatisticUser(userTask.getReports()))
+            .toList();
     }
 }

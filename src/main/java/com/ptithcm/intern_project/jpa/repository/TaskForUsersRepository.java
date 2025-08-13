@@ -113,4 +113,8 @@ public interface TaskForUsersRepository extends JpaRepository<TaskForUsers, Long
         @Param("username") String username);
 
     List<TaskForUsers> findAllByTaskCollectionPhaseProjectId(Long projectId);
+
+    List<TaskForUsers> findAllByTaskCollectionPhaseId(Long phaseId);
+
+    List<TaskForUsers> findAllByTaskCollectionId(Long collectionId);
 }

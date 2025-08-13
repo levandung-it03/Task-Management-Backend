@@ -1,5 +1,6 @@
 package com.ptithcm.intern_project.service.interfaces;
 
+import com.ptithcm.intern_project.dto.general.UserStatisticDTO;
 import com.ptithcm.intern_project.dto.request.CollectionRequest;
 import com.ptithcm.intern_project.dto.request.PhaseRequest;
 import com.ptithcm.intern_project.dto.response.CollectionResponse;
@@ -24,4 +25,6 @@ public interface IPhaseService {
     void completePhase(Long id, String token);
 
     PhaseDetailResponse getPhaseDetail(Long phaseId, String token);
+
+    List<UserStatisticDTO> getUsersStatistic(Long phaseId);
 }

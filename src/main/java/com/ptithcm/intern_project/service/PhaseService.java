@@ -1,10 +1,12 @@
 package com.ptithcm.intern_project.service;
 
+import com.ptithcm.intern_project.dto.general.UserStatisticDTO;
 import com.ptithcm.intern_project.dto.response.CollectionResponse;
 import com.ptithcm.intern_project.dto.response.PhaseDetailResponse;
 import com.ptithcm.intern_project.exception.enums.ErrorCodes;
 import com.ptithcm.intern_project.exception.AppExc;
 import com.ptithcm.intern_project.jpa.model.Collection;
+import com.ptithcm.intern_project.jpa.model.TaskForUsers;
 import com.ptithcm.intern_project.jpa.model.enums.ProjectStatus;
 import com.ptithcm.intern_project.mapper.CollectionMapper;
 import com.ptithcm.intern_project.mapper.PhaseMapper;
@@ -14,6 +16,7 @@ import com.ptithcm.intern_project.dto.response.IdResponse;
 import com.ptithcm.intern_project.jpa.model.Phase;
 import com.ptithcm.intern_project.jpa.model.Project;
 import com.ptithcm.intern_project.jpa.repository.PhaseRepository;
+import com.ptithcm.intern_project.mapper.UserInfoMapper;
 import com.ptithcm.intern_project.security.service.JwtService;
 import com.ptithcm.intern_project.service.interfaces.IPhaseService;
 import com.ptithcm.intern_project.service.trans.PhaseTransService;
@@ -41,6 +44,8 @@ public class PhaseService implements IPhaseService {
     PhaseMapper phaseMapper;
     CollectionMapper collectionMapper;
     JwtService jwtService;
+    TaskForUsersService taskForUsersService;
+    UserInfoMapper userInfoMapper;
 
     @Override
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
@@ -213,5 +218,14 @@ public class PhaseService implements IPhaseService {
 
     public boolean existsNotCompleteByProjectId(Long projectId) {
         return phaseRepository.existsNotCompleteByProjectId(projectId);
+    }
+
+    @Override
+    @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
+    public List<UserStatisticDTO> getUsersStatistic(Long phaseId) {
+        List<TaskForUsers> usersTask = taskForUsersService.findAllByTaskCollectionPhaseId(phaseId);
+        return usersTask.stream()
+            .map(userTask -> userInfoMapper.toStatisticUser(userTask.getReports()))
+            .toList();
     }
 }

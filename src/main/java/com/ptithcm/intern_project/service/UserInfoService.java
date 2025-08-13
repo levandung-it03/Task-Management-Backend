@@ -1,5 +1,6 @@
 package com.ptithcm.intern_project.service;
 
+import com.ptithcm.intern_project.dto.response.UserOverviewResponse;
 import com.ptithcm.intern_project.security.enums.AuthorityEnum;
 import com.ptithcm.intern_project.exception.enums.ErrorCodes;
 import com.ptithcm.intern_project.exception.AppExc;
@@ -14,6 +15,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
@@ -123,5 +125,12 @@ public class UserInfoService implements IUserInfoService {
 
     public void save(UserInfo userInfo) {
         userInfoRepository.save(userInfo);
+    }
+
+    @Override
+    @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
+    public UserOverviewResponse getUserOverview(String email) {
+        var userInfo = userInfoRepository.findByEmail(email).orElseThrow(() -> new AppExc(ErrorCodes.INVALID_EMAIL));
+        return userInfoMapper.toOverview(userInfo);
     }
 }
