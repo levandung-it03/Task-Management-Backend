@@ -106,7 +106,7 @@ VALUES ('Employee 1', 'employee1@example.com', '0900000001', 'ID001', 1, 1),
 -- 8. Tạo Project do PM tạo (Owner)
 INSERT IGNORE INTO project
 (created_by_id, name, description, expected_start_date, start_date, due_date, end_date, status, created_time, updated_time)
-VALUES (14, 'Project 1', 'Sample Project', CURDATE(), NULL, DATE_ADD(CURDATE(), INTERVAL 30 DAY), NULL, "CREATED", NOW(), NOW());
+VALUES (14, 'Project 1', 'Sample Project', CURDATE(), CURDATE(), DATE_ADD(CURDATE(), INTERVAL 30 DAY), NULL, "IN_PROGRESS", NOW(), NOW());
 
 -- Lấy ID Project mới tạo giả sử là 1
 
