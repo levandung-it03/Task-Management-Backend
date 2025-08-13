@@ -5,6 +5,7 @@ import com.ptithcm.intern_project.dto.general.UserStatisticDTO;
 import com.ptithcm.intern_project.dto.request.*;
 import com.ptithcm.intern_project.dto.response.*;
 import com.ptithcm.intern_project.jpa.model.Project;
+import com.ptithcm.intern_project.jpa.model.enums.ProjectStatus;
 
 import java.util.List;
 import java.util.Map;
@@ -45,7 +46,7 @@ public interface IProjectService {
 
     void startProject(Long projectId, String token);
 
-    void switchPauseAndInProgressProject(Long projectId, String token);
+    Map<String, ProjectStatus> switchPauseAndInProgressProject(Long projectId, String token);
 
     void closeProject(Long projectId, String token);
 }

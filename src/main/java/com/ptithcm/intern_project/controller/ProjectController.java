@@ -7,6 +7,7 @@ import com.ptithcm.intern_project.dto.response.*;
 import com.ptithcm.intern_project.exception.enums.SuccessCodes;
 import com.ptithcm.intern_project.dto.general.RestApiResponse;
 import com.ptithcm.intern_project.jpa.model.Project;
+import com.ptithcm.intern_project.jpa.model.enums.ProjectStatus;
 import com.ptithcm.intern_project.service.ProjectService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -191,11 +192,11 @@ public class ProjectController {
 
     @Operation(description = "Switch Project Status between Pause/In-progress")
     @PutMapping(ROLE_PM + "/v1/project/{projectId}/switch-pause-in-progress")
-    public ResponseEntity<RestApiResponse<Void>> switchPauseAndInProgressProject(
+    public ResponseEntity<RestApiResponse<Map<String, ProjectStatus>>> switchPauseAndInProgressProject(
         @PathVariable("projectId") Long projectId,
         @RequestHeader("Authorization") String token) {
-        projectService.switchPauseAndInProgressProject(projectId, token);
-        return RestApiResponse.fromScs(SuccessCodes.UPDATED);
+        return RestApiResponse.fromScs(SuccessCodes.UPDATED,
+            projectService.switchPauseAndInProgressProject(projectId, token));
     }
 
 

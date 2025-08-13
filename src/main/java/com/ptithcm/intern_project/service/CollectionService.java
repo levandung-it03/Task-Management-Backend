@@ -57,7 +57,7 @@ public class CollectionService implements ICollectionService {
     }
 
     private void validateEndedParentEntities(Collection collectionHasTask) {
-        var isProjectInProgress = !collectionHasTask.getPhase().getProject().getStatus()
+        var isProjectInProgress = collectionHasTask.getPhase().getProject().getStatus()
             .equals(ProjectStatus.IN_PROGRESS);
         if (!isProjectInProgress)   throw new AppExc(ErrorCodes.PROJECT_IS_NOT_IN_PROGRESS);
 

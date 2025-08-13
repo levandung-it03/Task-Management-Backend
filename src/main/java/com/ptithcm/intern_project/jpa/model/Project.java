@@ -21,8 +21,7 @@ import java.util.List;
 @Table(name = "project")
 @Check(constraints = """
     updated_time >= created_time
-    AND (end_date IS NULL OR end_date >= start_date)
-    AND due_date >= start_date
+    AND due_date >= expected_start_date
 """)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Project {
@@ -44,8 +43,8 @@ public class Project {
     @Column(name = "expected_start_date", nullable = false)
     LocalDate expectedStartDate = LocalDate.now();
 
-    @Column(name = "start_date", nullable = false)
-    LocalDate startDate = LocalDate.now();
+    @Column(name = "start_date")
+    LocalDate startDate;
 
     @Column(name = "end_date")
     LocalDate endDate;

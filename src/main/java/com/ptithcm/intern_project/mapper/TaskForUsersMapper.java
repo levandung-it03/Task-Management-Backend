@@ -17,6 +17,7 @@ public class TaskForUsersMapper {
             .email(userInfo.getEmail())
             .fullName(userInfo.getFullName())
             .role(userInfo.getAccount().getAuthorities().getFirst().getAuthority())
+            .department(userInfo.getDepartment().getName())
             .build();
     }
 }

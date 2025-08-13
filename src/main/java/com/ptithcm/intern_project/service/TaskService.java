@@ -35,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -382,6 +383,7 @@ public class TaskService implements ITaskService {
         var hasValidTimeForDeletion = task.getCreatedTime().plusHours(12).isAfter(LocalDateTime.now());
         if (!hasValidTimeForDeletion) throw new AppExc(ErrorCodes.TASK_CREATED_IN_LENGTHY_TIME);
 
+        var copiedTaskForUsers = new ArrayList<>(task.getTaskForUsers());
         var existsReportOnUsers = reportService.existsByEmailsInAndTaskId(
             task.getTaskForUsers().stream().map(userTask -> userTask.getAssignedUser().getEmail()).toList(),
             task.getId());
@@ -392,7 +394,7 @@ public class TaskService implements ITaskService {
         else
             this.deleteRootTask(task);
 
-        this.notifyViaEmail(task.getTaskForUsers(), TaskMsg.DELETED_TASK);
+        this.notifyViaEmail(copiedTaskForUsers, TaskMsg.DELETED_TASK);
     }
 
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)

@@ -36,7 +36,7 @@ public class TaskController {
         @PathVariable("id") Long id,
         @Valid @RequestBody TaskRequest request,
         @RequestHeader("Authorization") String token) {
-        return RestApiResponse.fromScs(SuccessCodes.CREATED, taskService.createSubTask(id, request, token));
+        return RestApiResponse.fromScs(SuccessCodes.CREATED_TASK, taskService.createSubTask(id, request, token));
     }
 
     @Operation(description = "Get Task detail")

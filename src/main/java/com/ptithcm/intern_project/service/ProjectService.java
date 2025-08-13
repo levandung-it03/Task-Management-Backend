@@ -102,7 +102,7 @@ public class ProjectService implements IProjectService {
     @Override
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public void update(Long id, ProjectRequest request, String token) {
-        var project = this.getUpdatableProject(id, token);
+        var project = this.getProjectByOwner(id, token);
         //--Checked in progress by "project"
 
         var phases = phaseService.findAllProjectId(project.getId());
@@ -167,10 +167,13 @@ public class ProjectService implements IProjectService {
     @Override
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public void delete(Long id, String token) {
+        String username = jwtService.readPayload(token).get("sub");
         var project = this.getProjectByOwner(id, token);
 
-        var canDeleteProject = project.getProjectUsers().isEmpty()
-            && !phaseService.existsByProjectId(project.getId());
+        var removedOwner = project.getProjectUsers().stream()
+            .filter(projectRole -> !projectRole.getUserInfo().getAccount().getUsername().equals(username))
+            .toList();
+        var canDeleteProject = removedOwner.isEmpty() && !phaseService.existsByProjectId(project.getId());
         if (!canDeleteProject)
             throw new AppExc(ErrorCodes.CANT_DELETE_PROJECT_WITH_PHASE);
 
@@ -198,7 +201,7 @@ public class ProjectService implements IProjectService {
                 int nextValue = next.getEndDate() == null ? -1 : 1;
                 return prevValue - nextValue;
             })
-            .sorted(Comparator.comparing(Project::getStartDate))
+            .sorted(Comparator.comparing(Project::getStartDate, Comparator.nullsFirst(Comparator.naturalOrder())))
             .toList();
     }
 
@@ -220,7 +223,7 @@ public class ProjectService implements IProjectService {
         if (existNotCompletePhase)  throw new AppExc(ErrorCodes.CANT_COMPLETE_PROJECT);
 
         updatedProject.setEndDate(LocalDate.now());
-        updatedProject.setStatus(ProjectStatus.CLOSED);
+        updatedProject.setStatus(ProjectStatus.COMPLETED);
         projectRepository.save(updatedProject);
 
         this.notifyViaEmail(updatedProject.getProjectUsers(), ProjectMsg.COMPLETED_PROJECT);
@@ -260,12 +263,12 @@ public class ProjectService implements IProjectService {
                 response.setEndedProjects(response.getEndedProjects() + 1);
                 continue;
             }
-            var isStartedProject = !LocalDate.now().isBefore(project.getStartDate());
+            var isStartedProject = project.getStartDate() != null;
             if (isStartedProject) {
                 response.setRunningProjects(response.getRunningProjects() + 1);
                 continue;
             }
-            var isPendingProject = LocalDate.now().isBefore(project.getStartDate());
+            var isPendingProject = project.getStatus().equals(ProjectStatus.CREATED);
             if (isPendingProject)   response.setPendingProjects(response.getPendingProjects() + 1);
         }
         response.setTotalProjects(relatedProjects.size());
@@ -366,13 +369,16 @@ public class ProjectService implements IProjectService {
     public void startProject(Long projectId, String token) {
         Project project = this.getProjectByOwner(projectId, token);
 
+        if (LocalDate.now().isAfter(project.getDueDate()))
+            throw new AppExc(ErrorCodes.PROJECT_OVERDUE);
+
         project.setStartDate(LocalDate.now());
         project.setStatus(ProjectStatus.IN_PROGRESS);
         projectRepository.save(project);
     }
 
     @Override
-    public void switchPauseAndInProgressProject(Long projectId, String token) {
+    public Map<String, ProjectStatus> switchPauseAndInProgressProject(Long projectId, String token) {
         Project project = this.getProjectByOwner(projectId, token);
 
         if (project.getStatus().equals(ProjectStatus.IN_PROGRESS))
@@ -380,15 +386,21 @@ public class ProjectService implements IProjectService {
 
         else if (project.getStatus().equals(ProjectStatus.PAUSED))
             project.setStatus(ProjectStatus.IN_PROGRESS);
+
         else
             throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
         projectRepository.save(project);
+        return Map.of("newStatus", project.getStatus());
     }
 
     @Override
     public void closeProject(Long projectId, String token) {
         Project project = this.getProjectByOwner(projectId, token);
+        //--Close don't have to check every component is completed, or not.
+
+        var isInProgress = project.getStatus().equals(ProjectStatus.IN_PROGRESS);
+        if (!isInProgress) throw new AppExc(ErrorCodes.PROJECT_IS_NOT_IN_PROGRESS);
 
         project.setEndDate(LocalDate.now());
         project.setStatus(ProjectStatus.CLOSED);

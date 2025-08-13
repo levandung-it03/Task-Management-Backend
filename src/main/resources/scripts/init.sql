@@ -105,8 +105,8 @@ VALUES ('Employee 1', 'employee1@example.com', '0900000001', 'ID001', 1, 1),
 
 -- 8. Tạo Project do PM tạo (Owner)
 INSERT IGNORE INTO project
-(created_by_id, name, description, expected_start_date, start_date, due_date, status, created_time, updated_time)
-VALUES (14, 'Project 1', 'Sample Project', CURDATE(), CURDATE(), DATE_ADD(CURDATE(), INTERVAL 30 DAY), "IN_PROGRESS", NOW(), NOW());
+(created_by_id, name, description, expected_start_date, start_date, due_date, end_date, status, created_time, updated_time)
+VALUES (14, 'Project 1', 'Sample Project', CURDATE(), NULL, DATE_ADD(CURDATE(), INTERVAL 30 DAY), NULL, "CREATED", NOW(), NOW());
 
 -- Lấy ID Project mới tạo giả sử là 1
 
@@ -136,13 +136,13 @@ VALUES
 -- 11. Tạo Phase thuộc project 1, do LEAD tạo
 INSERT IGNORE INTO phase
 (created_by_id, project_id, name, description, start_date, due_date, created_time, updated_time)
-VALUES (14, 1, 'Phase 1', 'Phase description', CURDATE(), DATE_ADD(CURDATE(), INTERVAL 10 DAY), NOW(), NOW());
+VALUES (14, 1, 'Phase 1', 'Phase description', DATE_ADD(CURDATE(), INTERVAL 1 DAY), DATE_ADD(CURDATE(), INTERVAL 20 DAY), NOW(), NOW());
 
 
 -- 10. Tạo Collection thuộc project (cần userInfoCreated chỉ là LEAD hoặc PM đã thuộc project)
 INSERT IGNORE INTO collection
 (created_by_id, phase_id, name, description, start_date, due_date, created_time, updated_time)
-VALUES (14, 1, 'Collection 1', 'Description collection', CURDATE(), DATE_ADD(CURDATE(), INTERVAL 15 DAY), NOW(), NOW());
+VALUES (14, 1, 'Collection 1', 'Description collection', DATE_ADD(CURDATE(), INTERVAL 2 DAY), DATE_ADD(CURDATE(), INTERVAL 15 DAY), NOW(), NOW());
 
 -- Giả sử Phase id = 1
 
@@ -155,8 +155,8 @@ WHERE id = 1;
 INSERT IGNORE INTO task
 (collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked,
  start_date, deadline, created_time, updated_time)
-VALUES (1, 11, NULL, 'Root Task 1', 'Root task description', 'Format 1', 'NORMAL', 'BACKEND', 'HIGH', 0, CURDATE(),
-        DATE_ADD(CURDATE(), INTERVAL 7 DAY), NOW(), NOW());
+VALUES (1, 11, NULL, 'Root Task 1', 'Root task description', 'Format 1', 'NORMAL', 'BACKEND', 'HIGH', 0, DATE_ADD(CURDATE(), INTERVAL 3 DAY),
+        DATE_ADD(CURDATE(), INTERVAL 10 DAY), NOW(), NOW());
 
 -- Giả sử Task id = 1 (Root Task)
 
@@ -164,10 +164,10 @@ VALUES (1, 11, NULL, 'Root Task 1', 'Root task description', 'Format 1', 'NORMAL
 INSERT IGNORE INTO task
 (collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked,
  start_date, deadline, created_time, updated_time)
-VALUES (1, 11, 1, 'Sub Task 1', 'Sub task 1 desc', 'Format Sub1', 'NORMAL', 'BACKEND', 'HIGH', 0, CURDATE(),
-        DATE_ADD(CURDATE(), INTERVAL 3 DAY), NOW(), NOW()),
-       (1, 11, 1, 'Sub Task 2', 'Sub task 2 desc', 'Format Sub2', 'ADVANCED', 'FRONTEND', 'NORMAL', 0, CURDATE(),
-        DATE_ADD(CURDATE(), INTERVAL 4 DAY), NOW(), NOW());
+VALUES (1, 11, 1, 'Sub Task 1', 'Sub task 1 desc', 'Format Sub1', 'NORMAL', 'BACKEND', 'HIGH', 0, DATE_ADD(CURDATE(), INTERVAL 3 DAY),
+        DATE_ADD(CURDATE(), INTERVAL 9 DAY), NOW(), NOW()),
+       (1, 11, 1, 'Sub Task 2', 'Sub task 2 desc', 'Format Sub2', 'ADVANCED', 'FRONTEND', 'NORMAL', 0, DATE_ADD(CURDATE(), INTERVAL 3 DAY),
+        DATE_ADD(CURDATE(), INTERVAL 8 DAY), NOW(), NOW());
 
 -- Sub Task id giả sử là 2 và 3
 
@@ -207,7 +207,7 @@ INSERT IGNORE INTO task
 (collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked,
  start_date, deadline, end_date, created_time, updated_time)
 VALUES (1, 11, NULL, 'Root Task On-Time', 'Root task completed on time', 'Format OT', 'NORMAL', 'BACKEND', 'HIGH', 0,
-        CURDATE(), DATE_ADD(CURDATE(), INTERVAL 5 DAY), DATE_ADD(CURDATE(), INTERVAL 4 DAY), NOW(), NOW());
+        DATE_ADD(CURDATE(), INTERVAL 3 DAY), DATE_ADD(CURDATE(), INTERVAL 11 DAY), DATE_ADD(CURDATE(), INTERVAL 4 DAY), NOW(), NOW());
 
 -- Gán 2 employee trực tiếp vào Root Task A
 INSERT IGNORE INTO task_for_users (assigned_to_id, task_id, user_task_status, updated_time)
@@ -227,7 +227,7 @@ INSERT IGNORE INTO task
 (collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked,
  start_date, deadline, end_date, created_time, updated_time)
 VALUES (1, 11, NULL, 'Root Task Late', 'Root task completed late', 'Format LT', 'NORMAL', 'FRONTEND', 'HIGH', 0,
-        CURDATE(), DATE_ADD(CURDATE(), INTERVAL 5 DAY), DATE_ADD(CURDATE(), INTERVAL 6 DAY), NOW(), NOW());
+        DATE_ADD(CURDATE(), INTERVAL 3 DAY), DATE_ADD(CURDATE(), INTERVAL 12 DAY), DATE_ADD(CURDATE(), INTERVAL 6 DAY), NOW(), NOW());
 
 -- Gán 2 employee trực tiếp vào Root Task B
 INSERT IGNORE INTO task_for_users (assigned_to_id, task_id, user_task_status, updated_time)

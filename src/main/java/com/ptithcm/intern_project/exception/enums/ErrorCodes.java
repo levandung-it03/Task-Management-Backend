@@ -72,7 +72,8 @@ public enum ErrorCodes {
     START_AFTER_PHASE(16006, "Start-Date cannot be AFTER Phase Start-Date", BAD_REQUEST),
     END_BEFORE_PHASE(16007, "End-Date cannot be BEFORE Phase End-Date", BAD_REQUEST),
     START_AFTER_SUB_TASK(16008, "Start-Date cannot be AFTER Sub-Task" , BAD_REQUEST),
-    END_BEFORE_SUB_TASK(17008, "End-Date cannot be BEFORE Sub-Task", BAD_REQUEST),
+    END_BEFORE_SUB_TASK(16009, "End-Date cannot be BEFORE Sub-Task", BAD_REQUEST),
+    PROJECT_OVERDUE(16010, "Project is Over-Due, update its Due-Date to perform action!", BAD_REQUEST),
     //--Phase(17)
     CANT_DELETE_PHASE(17000, "Phase has already had Collection, cannot perform action", BAD_REQUEST),
     START_BEFORE_PHASE(17001, "Start-Date must be after Phase Start-Date", BAD_REQUEST),
