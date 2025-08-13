@@ -107,7 +107,8 @@ public class ProjectService implements IProjectService {
 
         var phases = phaseService.findAllProjectId(project.getId());
         for (Phase phase : phases) {
-            if (request.getExpectedStartDate().isAfter(phase.getStartDate()))
+            var isBefore = request.getExpectedStartDate().isAfter(phase.getStartDate());
+            if (isBefore)
                 throw new AppExc(ErrorCodes.START_BEFORE_PHASE);
             if (request.getDueDate().isBefore(phase.getDueDate()))
                 throw new AppExc(ErrorCodes.END_BEFORE_PHASE);

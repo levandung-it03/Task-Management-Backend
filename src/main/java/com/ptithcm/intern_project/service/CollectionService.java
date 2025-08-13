@@ -227,6 +227,7 @@ public class CollectionService implements ICollectionService {
         List<TaskForUsers> usersTask = taskForUsersService.findAllByTaskCollectionId(collectionId);
         return usersTask.stream()
             .map(userTask -> userInfoMapper.toStatisticUser(userTask.getReports()))
+            .sorted((prev, next) -> (int) (next.getTotalPoint() - prev.getTotalPoint()))
             .toList();
     }
 }
