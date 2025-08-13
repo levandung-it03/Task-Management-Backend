@@ -426,7 +426,7 @@ public class TaskService implements ITaskService {
     public List<Task> getAllRelatedTasks(Collection collection, String token) {
         String username = jwtService.readPayload(token).get("sub");
         return taskRepository
-            .findAllDistinctByCollectionIdAndRootTaskIsNull(collection.getId())
+            .findAllDistinctByCollectionId(collection.getId())
             .stream().filter(task -> {
                 var isOwner = task.getUserInfoCreated().getAccount().getUsername().equals(username);
                 var isRelatedPM = task.getCollection().getPhase().getProject().getProjectUsers()
@@ -440,6 +440,9 @@ public class TaskService implements ITaskService {
                         .getUsername().equals(username));
                 return isOwner || isRelatedPM || isAssignedUser;
             })
+            .map(task -> task.getRootTask() == null ? task : task.getRootTask())
+            .collect(Collectors.toSet())
+            .stream()
             .toList();
     }
 

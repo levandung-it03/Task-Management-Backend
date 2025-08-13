@@ -54,7 +54,9 @@ public class UserInfoService implements IUserInfoService {
 
         var usernameFinding = jwtService.readPayload(token).get("sub");
         return userInfoRepository.findAllByEmailOrFullName(query, query).stream()
-            .filter(userInfo -> !userInfo.getAccount().getUsername().equals(usernameFinding))
+            .filter(userInfo -> !(userInfo.getAccount().getUsername().equals(usernameFinding)
+                || userInfo.getAccount().getAuthorities().getFirst().getName()
+                    .equals(AuthorityEnum.ROLE_ADMIN.toString())))
             .map(userInfoMapper::shortenUserInfo)
             .toList();
     }

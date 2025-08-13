@@ -57,8 +57,7 @@ public class UserInfoController {
         ROLE_ADMIN + "/v1/user-info/search/{query}"})
     public ResponseEntity<RestApiResponse<List<ShortUserInfoDTO>>> fastSearchUsers(
         @PathVariable("query") String query,
-        @RequestHeader("Authorization") String token
-    ) {
+        @RequestHeader("Authorization") String token) {
         return RestApiResponse.fromScs(SuccessCodes.GET_LIST, userInfoService.fastSearchUsers(query, token));
     }
 
