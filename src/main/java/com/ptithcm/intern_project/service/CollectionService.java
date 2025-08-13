@@ -91,9 +91,9 @@ public class CollectionService implements ICollectionService {
 
         var tasks = taskService.findAllByCollectionId(id);
         for (Task task : tasks) {
-            if (collection.getStartDate().isAfter(task.getStartDate()))
+            if (request.getStartDate().isAfter(task.getStartDate()))
                 throw new AppExc(ErrorCodes.START_AFTER_TASK);
-            if (collection.getDueDate().isBefore(task.getDeadline()))
+            if (request.getDueDate().isBefore(task.getDeadline()))
                 throw new AppExc(ErrorCodes.END_BEFORE_COLLECTION);
         }
         var isOwner = collection.getUserInfoCreated().getAccount().getUsername().equals(username);

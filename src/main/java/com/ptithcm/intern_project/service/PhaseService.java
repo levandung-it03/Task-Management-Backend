@@ -53,9 +53,9 @@ public class PhaseService implements IPhaseService {
 
         var collections = collectionService.findAllByPhaseId(id);
         for (Collection collection : collections) {
-            if (phase.getStartDate().isAfter(collection.getStartDate()))
+            if (request.getStartDate().isAfter(collection.getStartDate()))
                 throw new AppExc(ErrorCodes.START_AFTER_COLLECTION);
-            if (phase.getDueDate().isBefore(collection.getDueDate()))
+            if (request.getDueDate().isBefore(collection.getDueDate()))
                 throw new AppExc(ErrorCodes.END_BEFORE_COLLECTION);
         }
 

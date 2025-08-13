@@ -189,4 +189,8 @@ public class TaskForUsersService implements ITaskForUsersService {
             taskForUsersRepository.existsByTaskUserIdAndAssignedUsername(taskUserId, username)
         );
     }
+
+    public List<TaskForUsers> findAllByTaskCollectionPhaseProjectId(Long projectId) {
+        return taskForUsersRepository.findAllByTaskCollectionPhaseProjectId(projectId);
+    }
 }

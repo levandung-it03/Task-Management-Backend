@@ -111,4 +111,6 @@ public interface TaskForUsersRepository extends JpaRepository<TaskForUsers, Long
     boolean existsByTaskUserIdAndAssignedUsername(
         @Param("taskUserId") Long taskUserId,
         @Param("username") String username);
+
+    List<TaskForUsers> findAllByTaskCollectionPhaseProjectId(Long projectId);
 }

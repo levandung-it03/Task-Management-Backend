@@ -339,7 +339,7 @@ public class ProjectService implements IProjectService {
     @Override
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public List<UserStatisticDTO> getUsersStatistic(Long projectId) {
-        List<TaskForUsers> usersTask = projectRepository.findAllUsersTaskByProjectId(projectId);
+        List<TaskForUsers> usersTask = taskForUsersService.findAllByTaskCollectionPhaseProjectId(projectId);
         return usersTask.stream()
             .map(userTask -> userInfoMapper.toStatisticUser(userTask.getReports()))
             .toList();

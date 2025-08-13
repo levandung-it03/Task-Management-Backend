@@ -20,18 +20,8 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     List<Project> findAllByUsernameHighRole(@Param("username") String username);
 
     @Query("""
-        SELECT DISTINCT pj FROM TaskForUsers tfu
-        JOIN tfu.task t
-        JOIN t.collection c
-        JOIN c.phase p
-        JOIN p.project pj
+        SELECT DISTINCT tfu.task.collection.phase.project FROM TaskForUsers tfu
         WHERE tfu.assignedUser.account.username = :username
     """)
     List<Project> findAllByUsernameLowRole(@Param("username") String username);
-
-    @Query("""
-        SELECT DISTINCT tfu FROM TaskForUsers tfu
-        WHERE tfu.task.collection.phase.project.id = :projectId
-    """)
-    List<TaskForUsers> findAllUsersTaskByProjectId(@Param("projectId") Long projectId);
 }

@@ -196,9 +196,9 @@ public class TaskService implements ITaskService {
 
         var subTasks = taskRepository.findAllByRootTaskId(id);
             for (Task subTask : subTasks) {
-            if (foundTask.getStartDate().isAfter(subTask.getStartDate()))
+            if (request.getStartDate().isAfter(subTask.getStartDate()))
                 throw new AppExc(ErrorCodes.START_AFTER_SUB_TASK);
-            if (foundTask.getDeadline().isBefore(subTask.getDeadline()))
+            if (request.getDeadline().isBefore(subTask.getDeadline()))
                 throw new AppExc(ErrorCodes.END_BEFORE_SUB_TASK);
         }
         taskMapper.mappingBaseInfo(foundTask, request);
