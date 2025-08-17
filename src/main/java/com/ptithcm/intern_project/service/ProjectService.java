@@ -342,7 +342,8 @@ public class ProjectService implements IProjectService {
     public List<UserStatisticDTO> getUsersStatistic(Long projectId) {
         List<TaskForUsers> usersTask = taskForUsersService.findAllByTaskCollectionPhaseProjectId(projectId);
         return usersTask.stream()
-            .map(userTask -> userInfoMapper.toStatisticUser(userTask.getReports()))
+            .map(userInfoMapper::toStatisticUser)
+            .sorted((prev, next) -> (int) (next.getTotalPoint() - prev.getTotalPoint()))
             .toList();
     }
 

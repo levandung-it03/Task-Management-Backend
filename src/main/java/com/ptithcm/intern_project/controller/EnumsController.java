@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/public/v1/enum")
 @RequiredArgsConstructor
@@ -41,8 +44,8 @@ public class EnumsController {
     }
 
     @GetMapping("/task-level")
-    public ResponseEntity<RestApiResponse<TaskLevel[]>> getTaskLevel() {
-        return RestApiResponse.fromScs(SuccessCodes.GET_ENUMS, TaskLevel.values());
+    public ResponseEntity<RestApiResponse<List<Map<String, Float>>>> getTaskLevel() {
+        return RestApiResponse.fromScs(SuccessCodes.GET_ENUMS, enumService.getTaskLevelEnums());
     }
 
     @GetMapping("/task-priority")

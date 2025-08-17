@@ -3,8 +3,11 @@ package com.ptithcm.intern_project.mapper;
 import com.ptithcm.intern_project.dto.general.ShortUserInfoDTO;
 import com.ptithcm.intern_project.dto.general.UserStatisticDTO;
 import com.ptithcm.intern_project.dto.request.UpdatedUserInfoRequest;
+import com.ptithcm.intern_project.dto.response.UserInfoResponse;
 import com.ptithcm.intern_project.dto.response.UserOverviewResponse;
+import com.ptithcm.intern_project.jpa.model.Authority;
 import com.ptithcm.intern_project.jpa.model.Report;
+import com.ptithcm.intern_project.jpa.model.TaskForUsers;
 import com.ptithcm.intern_project.jpa.model.UserInfo;
 import com.ptithcm.intern_project.jpa.model.enums.ReportStatus;
 import com.ptithcm.intern_project.jpa.model.enums.TaskLevel;
@@ -35,12 +38,24 @@ public class UserInfoMapper {
         originInfo.setIdentity(dto.getIdentity());
     }
 
-    public UserStatisticDTO toStatisticUser(List<Report> reports) {
-        var userInfo = reports.getFirst().getUserTaskCreated().getAssignedUser();
+    public UserStatisticDTO toStatisticUser(TaskForUsers taskForUsers) {
+        var userInfo = taskForUsers.getAssignedUser();
+        if (taskForUsers.getReports().isEmpty())
+            return UserStatisticDTO.builder()
+                .email(userInfo.getEmail())
+                .fullName(userInfo.getFullName())
+                .role(userInfo.getAccount().getAuthorities().getFirst().getAuthority())
+                .department(userInfo.getDepartment().getName())
+                .approvedRatio(0)
+                .totalPoint(0)
+                .totalDoneTaskOnTime(0)
+                .totalDoneTaskLate(0)
+                .build();
+
         float totalPoint = 0;
         int totalApproved = 0, totalRejected = 0, totalDoneTaskOnTime = 0, totalDoneTaskLate = 0;
 
-        for (Report report : reports) {
+        for (Report report : taskForUsers.getReports()) {
             var task = report.getUserTaskCreated().getTask();
 
             if (report.getReviewedTime() == null)
@@ -73,7 +88,7 @@ public class UserInfoMapper {
         }
 
         float approvedRatio = (totalApproved + totalRejected == 0f) ? 0
-            : (float) totalApproved / (totalApproved + totalRejected) * 100;
+                : (float) totalApproved / (totalApproved + totalRejected) * 100;
         return UserStatisticDTO.builder()
             .email(userInfo.getEmail())
             .fullName(userInfo.getFullName())
@@ -94,6 +109,23 @@ public class UserInfoMapper {
             .phone(userInfo.getPhone())
             .departmentName(userInfo.getDepartment().getName())
             .authorityName(userInfo.getAccount().getAuthorities().getFirst().getAuthority())
+            .build();
+    }
+
+    public UserInfoResponse toFullInfo(UserInfo userInfo) {
+        List<String> authorities = userInfo.getAccount().getAuthorities().stream()
+            .map(Authority::getName)
+            .toList();
+        return UserInfoResponse.builder()
+            .id(userInfo.getId())
+            .phone(userInfo.getPhone())
+            .fullName(userInfo.getFullName())
+            .department(userInfo.getDepartment().getName())
+            .email(userInfo.getEmail())
+            .identity(userInfo.getIdentity())
+            .authorities(String.join(",", authorities))
+            .createdTime(userInfo.getAccount().getCreatedTime())
+            .status(userInfo.getAccount().isStatus())
             .build();
     }
 }

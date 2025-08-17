@@ -1,7 +1,10 @@
 package com.ptithcm.intern_project.service.interfaces;
 
 import com.ptithcm.intern_project.dto.general.ShortUserInfoDTO;
+import com.ptithcm.intern_project.dto.request.PaginationRequest;
 import com.ptithcm.intern_project.dto.request.UpdatedUserInfoRequest;
+import com.ptithcm.intern_project.dto.response.PaginationResponse;
+import com.ptithcm.intern_project.dto.response.UserInfoResponse;
 import com.ptithcm.intern_project.dto.response.UserOverviewResponse;
 import com.ptithcm.intern_project.jpa.model.UserInfo;
 
@@ -20,4 +23,8 @@ public interface IUserInfoService {
     List<ShortUserInfoDTO> pmFastSearchUsersForNewProject(String query, String token);
 
     UserOverviewResponse getUserOverview(String email);
+
+    PaginationResponse<UserInfoResponse> searchFullPaginatedInformationUsers(PaginationRequest request);
+
+    void switchAccountStatus(Long userInfoId);
 }

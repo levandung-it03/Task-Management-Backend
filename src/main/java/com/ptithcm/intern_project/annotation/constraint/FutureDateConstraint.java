@@ -1,7 +1,6 @@
 package com.ptithcm.intern_project.annotation.constraint;
 
 import com.ptithcm.intern_project.annotation.validator.FutureDateValidator;
-import com.ptithcm.intern_project.annotation.validator.FutureTimeValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 

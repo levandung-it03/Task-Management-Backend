@@ -1,6 +1,9 @@
 package com.ptithcm.intern_project.jpa.repository;
 
+import com.ptithcm.intern_project.dto.response.UserInfoResponse;
 import com.ptithcm.intern_project.jpa.model.UserInfo;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -44,7 +47,8 @@ public interface UserInfoRepository extends JpaRepository<UserInfo, Long> {
 
     @Query("""
         SELECT DISTINCT u FROM UserInfo u
-        JOIN u.account.authorities auth
+        JOIN FETCH u.account a
+        JOIN FETCH a.authorities auth
         WHERE NOT u.email IN :emails
         AND (LOWER(u.fullName) LIKE CONCAT('%',LOWER(:query),'%')
             OR LOWER(u.email) LIKE CONCAT('%',LOWER(:query),'%'))
@@ -53,4 +57,18 @@ public interface UserInfoRepository extends JpaRepository<UserInfo, Long> {
     List<UserInfo> searchAllLeaderByNotEmailIn(
         @Param("emails") List<String> emails,
         @Param("query") String query);
+
+    @Query("""
+        SELECT DISTINCT u FROM UserInfo u
+        JOIN FETCH u.account a
+        JOIN FETCH a.authorities auth
+        WHERE (:#{#filter.id} IS NULL OR u.id = :#{#filter.id})
+        AND (:#{#filter.department} IS NULL OR LOWER(u.department.name) LIKE LOWER(CONCAT('%',:#{#filter.department},'%')))
+        AND (:#{#filter.email} IS NULL OR LOWER(u.email) LIKE LOWER(CONCAT('%',:#{#filter.email},'%')))
+        AND (:#{#filter.fullName} IS NULL OR LOWER(u.fullName) LIKE LOWER(CONCAT('%',:#{#filter.fullName},'%')))
+        AND (:#{#filter.phone} IS NULL OR u.phone LIKE CONCAT('%',:#{#filter.phone},'%'))
+        AND (:#{#filter.identity} IS NULL OR u.identity LIKE CONCAT('%',:#{#filter.identity},'%'))
+        AND (:#{#filter.authorities} IS NULL OR LOWER(auth.name) LIKE LOWER(CONCAT('%',:#{#filter.authorities},'%')))
+    """)
+    Page<UserInfo> searchFullPaginatedInformationUsers(@Param("filter") UserInfoResponse filter, Pageable pageable);
 }

@@ -4,6 +4,8 @@ import com.ptithcm.intern_project.dto.response.UserTaskResponse;
 import com.ptithcm.intern_project.exception.enums.ErrorCodes;
 import com.ptithcm.intern_project.exception.AppExc;
 import com.ptithcm.intern_project.jpa.model.UserInfo;
+import com.ptithcm.intern_project.jpa.model.enums.ProjectStatus;
+import com.ptithcm.intern_project.jpa.model.enums.ReportStatus;
 import com.ptithcm.intern_project.mapper.ReportMapper;
 import com.ptithcm.intern_project.mapper.UserInfoMapper;
 import com.ptithcm.intern_project.dto.general.ShortUserInfoDTO;
@@ -16,7 +18,6 @@ import com.ptithcm.intern_project.jpa.model.enums.UserTaskStatus;
 import com.ptithcm.intern_project.jpa.repository.TaskForUsersRepository;
 import com.ptithcm.intern_project.security.service.JwtService;
 import com.ptithcm.intern_project.service.interfaces.ITaskForUsersService;
-import com.ptithcm.intern_project.service.trans.TaskForUsersTransService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -35,7 +36,6 @@ public class TaskForUsersService implements ITaskForUsersService {
     TaskForUsersRepository taskForUsersRepository;
     UserInfoMapper userInfoMapper;
     UserInfoService userInfoService;
-    TaskForUsersTransService taskForUsersTransService;
     ReportMapper reportMapper;
     JwtService jwtService;
     ReportService reportService;
@@ -80,10 +80,14 @@ public class TaskForUsersService implements ITaskForUsersService {
         if (!isAssignedUser || isKickedOut)
             throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
-        taskForUsersTransService.validateEndedParentEntities(taskUserCreating);
+        this.validateEndedParentEntities(taskUserCreating);
 
         var isNotStartedTask = LocalDate.now().isBefore(taskUserCreating.getTask().getStartDate());
         if (isNotStartedTask)   throw new AppExc(ErrorCodes.TASK_HASNT_STARTED);
+
+        var containsApprovedReport = taskUserCreating.getReports()
+            .stream().anyMatch(report -> report.getReportStatus().equals(ReportStatus.APPROVED));
+        if (containsApprovedReport) throw new AppExc(ErrorCodes.ALREADY_HAS_REPORT_APPROVED);
 
         var report = reportMapper.newModel(request, taskUserCreating);
         return IdResponse.builder()
@@ -148,29 +152,89 @@ public class TaskForUsersService implements ITaskForUsersService {
         return taskForUsersRepository.searchTheRestUsersOnRoot(rootId, query, username);
     }
 
+    @Override
+    @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public void kickUser(Long taskUserId, String token) {
-        var kickedUserTask = taskForUsersTransService.updateTaskUserStatus(taskUserId, token, UserTaskStatus.KICKED_OUT);
+        String username = jwtService.readPayload(token).get("sub");
+
         //--Checked project in-progress by "kickedUserTask"
         //--Checked phase is not ended by "reAddedUserTask"
         //--Checked collection is not ended by "reAddedUserTask"
         //--Checked task is not ended by "reAddedUserTask"
+        var kickedUserTask = this.findUserTaskByTaskOwner(taskUserId, username);
 
-        var isAssignedUserHasReport = reportService.existsReportByUserTaskCreatedId(kickedUserTask.getId());
+        if (kickedUserTask.getTask().getRootTask() == null)
+            this.rootTaskKickUser(kickedUserTask);
+        else
+            this.validateSubTaskKickUser(kickedUserTask);
+
+        var isAssignedUserHasReport = reportService.existsReportByUserTaskCreatedId(taskUserId);
         if (isAssignedUserHasReport) {
+            kickedUserTask.setUserTaskStatus(UserTaskStatus.KICKED_OUT);
+            kickedUserTask.setUpdatedTime(LocalDateTime.now());
             taskForUsersRepository.save(kickedUserTask);
         } else {
-            taskForUsersRepository.delete(kickedUserTask);
+            kickedUserTask.getTask().getTaskForUsers().remove(kickedUserTask);
+            taskForUsersRepository.deleteById(taskUserId);
         }
     }
 
+    public void rootTaskKickUser(TaskForUsers kickedUserTask) {
+        var existsSubTask = taskForUsersRepository.existsSubTaskOfRootTask(kickedUserTask.getTask().getId());
+        var isTheLastUser = kickedUserTask.getTask().getTaskForUsers().size() == 1;
+
+        if (isTheLastUser && !existsSubTask)
+            throw new AppExc(ErrorCodes.TASK_NEED_AT_LEAST_ONE_USER);
+    }
+
+    public void validateSubTaskKickUser(TaskForUsers kickedUserTask) {
+        var isTheLastUser = kickedUserTask.getTask().getTaskForUsers().size() == 1;
+        if (isTheLastUser)  throw new AppExc(ErrorCodes.TASK_NEED_AT_LEAST_ONE_USER);
+    }
+
+    @Override
     public void reAddUser(Long taskUserId, String token) {
-        var reAddedUserTask = taskForUsersTransService.updateTaskUserStatus(taskUserId, token, UserTaskStatus.JOINED);
+        String username = jwtService.readPayload(token).get("sub");
         //--Checked project in-progress by "reAddedUserTask"
         //--Checked phase is not ended by "reAddedUserTask"
         //--Checked collection is not ended by "reAddedUserTask"
         //--Checked task is not ended by "reAddedUserTask"
+        var reAddedUserTask = this.findUserTaskByTaskOwner(taskUserId, username);
+
+        reAddedUserTask.setUserTaskStatus(UserTaskStatus.JOINED);
+        reAddedUserTask.setUpdatedTime(LocalDateTime.now());
 
         taskForUsersRepository.save(reAddedUserTask);
+    }
+
+    private TaskForUsers findUserTaskByTaskOwner(Long taskUserId, String username) {
+        var foundUserTask = taskForUsersRepository.findById(taskUserId)
+            .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
+
+        var isTaskOwner = foundUserTask.getTask().getUserInfoCreated().getAccount().getUsername().equals(username);
+        if (!isTaskOwner) throw new AppExc(ErrorCodes.FORBIDDEN_USER);
+
+        this.validateEndedParentEntities(foundUserTask);
+
+        var isKickedLeaderProject = ProjectService.isKickedLeader(foundUserTask.getTask(), username);
+        if (isKickedLeaderProject) throw new AppExc(ErrorCodes.FORBIDDEN_USER);
+
+        return foundUserTask;
+    }
+
+    private void validateEndedParentEntities(TaskForUsers taskForUser) {
+        var isInProgressProject = taskForUser.getTask().getCollection().getPhase().getProject().getStatus()
+            .equals(ProjectStatus.IN_PROGRESS);
+        if (!isInProgressProject) throw new AppExc(ErrorCodes.PROJECT_IS_NOT_IN_PROGRESS);
+
+        var isPhaseEnded = taskForUser.getTask().getCollection().getPhase().getEndDate() != null;
+        if (isPhaseEnded) throw new AppExc(ErrorCodes.PHASE_ENDED);
+
+        var isCollectionEnded = taskForUser.getTask().getCollection().getEndDate() != null;
+        if (isCollectionEnded)  throw new AppExc(ErrorCodes.COLLECTION_ENDED);
+
+        var isTaskEnded = taskForUser.getTask().getEndDate() != null;
+        if (isTaskEnded)  throw new AppExc(ErrorCodes.TASK_ENDED);
     }
 
     public boolean existsByProjectIdAndAssignedUsername(Long projectId, String username) {

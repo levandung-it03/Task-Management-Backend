@@ -1,5 +1,8 @@
 package com.ptithcm.intern_project.controller;
 
+import com.ptithcm.intern_project.dto.request.PaginationRequest;
+import com.ptithcm.intern_project.dto.response.PaginationResponse;
+import com.ptithcm.intern_project.dto.response.UserInfoResponse;
 import com.ptithcm.intern_project.dto.response.UserOverviewResponse;
 import com.ptithcm.intern_project.exception.enums.SuccessCodes;
 import com.ptithcm.intern_project.dto.general.RestApiResponse;
@@ -95,5 +98,19 @@ public class UserInfoController {
         ROLE_ADMIN + "/v1/user-info/{email}"})
     public ResponseEntity<RestApiResponse<UserOverviewResponse>> getUserOverview(@PathVariable("email") String email) {
         return RestApiResponse.fromScs(GET_USER_INFO, userInfoService.getUserOverview(email));
+    }
+
+    @Operation(description = "Get paginated User-Info for Admin")
+    @PostMapping(ROLE_ADMIN + "/v1/user-info/search-full")
+    public ResponseEntity<RestApiResponse<PaginationResponse<UserInfoResponse>>> searchUsers(
+        @Valid @RequestBody PaginationRequest request) {
+        return RestApiResponse.fromScs(GET_LIST, userInfoService.searchFullPaginatedInformationUsers(request));
+    }
+
+    @Operation(description = "Switch specified UserInfo-Account status by Admin")
+    @PutMapping(ROLE_ADMIN + "/v1/user-info/{id}/switch-account-status")
+    public ResponseEntity<RestApiResponse<Void>> switchAccountStatus(@PathVariable("id") Long id) {
+        userInfoService.switchAccountStatus(id);
+        return RestApiResponse.fromScs(UPDATED);
     }
 }

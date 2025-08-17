@@ -225,7 +225,8 @@ public class PhaseService implements IPhaseService {
     public List<UserStatisticDTO> getUsersStatistic(Long phaseId) {
         List<TaskForUsers> usersTask = taskForUsersService.findAllByTaskCollectionPhaseId(phaseId);
         return usersTask.stream()
-            .map(userTask -> userInfoMapper.toStatisticUser(userTask.getReports()))
+            .map(userInfoMapper::toStatisticUser)
+            .sorted((prev, next) -> (int) (next.getTotalPoint() - prev.getTotalPoint()))
             .toList();
     }
 }

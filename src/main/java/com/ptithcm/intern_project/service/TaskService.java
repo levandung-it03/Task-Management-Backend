@@ -195,7 +195,7 @@ public class TaskService implements ITaskService {
         if (isEndingAfterCollection)    throw new AppExc(ErrorCodes.END_AFTER_COLLECTION);
 
         var subTasks = taskRepository.findAllByRootTaskId(id);
-            for (Task subTask : subTasks) {
+        for (Task subTask : subTasks) {
             if (request.getStartDate().isAfter(subTask.getStartDate()))
                 throw new AppExc(ErrorCodes.START_AFTER_SUB_TASK);
             if (request.getDeadline().isBefore(subTask.getDeadline()))
@@ -285,7 +285,7 @@ public class TaskService implements ITaskService {
         //--Checked collection is ended by "lockedTask"
         //--Checked task is ended by "lockedTask"
 
-        lockedTask.setLocked(request.isStatus());
+        lockedTask.setLocked(request.getStatus());
         taskRepository.save(lockedTask);
 
         this.notifyViaEmail(lockedTask.getTaskForUsers(), TaskMsg.LOCKED_TASK);

@@ -1,7 +1,5 @@
 package com.ptithcm.intern_project.exception.enums;
 
-import com.ptithcm.intern_project.exception.AppExc;
-import com.ptithcm.intern_project.jpa.model.Collection;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
@@ -13,7 +11,7 @@ import static org.springframework.http.HttpStatus.*;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public enum ErrorCodes {
     UNAWARE_ERROR(10000, "Unaware Exc Thrown from server", INTERNAL_SERVER_ERROR),
-    VALIDATOR_ERR_RESPONSE(10001, "Invalid data or format of '${field}'", BAD_REQUEST),
+    VALIDATOR_ERR_RESPONSE(10001, "Error occurred on field '${field}', please check it", BAD_REQUEST),
     PARSE_JSON_ERR(10002, "Invalid data or format of '${field}'", BAD_REQUEST),
     INVALID_TOKEN(10003, "Auth Token is invalid", UNAUTHORIZED),
     EXPIRED_TOKEN(10004, "Auth Token is expired", UNAUTHORIZED),
@@ -60,6 +58,7 @@ public enum ErrorCodes {
     USER_SUBMITTED_REPORT(14010, "User submitted Report on Root-Task, cannot move them", BAD_REQUEST),
     START_BEFORE_ROOT_TASK(14011, "Start-Date must be after Root-Task Start-Date", BAD_REQUEST),
     END_AFTER_ROOT_TASK(14011, "End-Date must be before Root-Task End-Date", BAD_REQUEST),
+    TASK_NEED_AT_LEAST_ONE_USER(14012, "Task need at least ONE User. You can Delete, or Lock it instead!", BAD_REQUEST),
     //--Report(15)
     REPORT_REVIEWED(15000, "Report has been reviewed, cannot perform action", BAD_REQUEST),
     //--Project(16)
@@ -71,18 +70,19 @@ public enum ErrorCodes {
     CANT_COMPLETE_PROJECT(16005, "Complete all Phases before completing Project" , BAD_REQUEST ),
     START_AFTER_PHASE(16006, "Start-Date cannot be AFTER Phase Start-Date", BAD_REQUEST),
     END_BEFORE_PHASE(16007, "End-Date cannot be BEFORE Phase End-Date", BAD_REQUEST),
-    START_AFTER_SUB_TASK(16008, "Start-Date cannot be AFTER Sub-Task" , BAD_REQUEST),
-    END_BEFORE_SUB_TASK(16009, "End-Date cannot be BEFORE Sub-Task", BAD_REQUEST),
+    START_AFTER_SUB_TASK(16008, "Start-Date cannot be AFTER Sub-Task Start-Date" , BAD_REQUEST),
+    END_BEFORE_SUB_TASK(16009, "Deadline cannot be BEFORE Sub-Task Deadline", BAD_REQUEST),
     PROJECT_OVERDUE(16010, "Project is Over-Due, update its Due-Date to perform action!", BAD_REQUEST),
     //--Phase(17)
     CANT_DELETE_PHASE(17000, "Phase has already had Collection, cannot perform action", BAD_REQUEST),
     START_BEFORE_PHASE(17001, "Start-Date must be after Phase Start-Date", BAD_REQUEST),
-    END_AFTER_PHASE(17002, "End-Date must be before Phase Start-Date", BAD_REQUEST),
+    END_AFTER_PHASE(17002, "End-Date must be before Phase End-Date", BAD_REQUEST),
     CANT_DELETE_PHASE_WITH_COLLECTION(17003, "Phase still has collections, cannot be deleted", BAD_REQUEST),
     CANT_COMPLETE_PHASE(17004, "Complete all Collections before completing Phase!", BAD_REQUEST),
     PHASE_ENDED(17005, "Phase was ended! You cannot do anything more!", BAD_REQUEST),
     START_AFTER_COLLECTION(17006,"Start-Date cannot be AFTER Collection Start-Date", BAD_REQUEST),
     END_BEFORE_COLLECTION(17007,"End-Date cannot be BEFORE Collection End-Date", BAD_REQUEST),
+    ALREADY_HAS_REPORT_APPROVED(17008, "You had a Report approved, cannot create new!", BAD_REQUEST),
     //--UserInfo(18)
     INVALID_EMAIL(18000, "Email not found or is invalid", BAD_REQUEST),
     //--Collection(18)

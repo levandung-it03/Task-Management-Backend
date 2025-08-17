@@ -1,5 +1,8 @@
 package com.ptithcm.intern_project.service;
 
+import com.ptithcm.intern_project.dto.request.PaginationRequest;
+import com.ptithcm.intern_project.dto.response.PaginationResponse;
+import com.ptithcm.intern_project.dto.response.UserInfoResponse;
 import com.ptithcm.intern_project.dto.response.UserOverviewResponse;
 import com.ptithcm.intern_project.security.enums.AuthorityEnum;
 import com.ptithcm.intern_project.exception.enums.ErrorCodes;
@@ -11,9 +14,11 @@ import com.ptithcm.intern_project.jpa.repository.UserInfoRepository;
 import com.ptithcm.intern_project.dto.request.UpdatedUserInfoRequest;
 import com.ptithcm.intern_project.security.service.JwtService;
 import com.ptithcm.intern_project.service.interfaces.IUserInfoService;
+import com.ptithcm.intern_project.service.supports.PaginationService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -134,5 +139,33 @@ public class UserInfoService implements IUserInfoService {
     public UserOverviewResponse getUserOverview(String email) {
         var userInfo = userInfoRepository.findByEmail(email).orElseThrow(() -> new AppExc(ErrorCodes.INVALID_EMAIL));
         return userInfoMapper.toOverview(userInfo);
+    }
+
+    @Override
+    public PaginationResponse<UserInfoResponse> searchFullPaginatedInformationUsers(PaginationRequest request) {
+        var pageable = PageRequest.of(
+            request.getPage() - 1,
+            PaginationService.PAGE_SIZE,
+            PaginationService.getSortOption(request, UserInfo.class));
+        var filterObject = UserInfoResponse.generateFilterObject(request);
+        var usersPage = userInfoRepository.searchFullPaginatedInformationUsers(filterObject, pageable);
+        var usersList = usersPage.stream()
+            .map(userInfoMapper::toFullInfo)
+            .filter(user -> !user.getAuthorities().toUpperCase().contains("ADMIN"))
+            .toList();
+
+        return PaginationResponse.<UserInfoResponse>builder()
+            .totalPages(usersPage.getTotalPages())
+            .dataList(usersList)
+            .build();
+    }
+
+    @Override
+    @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
+    public void switchAccountStatus(Long userInfoId) {
+        var userInfo = userInfoRepository.findById(userInfoId)
+            .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
+        userInfo.getAccount().setStatus(!userInfo.getAccount().isStatus());
+        userInfoRepository.save(userInfo);
     }
 }

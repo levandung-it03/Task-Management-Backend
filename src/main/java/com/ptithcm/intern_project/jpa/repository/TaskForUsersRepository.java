@@ -117,4 +117,11 @@ public interface TaskForUsersRepository extends JpaRepository<TaskForUsers, Long
     List<TaskForUsers> findAllByTaskCollectionPhaseId(Long phaseId);
 
     List<TaskForUsers> findAllByTaskCollectionId(Long collectionId);
+
+    @Query("""
+        SELECT CASE WHEN COUNT(tfu) > 0 THEN TRUE ELSE FALSE END
+        FROM TaskForUsers tfu
+        WHERE tfu.task.rootTask.id = :rootTaskId
+    """)
+    boolean existsSubTaskOfRootTask(@Param("rootTaskId") Long rootTaskId);
 }
