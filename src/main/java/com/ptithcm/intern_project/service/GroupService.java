@@ -126,10 +126,11 @@ public class GroupService implements IGroupService {
             .toList();
         changedGroup.getGroupUsers().addAll(newGroupUsers); //--Update Hibernate OneToMany cache
         changedGroup.setUpdatedTime(LocalDateTime.now());
+        changedGroup.setName(request.getName());
+        groupRepository.save(changedGroup);
 
-        this.notifyViaEmail(newGroupUsers, GroupMsg.ADDED_INTO_GROUP);
-
-        groupUsersService.saveAll(newGroupUsers);
+        if (!newGroupUsers.isEmpty())
+            this.notifyViaEmail(newGroupUsers, GroupMsg.ADDED_INTO_GROUP);
     }
 
     @Override

@@ -19,7 +19,7 @@ spring:
       name: none
       password: none
   datasource:
-    url: jdbc:${DBMS_CONNECTION:mysql://localhost:3306}/${DB_NAME:task_management}?createDatabaseIfNotExist=true&autoReconnect=true&characterEncoding=UTF-8&allowPublicKeyRetrieval=true&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Ho_Chi_Minh&useSSL=false
+    url: ${DBMS_CONNECTION:jdbc:mysql://localhost:3306}/${DB_NAME:task_management}?createDatabaseIfNotExist=true&autoReconnect=true&characterEncoding=UTF-8&allowPublicKeyRetrieval=true&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Ho_Chi_Minh&useSSL=false
     driver-class-name: "com.mysql.cj.jdbc.Driver"
     username: ${DBMS_USERNAME:root}
     password: ${DBMS_PASSWORD:sa}
@@ -33,11 +33,11 @@ spring:
     properties:
       hibernate:
         format_sql: true
-#  sql:
-#    init:
-#      mode: always
-#      encoding: UTF-8
-#      data-locations: classpath:scripts/init.sql
+  sql:
+    init:
+      mode: always
+      encoding: UTF-8
+      data-locations: classpath:scripts/init.sql
   data:
     redis:
       url: ${REDIS_CONNECTION:redis://localhost:6379}

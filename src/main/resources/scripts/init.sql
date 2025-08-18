@@ -10,6 +10,10 @@ TRUNCATE TABLE `collection`;
 TRUNCATE TABLE `phase`;
 TRUNCATE TABLE `task`;
 TRUNCATE TABLE `task_for_users`;
+TRUNCATE TABLE `report`;
+TRUNCATE TABLE `comment_of_report`;
+TRUNCATE TABLE `group`;
+TRUNCATE TABLE `group_has_users`;
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- 1. Tạo Departments
