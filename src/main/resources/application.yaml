@@ -33,11 +33,11 @@ spring:
     properties:
       hibernate:
         format_sql: true
-  sql:
-    init:
-      mode: always
-      encoding: UTF-8
-      data-locations: classpath:scripts/init.sql
+#  sql:
+#    init:
+#      mode: always
+#      encoding: UTF-8
+#      data-locations: classpath:scripts/init.sql
   data:
     redis:
       url: ${REDIS_CONNECTION:redis://localhost:6379}

@@ -8,6 +8,7 @@ import com.ptithcm.intern_project.jpa.model.CommentOfReport;
 import com.ptithcm.intern_project.jpa.model.Report;
 import com.ptithcm.intern_project.jpa.model.UserInfo;
 import com.ptithcm.intern_project.jpa.repository.CommentOfRequestRepository;
+import com.ptithcm.intern_project.security.enums.AuthorityEnum;
 import com.ptithcm.intern_project.service.messages.CommentOfReportMsg;
 import com.ptithcm.intern_project.service.supports.EmailService;
 import lombok.AccessLevel;
@@ -54,9 +55,11 @@ public class CommentOfReportService {
         if (!isAssignedUser && !isProjectOwner && !isTaskOwner)
             throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
-        var isKickedLeaderProject = ProjectService.isKickedLeader(
-            report.getUserTaskCreated().getTask(),
-            userInfoCreating.getAccount().getUsername());
+        var isKickedLeaderProject = userInfoCreating.getAccount().getAuthorities().getFirst().getName()
+            .equals(AuthorityEnum.ROLE_ADMIN.toString())
+            && ProjectService.isKickedLeader(
+                report.getUserTaskCreated().getTask(),
+                userInfoCreating.getAccount().getUsername());
         if (isKickedLeaderProject)  throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
         var comment = CommentOfReport.builder()
