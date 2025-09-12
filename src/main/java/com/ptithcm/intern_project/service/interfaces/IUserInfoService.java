@@ -1,12 +1,12 @@
 package com.ptithcm.intern_project.service.interfaces;
 
-import com.ptithcm.intern_project.dto.general.ShortUserInfoDTO;
-import com.ptithcm.intern_project.dto.request.PaginationRequest;
-import com.ptithcm.intern_project.dto.request.UpdatedUserInfoRequest;
-import com.ptithcm.intern_project.dto.response.PaginationResponse;
-import com.ptithcm.intern_project.dto.response.UserInfoResponse;
-import com.ptithcm.intern_project.dto.response.UserOverviewResponse;
-import com.ptithcm.intern_project.jpa.model.UserInfo;
+import com.ptithcm.intern_project.model.dto.general.ShortUserInfoDTO;
+import com.ptithcm.intern_project.model.dto.request.PaginationRequest;
+import com.ptithcm.intern_project.model.dto.request.UpdatedUserInfoRequest;
+import com.ptithcm.intern_project.model.dto.response.PaginationResponse;
+import com.ptithcm.intern_project.model.dto.response.UserInfoResponse;
+import com.ptithcm.intern_project.model.dto.response.UserOverviewResponse;
+import com.ptithcm.intern_project.model.UserInfo;
 
 import java.util.List;
 

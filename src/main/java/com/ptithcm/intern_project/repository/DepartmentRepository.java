@@ -1,0 +1,8 @@
+package com.ptithcm.intern_project.repository;
+
+import com.ptithcm.intern_project.model.Department;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface DepartmentRepository extends JpaRepository<Department, Long> {
+    boolean existsByName(String name);
+}

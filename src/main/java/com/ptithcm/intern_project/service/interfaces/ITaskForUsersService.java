@@ -1,9 +1,9 @@
 package com.ptithcm.intern_project.service.interfaces;
 
-import com.ptithcm.intern_project.dto.general.ShortUserInfoDTO;
-import com.ptithcm.intern_project.dto.request.ReportRequest;
-import com.ptithcm.intern_project.dto.response.IdResponse;
-import com.ptithcm.intern_project.dto.response.ReportCommentsResponse;
+import com.ptithcm.intern_project.model.dto.general.ShortUserInfoDTO;
+import com.ptithcm.intern_project.model.dto.request.ReportRequest;
+import com.ptithcm.intern_project.model.dto.response.IdResponse;
+import com.ptithcm.intern_project.model.dto.response.ReportCommentsResponse;
 
 import java.util.List;
 import java.util.Map;

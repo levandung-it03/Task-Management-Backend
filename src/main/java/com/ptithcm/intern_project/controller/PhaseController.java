@@ -1,15 +1,14 @@
 package com.ptithcm.intern_project.controller;
 
-import com.ptithcm.intern_project.dto.general.UserStatisticDTO;
-import com.ptithcm.intern_project.dto.response.CollectionDetailResponse;
-import com.ptithcm.intern_project.dto.response.CollectionResponse;
-import com.ptithcm.intern_project.dto.response.PhaseDetailResponse;
-import com.ptithcm.intern_project.exception.enums.SuccessCodes;
-import com.ptithcm.intern_project.dto.general.RestApiResponse;
-import com.ptithcm.intern_project.dto.request.CollectionRequest;
-import com.ptithcm.intern_project.dto.request.PhaseRequest;
-import com.ptithcm.intern_project.dto.response.IdResponse;
-import com.ptithcm.intern_project.jpa.model.Phase;
+import com.ptithcm.intern_project.model.dto.general.UserStatisticDTO;
+import com.ptithcm.intern_project.model.dto.response.CollectionResponse;
+import com.ptithcm.intern_project.model.dto.response.PhaseDetailResponse;
+import com.ptithcm.intern_project.config.enums.SuccessCodes;
+import com.ptithcm.intern_project.model.dto.general.RestApiResponse;
+import com.ptithcm.intern_project.model.dto.request.CollectionRequest;
+import com.ptithcm.intern_project.model.dto.request.PhaseRequest;
+import com.ptithcm.intern_project.model.dto.response.IdResponse;
+import com.ptithcm.intern_project.model.Phase;
 import com.ptithcm.intern_project.service.PhaseService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -22,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
-import static com.ptithcm.intern_project.security.constvalues.AuthorityValues.*;
+import static com.ptithcm.intern_project.config.constvalues.AuthorityValues.*;
 
 @RestController
 @RequiredArgsConstructor

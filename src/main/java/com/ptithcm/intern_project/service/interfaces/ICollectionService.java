@@ -1,13 +1,12 @@
 package com.ptithcm.intern_project.service.interfaces;
 
-import com.ptithcm.intern_project.dto.general.UserStatisticDTO;
-import com.ptithcm.intern_project.dto.request.CollectionRequest;
-import com.ptithcm.intern_project.dto.request.TaskRequest;
-import com.ptithcm.intern_project.dto.response.CollectionDetailResponse;
-import com.ptithcm.intern_project.dto.response.IdResponse;
-import com.ptithcm.intern_project.dto.response.ProjectDetailResponse;
-import com.ptithcm.intern_project.dto.response.ShortTaskResponse;
-import com.ptithcm.intern_project.jpa.model.Collection;
+import com.ptithcm.intern_project.model.dto.general.UserStatisticDTO;
+import com.ptithcm.intern_project.model.dto.request.CollectionRequest;
+import com.ptithcm.intern_project.model.dto.request.TaskRequest;
+import com.ptithcm.intern_project.model.dto.response.CollectionDetailResponse;
+import com.ptithcm.intern_project.model.dto.response.IdResponse;
+import com.ptithcm.intern_project.model.dto.response.ShortTaskResponse;
+import com.ptithcm.intern_project.model.Collection;
 
 import java.util.List;
 

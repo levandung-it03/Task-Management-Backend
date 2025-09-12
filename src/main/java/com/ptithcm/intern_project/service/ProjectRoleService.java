@@ -1,7 +1,7 @@
 package com.ptithcm.intern_project.service;
 
-import com.ptithcm.intern_project.jpa.model.ProjectRole;
-import com.ptithcm.intern_project.jpa.repository.ProjectRoleRepository;
+import com.ptithcm.intern_project.model.ProjectRole;
+import com.ptithcm.intern_project.repository.ProjectRoleRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

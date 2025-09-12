@@ -1,0 +1,14 @@
+version: "3.8"
+
+services:
+  spicedb:
+    image: authzed/spicedb:latest
+    container_name: spicedb
+    command: [
+      "serve",
+      "--grpc-preshared-key", "local-secret-token"
+    ]
+    ports:
+      - "50051:50051"
+
+# Run: docker-compose up -d

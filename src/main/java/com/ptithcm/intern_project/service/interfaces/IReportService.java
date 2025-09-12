@@ -1,7 +1,7 @@
 package com.ptithcm.intern_project.service.interfaces;
 
-import com.ptithcm.intern_project.dto.request.CommentCreationRequest;
-import com.ptithcm.intern_project.dto.response.CommentResponse;
+import com.ptithcm.intern_project.model.dto.request.CommentCreationRequest;
+import com.ptithcm.intern_project.model.dto.response.CommentResponse;
 
 public interface IReportService {
 

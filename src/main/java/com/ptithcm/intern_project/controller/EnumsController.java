@@ -1,9 +1,9 @@
 package com.ptithcm.intern_project.controller;
 
-import com.ptithcm.intern_project.exception.enums.SuccessCodes;
-import com.ptithcm.intern_project.dto.general.RestApiResponse;
-import com.ptithcm.intern_project.jpa.model.enums.*;
-import com.ptithcm.intern_project.redis.model.enums.OtpTypes;
+import com.ptithcm.intern_project.config.enums.SuccessCodes;
+import com.ptithcm.intern_project.model.dto.general.RestApiResponse;
+import com.ptithcm.intern_project.model.enums.*;
+import com.ptithcm.intern_project.config.enums.OtpTypes;
 import com.ptithcm.intern_project.service.EnumService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -54,8 +54,8 @@ public class EnumsController {
     }
 
     @GetMapping("/task-type")
-    public ResponseEntity<RestApiResponse<TaskType[]>> getTaskType() {
-        return RestApiResponse.fromScs(SuccessCodes.GET_ENUMS, TaskType.values());
+    public ResponseEntity<RestApiResponse<Domain[]>> getTaskType() {
+        return RestApiResponse.fromScs(SuccessCodes.GET_ENUMS, Domain.values());
     }
 
     @GetMapping("/user-task-status")

@@ -1,23 +1,23 @@
 package com.ptithcm.intern_project.service;
 
-import com.ptithcm.intern_project.dto.general.UserStatisticDTO;
-import com.ptithcm.intern_project.dto.response.CollectionDetailResponse;
-import com.ptithcm.intern_project.dto.response.ShortTaskResponse;
-import com.ptithcm.intern_project.exception.enums.ErrorCodes;
-import com.ptithcm.intern_project.exception.AppExc;
-import com.ptithcm.intern_project.jpa.model.Task;
-import com.ptithcm.intern_project.jpa.model.TaskForUsers;
-import com.ptithcm.intern_project.jpa.model.enums.ProjectStatus;
+import com.ptithcm.intern_project.model.dto.general.UserStatisticDTO;
+import com.ptithcm.intern_project.model.dto.response.CollectionDetailResponse;
+import com.ptithcm.intern_project.model.dto.response.ShortTaskResponse;
+import com.ptithcm.intern_project.config.enums.ErrorCodes;
+import com.ptithcm.intern_project.config.exception.AppExc;
+import com.ptithcm.intern_project.model.Task;
+import com.ptithcm.intern_project.model.TaskForUsers;
+import com.ptithcm.intern_project.model.enums.ProjectStatus;
 import com.ptithcm.intern_project.mapper.CollectionMapper;
-import com.ptithcm.intern_project.dto.request.CollectionRequest;
-import com.ptithcm.intern_project.dto.request.TaskRequest;
-import com.ptithcm.intern_project.dto.response.IdResponse;
-import com.ptithcm.intern_project.jpa.model.Collection;
-import com.ptithcm.intern_project.jpa.model.Phase;
-import com.ptithcm.intern_project.jpa.repository.CollectionRepository;
+import com.ptithcm.intern_project.model.dto.request.CollectionRequest;
+import com.ptithcm.intern_project.model.dto.request.TaskRequest;
+import com.ptithcm.intern_project.model.dto.response.IdResponse;
+import com.ptithcm.intern_project.model.Collection;
+import com.ptithcm.intern_project.model.Phase;
+import com.ptithcm.intern_project.repository.CollectionRepository;
 import com.ptithcm.intern_project.mapper.TaskMapper;
 import com.ptithcm.intern_project.mapper.UserInfoMapper;
-import com.ptithcm.intern_project.security.service.JwtService;
+import com.ptithcm.intern_project.service.auth.JwtService;
 import com.ptithcm.intern_project.service.interfaces.ICollectionService;
 import com.ptithcm.intern_project.service.trans.CollectionTransService;
 import lombok.AccessLevel;
@@ -56,12 +56,12 @@ public class CollectionService implements ICollectionService {
         if (request.getDeadline().isAfter(collectionHasTask.getDueDate()))
             throw new AppExc(ErrorCodes.END_AFTER_COLLECTION);
 
-        this.validateEndedParentEntities(collectionHasTask);
+        this.validateEndedTimeOnDependedEntity(collectionHasTask);
 
         return taskService.create(collectionHasTask, request, token);
     }
 
-    private void validateEndedParentEntities(Collection collectionHasTask) {
+    private void validateEndedTimeOnDependedEntity(Collection collectionHasTask) {
         var isProjectInProgress = collectionHasTask.getPhase().getProject().getStatus()
             .equals(ProjectStatus.IN_PROGRESS);
         if (!isProjectInProgress)   throw new AppExc(ErrorCodes.PROJECT_IS_NOT_IN_PROGRESS);
@@ -92,7 +92,7 @@ public class CollectionService implements ICollectionService {
             .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
 
         this.validateCollection(request, collection.getPhase());
-        this.validateEndedParentEntities(collection);
+        this.validateEndedTimeOnDependedEntity(collection);
 
         var tasks = taskService.findAllByCollectionId(id);
         for (Task task : tasks) {
@@ -120,7 +120,7 @@ public class CollectionService implements ICollectionService {
             .getUsername().equals(username);
         if (!isOwner)   throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
-        this.validateEndedParentEntities(deletedCollection);
+        this.validateEndedTimeOnDependedEntity(deletedCollection);
 
         var hasRelatedData = taskService.existsByCollectionId(id);
         if (hasRelatedData) throw new AppExc(ErrorCodes.CANT_DELETE_COLLECTION_WITH_TASKS);
@@ -196,7 +196,7 @@ public class CollectionService implements ICollectionService {
         var isOwner = collection.getUserInfoCreated().getAccount().getUsername().equals(username);
         if (!isOwner)   throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
-        this.validateEndedParentEntities(collection);
+        this.validateEndedTimeOnDependedEntity(collection);
 
         var existsTaskNotCompleted = taskService.existsTaskNotCompletedByCollectionId(collection.getId());
         if (existsTaskNotCompleted)   throw new AppExc(ErrorCodes.CANT_COMPLETE_COLLECTION);

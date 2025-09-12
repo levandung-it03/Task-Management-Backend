@@ -1,11 +1,11 @@
 package com.ptithcm.intern_project.controller;
 
-import com.ptithcm.intern_project.exception.enums.SuccessCodes;
-import com.ptithcm.intern_project.dto.general.RestApiResponse;
-import com.ptithcm.intern_project.dto.general.ShortUserInfoDTO;
-import com.ptithcm.intern_project.dto.request.ReportRequest;
-import com.ptithcm.intern_project.dto.response.IdResponse;
-import com.ptithcm.intern_project.dto.response.ReportCommentsResponse;
+import com.ptithcm.intern_project.config.enums.SuccessCodes;
+import com.ptithcm.intern_project.model.dto.general.RestApiResponse;
+import com.ptithcm.intern_project.model.dto.general.ShortUserInfoDTO;
+import com.ptithcm.intern_project.model.dto.request.ReportRequest;
+import com.ptithcm.intern_project.model.dto.response.IdResponse;
+import com.ptithcm.intern_project.model.dto.response.ReportCommentsResponse;
 import com.ptithcm.intern_project.service.TaskForUsersService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
-import static com.ptithcm.intern_project.security.constvalues.AuthorityValues.*;
+import static com.ptithcm.intern_project.config.constvalues.AuthorityValues.*;
 
 @RestController
 @RequestMapping("/api/private")

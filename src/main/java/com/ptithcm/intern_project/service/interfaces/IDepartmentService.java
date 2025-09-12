@@ -1,8 +1,8 @@
 package com.ptithcm.intern_project.service.interfaces;
 
-import com.ptithcm.intern_project.dto.request.DepartmentRequest;
-import com.ptithcm.intern_project.dto.response.IdResponse;
-import com.ptithcm.intern_project.jpa.model.Department;
+import com.ptithcm.intern_project.model.dto.request.DepartmentRequest;
+import com.ptithcm.intern_project.model.dto.response.IdResponse;
+import com.ptithcm.intern_project.model.Department;
 
 import java.util.List;
 

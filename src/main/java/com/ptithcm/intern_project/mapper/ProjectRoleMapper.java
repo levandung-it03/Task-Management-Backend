@@ -1,7 +1,7 @@
 package com.ptithcm.intern_project.mapper;
 
-import com.ptithcm.intern_project.dto.response.ProjectRoleResponse;
-import com.ptithcm.intern_project.jpa.model.ProjectRole;
+import com.ptithcm.intern_project.model.dto.response.ProjectRoleResponse;
+import com.ptithcm.intern_project.model.ProjectRole;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 

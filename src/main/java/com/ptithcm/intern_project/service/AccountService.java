@@ -1,33 +1,28 @@
 package com.ptithcm.intern_project.service;
 
-import com.ptithcm.intern_project.dto.general.*;
-import com.ptithcm.intern_project.dto.request.RegisterRequest;
-import com.ptithcm.intern_project.dto.request.*;
-import com.ptithcm.intern_project.dto.response.EmailResponse;
-import com.ptithcm.intern_project.dto.response.IdResponse;
-import com.ptithcm.intern_project.exception.AppExc;
-import com.ptithcm.intern_project.exception.enums.ErrorCodes;
-import com.ptithcm.intern_project.jpa.model.Account;
-import com.ptithcm.intern_project.jpa.model.Authority;
-import com.ptithcm.intern_project.jpa.model.Department;
-import com.ptithcm.intern_project.jpa.model.UserInfo;
+import com.ptithcm.intern_project.model.*;
+import com.ptithcm.intern_project.model.dto.general.*;
+import com.ptithcm.intern_project.model.dto.request.*;
+import com.ptithcm.intern_project.model.dto.response.EmailResponse;
+import com.ptithcm.intern_project.model.dto.response.IdResponse;
+import com.ptithcm.intern_project.config.exception.AppExc;
+import com.ptithcm.intern_project.config.enums.ErrorCodes;
 import com.ptithcm.intern_project.mapper.AccountMapper;
-import com.ptithcm.intern_project.security.enums.AuthorityEnum;
-import com.ptithcm.intern_project.jpa.repository.AccountRepository;
-import com.ptithcm.intern_project.jpa.repository.UserInfoRepository;
-import com.ptithcm.intern_project.dto.response.AuthResponse;
-import com.ptithcm.intern_project.dto.response.VerifyEmailResponse;
-import com.ptithcm.intern_project.redis.crud.*;
-import com.ptithcm.intern_project.redis.model.*;
-import com.ptithcm.intern_project.redis.model.enums.OtpTypes;
-import com.ptithcm.intern_project.security.enums.TokenClaimNames;
-import com.ptithcm.intern_project.security.enums.TokenTypes;
-import com.ptithcm.intern_project.security.service.JwtService;
-import com.ptithcm.intern_project.security.service.OtpHelper;
+import com.ptithcm.intern_project.config.enums.AuthorityEnum;
+import com.ptithcm.intern_project.model.cache.*;
+import com.ptithcm.intern_project.repository.*;
+import com.ptithcm.intern_project.model.dto.response.AuthResponse;
+import com.ptithcm.intern_project.model.dto.response.VerifyEmailResponse;
+import com.ptithcm.intern_project.config.enums.OtpTypes;
+import com.ptithcm.intern_project.config.enums.TokenClaimNames;
+import com.ptithcm.intern_project.config.enums.TokenTypes;
+import com.ptithcm.intern_project.service.auth.JwtService;
+import com.ptithcm.intern_project.service.auth.OtpHelper;
+import com.ptithcm.intern_project.service.cache.*;
 import com.ptithcm.intern_project.service.interfaces.IAccountService;
-import com.ptithcm.intern_project.service.messages.AccountMsg;
-import com.ptithcm.intern_project.service.supports.EmailService;
-import com.ptithcm.intern_project.service.supports.ExcelHelper;
+import com.ptithcm.intern_project.service.email.messages.AccountMsg;
+import com.ptithcm.intern_project.service.email.EmailService;
+import com.ptithcm.intern_project.service.files.ExcelHelper;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -65,18 +60,18 @@ public class AccountService implements IAccountService {
     @Getter
     AccountRepository accountRepository;
     AuthorityService authorityService;
-    InvalidTokenCrud invalidTokenCrud;
-    RefreshTokenCrud refreshTokenCrud;
+    InvalidTokenService invalidTokenService;
+    RefreshTokenService refreshTokenService;
     JwtService jwtService;
     PasswordEncoder userPasswordEncoder;
     EmailService emailService;
-    RegisterOtpCrud registerOtpCrud;
-    LostPassOtpCrud lostPassOtpCrud;
-    AuthorizedEmailOtpCrud authorizedEmailOtpCrud;
-    UserInfoRepository userInfoRepository;
+    RegisterOtpService registerOtpService;
+    LostPassOtpService lostPassOtpService;
+    AuthorizeEmailOtpService authorizedEmailOtpService;
     DepartmentService departmentService;
     UserInfoService userInfoService;
     AccountMapper accountMapper;
+    ExpertiseService expertiseService;
     ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
     @Override
@@ -90,7 +85,7 @@ public class AccountService implements IAccountService {
         if (!authAccount.isStatus())
             throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
-        UserInfo userInfo = userInfoRepository.findByAccountId(authAccount.getId())
+        UserInfo userInfo = userInfoService.findByAccountId(authAccount.getId())
             .orElseThrow(() -> new AppExc(ErrorCodes.FORBIDDEN_USER));
         TokenInfoDTO accessTokenInfoDTO = jwtService.generateToken(GeneralTokenClaims.builder()
             .subject(authAccount.getUsername())
@@ -107,7 +102,7 @@ public class AccountService implements IAccountService {
             .isOauth2(false)
             .build());
 
-        refreshTokenCrud.save(RefreshToken.builder().id(refreshTokenInfoDTO.getJti()).build());
+        refreshTokenService.save(RefreshToken.builder().id(refreshTokenInfoDTO.getJti()).build());
         return AuthResponse.builder()
             .accessToken(accessTokenInfoDTO.getToken())
             .refreshToken(refreshTokenInfoDTO.getToken())
@@ -124,7 +119,7 @@ public class AccountService implements IAccountService {
         if (!authAccount.isStatus())
             throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
-        UserInfo userInfo = userInfoRepository.findByAccountId(authAccount.getId())
+        UserInfo userInfo = userInfoService.findByAccountId(authAccount.getId())
             .orElseThrow(() -> new AppExc(ErrorCodes.FORBIDDEN_USER));
         TokenInfoDTO accessTokenInfoDTO = jwtService.generateToken(GeneralTokenClaims.builder()
             .subject(authAccount.getUsername())
@@ -144,9 +139,9 @@ public class AccountService implements IAccountService {
         HashMap<String, String> refreshClaims = jwtService.readPayload(refreshToken);
         int exp = Integer.parseInt(refreshClaims.get("exp"));
 
-        refreshTokenCrud.deleteById(refreshClaims.get("jti"));
+        refreshTokenService.deleteById(refreshClaims.get("jti"));
         if (new Date(System.currentTimeMillis()).before(new Date(exp)))
-            invalidTokenCrud.save(InvalidToken.builder()
+            invalidTokenService.save(InvalidToken.builder()
                 .id(accessClaims.get("jti"))
                 .expiryDate(new Date(exp).toInstant())
                 .build());
@@ -156,11 +151,11 @@ public class AccountService implements IAccountService {
     public VerifyEmailResponse authorizeLoggingInEmail(String token) {
         UserInfo userInfo = userInfoService.getUserInfo(token);
 
-        if (authorizedEmailOtpCrud.existsById(userInfo.getEmail()))
+        if (authorizedEmailOtpService.existsById(userInfo.getEmail()))
             throw new AppExc(ErrorCodes.OTP_HAS_NOT_EXPIRED);
 
         String otp = OtpHelper.randOTP();
-        authorizedEmailOtpCrud.save(AuthorizedEmailOtp.builder()
+        authorizedEmailOtpService.save(AuthorizedEmailOtp.builder()
             .email(userInfo.getEmail())
             .otp(otp)
             .build());
@@ -185,7 +180,7 @@ public class AccountService implements IAccountService {
     @Override
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public void registerNewAccount(RegisterRequest dto) {
-        var foundOtp = registerOtpCrud.findById(dto.getEmail())
+        var foundOtp = registerOtpService.findById(dto.getEmail())
             .orElseThrow(() -> new AppExc(ErrorCodes.OTP_NOT_FOUND));
         if (!foundOtp.getOtp().equals(dto.getOtp()))
             throw new AppExc(ErrorCodes.OTP_NOT_CORRECT);
@@ -200,7 +195,7 @@ public class AccountService implements IAccountService {
             .createdTime(LocalDateTime.now(ZoneId.systemDefault()))
             .updatedTime(LocalDateTime.now(ZoneId.systemDefault()))
             .build());
-        userInfoRepository.save(UserInfo.builder()
+        userInfoService.save(UserInfo.builder()
             .email(dto.getEmail())
             .identity(dto.getIdentity())
             .phone(dto.getPhone())
@@ -208,7 +203,7 @@ public class AccountService implements IAccountService {
             .fullName(dto.getFullName())
             .account(savedAccount)
             .build());
-        registerOtpCrud.deleteById(dto.getEmail());
+        registerOtpService.deleteById(dto.getEmail());
     }
 
     @Override
@@ -218,7 +213,7 @@ public class AccountService implements IAccountService {
         var userInfo = userInfoService.findByAccountUsername(account.getUsername())
             .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_CREDENTIALS));
 
-        LostPassOtp otp = lostPassOtpCrud.findById(userInfo.getEmail())
+        LostPassOtp otp = lostPassOtpService.findById(userInfo.getEmail())
             .orElseThrow(() -> new AppExc(ErrorCodes.OTP_NOT_FOUND));
         if (!otp.getOtp().equals(dto.getOtp()))
             throw new AppExc(ErrorCodes.OTP_NOT_CORRECT);
@@ -227,7 +222,7 @@ public class AccountService implements IAccountService {
         account.setPassword(userPasswordEncoder.encode(newPassword));
         accountRepository.save(account);
 
-        lostPassOtpCrud.deleteById(userInfo.getEmail());
+        lostPassOtpService.deleteById(userInfo.getEmail());
 
         emailService.sendSimpleEmail(EmailTaskDTO.builder()
             .to(userInfo.getEmail())
@@ -240,16 +235,16 @@ public class AccountService implements IAccountService {
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public void changePassword(String token, ChangePassRequest dto) {
         var username = jwtService.readPayload(token).get("sub");
-        var userInfo = userInfoRepository.findByAccountUsername(username)
+        var userInfo = userInfoService.findByAccountUsername(username)
             .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_TOKEN));
 
         System.out.println(userInfo.getEmail());
-        AuthorizedEmailOtp otp = authorizedEmailOtpCrud.findById(userInfo.getEmail())
+        AuthorizedEmailOtp otp = authorizedEmailOtpService.findById(userInfo.getEmail())
             .orElseThrow(() -> new AppExc(ErrorCodes.OTP_NOT_FOUND));
         if (!otp.getOtp().equals(dto.getOtp()))
             throw new AppExc(ErrorCodes.OTP_NOT_CORRECT);
 
-        authorizedEmailOtpCrud.deleteById(userInfo.getEmail());
+        authorizedEmailOtpService.deleteById(userInfo.getEmail());
         userInfo.getAccount().setPassword(userPasswordEncoder.encode(dto.getPassword()));
         accountRepository.save(userInfo.getAccount());
     }
@@ -266,9 +261,9 @@ public class AccountService implements IAccountService {
 
         if (userInfoService.existsByEmail(request.getEmail()))
             throw new AppExc(ErrorCodes.DUPLICATED_EMAIL);
-        if (registerOtpCrud.existsById(request.getEmail()))
+        if (registerOtpService.existsById(request.getEmail()))
             throw new AppExc(ErrorCodes.OTP_HAS_NOT_EXPIRED);
-        registerOtpCrud.save(RegisterOtp.builder()
+        registerOtpService.save(RegisterOtp.builder()
             .email(request.getEmail())
             .otp(otp)
             .build());
@@ -286,9 +281,9 @@ public class AccountService implements IAccountService {
 
         if (!userInfoService.existsByEmail(request.getEmail()))
             throw new AppExc(ErrorCodes.EMAIL_NOT_FOUND);
-        if (lostPassOtpCrud.existsById(request.getEmail()))
+        if (lostPassOtpService.existsById(request.getEmail()))
             throw new AppExc(ErrorCodes.OTP_HAS_NOT_EXPIRED);
-        lostPassOtpCrud.save(LostPassOtp.builder()
+        lostPassOtpService.save(LostPassOtp.builder()
             .email(request.getEmail())
             .otp(otp)
             .build());
@@ -330,6 +325,8 @@ public class AccountService implements IAccountService {
             .collect(Collectors.toMap(
                 auth -> AuthorityEnum.valueOf(auth.getName()),
                 auth -> auth));
+        Map<Long, Expertise> expertises = expertiseService.findAll().stream()
+            .collect(Collectors.toMap(Expertise::getId, dep -> dep));
         Map<Long, Department> departments = departmentService.findAll().stream()
             .collect(Collectors.toMap(Department::getId, dep -> dep));
         List<UserInfo> usersInfoRequest = new ArrayList<>();
@@ -351,6 +348,7 @@ public class AccountService implements IAccountService {
                 .account(account)
                 .email(registerReq.getEmail())
                 .department(departments.get(registerReq.getDepartmentId()))
+                .expertise(expertises.get(registerReq.getExpertiseId()))
                 .fullName(registerReq.getFullName())
                 .phone(registerReq.getPhone())
                 .identity(registerReq.getIdentity())

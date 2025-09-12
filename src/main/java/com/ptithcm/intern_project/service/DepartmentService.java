@@ -1,11 +1,11 @@
 package com.ptithcm.intern_project.service;
 
-import com.ptithcm.intern_project.exception.enums.ErrorCodes;
-import com.ptithcm.intern_project.exception.AppExc;
-import com.ptithcm.intern_project.jpa.model.Department;
-import com.ptithcm.intern_project.jpa.repository.DepartmentRepository;
-import com.ptithcm.intern_project.dto.request.DepartmentRequest;
-import com.ptithcm.intern_project.dto.response.IdResponse;
+import com.ptithcm.intern_project.config.enums.ErrorCodes;
+import com.ptithcm.intern_project.config.exception.AppExc;
+import com.ptithcm.intern_project.model.Department;
+import com.ptithcm.intern_project.repository.DepartmentRepository;
+import com.ptithcm.intern_project.model.dto.request.DepartmentRequest;
+import com.ptithcm.intern_project.model.dto.response.IdResponse;
 import com.ptithcm.intern_project.service.interfaces.IDepartmentService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

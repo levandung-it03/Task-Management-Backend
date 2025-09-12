@@ -1,23 +1,23 @@
 package com.ptithcm.intern_project.service;
 
-import com.ptithcm.intern_project.dto.general.UserStatisticDTO;
-import com.ptithcm.intern_project.dto.response.CollectionResponse;
-import com.ptithcm.intern_project.dto.response.PhaseDetailResponse;
-import com.ptithcm.intern_project.exception.enums.ErrorCodes;
-import com.ptithcm.intern_project.exception.AppExc;
-import com.ptithcm.intern_project.jpa.model.Collection;
-import com.ptithcm.intern_project.jpa.model.TaskForUsers;
-import com.ptithcm.intern_project.jpa.model.enums.ProjectStatus;
+import com.ptithcm.intern_project.model.dto.general.UserStatisticDTO;
+import com.ptithcm.intern_project.model.dto.response.CollectionResponse;
+import com.ptithcm.intern_project.model.dto.response.PhaseDetailResponse;
+import com.ptithcm.intern_project.config.enums.ErrorCodes;
+import com.ptithcm.intern_project.config.exception.AppExc;
+import com.ptithcm.intern_project.model.Collection;
+import com.ptithcm.intern_project.model.TaskForUsers;
+import com.ptithcm.intern_project.model.enums.ProjectStatus;
 import com.ptithcm.intern_project.mapper.CollectionMapper;
 import com.ptithcm.intern_project.mapper.PhaseMapper;
-import com.ptithcm.intern_project.dto.request.CollectionRequest;
-import com.ptithcm.intern_project.dto.request.PhaseRequest;
-import com.ptithcm.intern_project.dto.response.IdResponse;
-import com.ptithcm.intern_project.jpa.model.Phase;
-import com.ptithcm.intern_project.jpa.model.Project;
-import com.ptithcm.intern_project.jpa.repository.PhaseRepository;
+import com.ptithcm.intern_project.model.dto.request.CollectionRequest;
+import com.ptithcm.intern_project.model.dto.request.PhaseRequest;
+import com.ptithcm.intern_project.model.dto.response.IdResponse;
+import com.ptithcm.intern_project.model.Phase;
+import com.ptithcm.intern_project.model.Project;
+import com.ptithcm.intern_project.repository.PhaseRepository;
 import com.ptithcm.intern_project.mapper.UserInfoMapper;
-import com.ptithcm.intern_project.security.service.JwtService;
+import com.ptithcm.intern_project.service.auth.JwtService;
 import com.ptithcm.intern_project.service.interfaces.IPhaseService;
 import com.ptithcm.intern_project.service.trans.PhaseTransService;
 import lombok.AccessLevel;
@@ -126,7 +126,8 @@ public class PhaseService implements IPhaseService {
         var phase = phaseRepository
             .findById(phaseId).orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
 
-        var isProjectInProgress = phase.getProject().getStatus().equals(ProjectStatus.IN_PROGRESS);
+        var isProjectInProgress = phase.getProject().getStatus().equals(ProjectStatus.IN_PROGRESS)
+            || phase.getProject().getStatus().equals(ProjectStatus.CREATED);;
         if (!isProjectInProgress) throw new AppExc(ErrorCodes.PROJECT_IS_NOT_IN_PROGRESS);
 
         var isPhaseEnded = phase.getEndDate() != null;
@@ -165,7 +166,12 @@ public class PhaseService implements IPhaseService {
     }
 
     public void validatePhase(PhaseRequest request, Project project) {
-        var isStartingBeforeProject = request.getStartDate().isBefore(project.getStartDate());
+        var isExpectingBeforeProject = project.getStartDate() == null
+            && request.getStartDate().isBefore(project.getExpectedStartDate());
+        if (isExpectingBeforeProject)    throw new AppExc(ErrorCodes.EXPECT_BEFORE_PROJECT);
+
+        var isStartingBeforeProject = project.getStartDate() != null
+            && request.getStartDate().isBefore(project.getStartDate());
         if (isStartingBeforeProject)    throw new AppExc(ErrorCodes.START_BEFORE_PROJECT);
 
         var isEndingAfterProject = request.getDueDate().isAfter(project.getDueDate());

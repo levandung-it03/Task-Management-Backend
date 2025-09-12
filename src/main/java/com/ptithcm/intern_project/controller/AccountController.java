@@ -1,13 +1,12 @@
 package com.ptithcm.intern_project.controller;
 
-import com.ptithcm.intern_project.dto.request.RegisterRequest;
-import com.ptithcm.intern_project.dto.general.RestApiResponse;
-import com.ptithcm.intern_project.dto.general.TokenDTO;
-import com.ptithcm.intern_project.dto.request.*;
-import com.ptithcm.intern_project.dto.response.AuthResponse;
-import com.ptithcm.intern_project.dto.response.EmailResponse;
-import com.ptithcm.intern_project.dto.response.IdResponse;
-import com.ptithcm.intern_project.dto.response.VerifyEmailResponse;
+import com.ptithcm.intern_project.model.dto.request.*;
+import com.ptithcm.intern_project.model.dto.general.RestApiResponse;
+import com.ptithcm.intern_project.model.dto.general.TokenDTO;
+import com.ptithcm.intern_project.model.dto.response.AuthResponse;
+import com.ptithcm.intern_project.model.dto.response.EmailResponse;
+import com.ptithcm.intern_project.model.dto.response.IdResponse;
+import com.ptithcm.intern_project.model.dto.response.VerifyEmailResponse;
 import com.ptithcm.intern_project.service.AccountService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,8 +24,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.Map;
 
-import static com.ptithcm.intern_project.exception.enums.SuccessCodes.*;
-import static com.ptithcm.intern_project.security.constvalues.AuthorityValues.*;
+import static com.ptithcm.intern_project.config.enums.SuccessCodes.*;
+import static com.ptithcm.intern_project.config.constvalues.AuthorityValues.*;
 
 @RestController
 @RequestMapping("/api")

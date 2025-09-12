@@ -1,6 +1,6 @@
 package com.ptithcm.intern_project.config;
 
-import com.ptithcm.intern_project.redis.crud.*;
+import com.ptithcm.intern_project.repository.*;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

@@ -1,29 +1,28 @@
 package com.ptithcm.intern_project.service;
 
-import com.ptithcm.intern_project.dto.general.EmailTaskDTO;
-import com.ptithcm.intern_project.dto.general.StatusDTO;
-import com.ptithcm.intern_project.dto.response.*;
-import com.ptithcm.intern_project.jpa.model.enums.ProjectStatus;
-import com.ptithcm.intern_project.jpa.model.enums.RoleOnEntity;
-import com.ptithcm.intern_project.security.enums.AuthorityEnum;
-import com.ptithcm.intern_project.exception.enums.ErrorCodes;
-import com.ptithcm.intern_project.exception.AppExc;
+import com.ptithcm.intern_project.model.dto.general.EmailTaskDTO;
+import com.ptithcm.intern_project.model.dto.general.StatusDTO;
+import com.ptithcm.intern_project.model.dto.response.*;
+import com.ptithcm.intern_project.model.enums.RoleOnEntity;
+import com.ptithcm.intern_project.config.enums.AuthorityEnum;
+import com.ptithcm.intern_project.config.enums.ErrorCodes;
+import com.ptithcm.intern_project.config.exception.AppExc;
 import com.ptithcm.intern_project.mapper.TaskForUsersMapper;
 import com.ptithcm.intern_project.mapper.TaskMapper;
 import com.ptithcm.intern_project.mapper.UserInfoMapper;
-import com.ptithcm.intern_project.dto.general.TaskCreationDTO;
-import com.ptithcm.intern_project.dto.request.TaskRequest;
-import com.ptithcm.intern_project.dto.request.UpdatedTaskRequest;
-import com.ptithcm.intern_project.dto.general.ShortUserInfoDTO;
-import com.ptithcm.intern_project.jpa.model.Collection;
-import com.ptithcm.intern_project.jpa.model.Task;
-import com.ptithcm.intern_project.jpa.model.TaskForUsers;
-import com.ptithcm.intern_project.jpa.model.enums.UserTaskStatus;
-import com.ptithcm.intern_project.jpa.repository.TaskRepository;
-import com.ptithcm.intern_project.security.service.JwtService;
+import com.ptithcm.intern_project.model.dto.general.TaskCreationDTO;
+import com.ptithcm.intern_project.model.dto.request.TaskRequest;
+import com.ptithcm.intern_project.model.dto.request.UpdatedTaskRequest;
+import com.ptithcm.intern_project.model.dto.general.ShortUserInfoDTO;
+import com.ptithcm.intern_project.model.Collection;
+import com.ptithcm.intern_project.model.Task;
+import com.ptithcm.intern_project.model.TaskForUsers;
+import com.ptithcm.intern_project.model.enums.UserTaskStatus;
+import com.ptithcm.intern_project.repository.TaskRepository;
+import com.ptithcm.intern_project.service.auth.JwtService;
 import com.ptithcm.intern_project.service.interfaces.ITaskService;
-import com.ptithcm.intern_project.service.messages.TaskMsg;
-import com.ptithcm.intern_project.service.supports.EmailQueueService;
+import com.ptithcm.intern_project.service.email.messages.TaskMsg;
+import com.ptithcm.intern_project.service.email.EmailQueueService;
 import com.ptithcm.intern_project.service.trans.TaskTransService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +34,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -56,9 +54,6 @@ public class TaskService implements ITaskService {
 
     @Transactional(rollbackFor = RuntimeException.class)
     public IdResponse create(Collection collection, TaskRequest request, String token) {
-        var isInProgressProject = collection.getPhase().getProject().getStatus().equals(ProjectStatus.IN_PROGRESS);
-        if (!isInProgressProject)   throw new AppExc(ErrorCodes.PROJECT_IS_NOT_IN_PROGRESS);
-
         var isPhaseEnded = collection.getPhase().getEndDate() != null;
         if (isPhaseEnded) throw new AppExc(ErrorCodes.PHASE_ENDED);
 

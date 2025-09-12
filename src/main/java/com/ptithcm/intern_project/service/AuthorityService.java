@@ -1,16 +1,15 @@
 package com.ptithcm.intern_project.service;
 
-import com.ptithcm.intern_project.security.enums.AuthorityEnum;
-import com.ptithcm.intern_project.exception.enums.ErrorCodes;
-import com.ptithcm.intern_project.exception.AppExc;
-import com.ptithcm.intern_project.jpa.model.Authority;
-import com.ptithcm.intern_project.jpa.repository.AuthorityRepository;
+import com.ptithcm.intern_project.config.enums.AuthorityEnum;
+import com.ptithcm.intern_project.config.enums.ErrorCodes;
+import com.ptithcm.intern_project.config.exception.AppExc;
+import com.ptithcm.intern_project.model.Authority;
+import com.ptithcm.intern_project.repository.AuthorityRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
 import java.util.List;
 
 @Service

@@ -1,13 +1,12 @@
 package com.ptithcm.intern_project.mapper;
 
-import com.ptithcm.intern_project.dto.general.EntityDelegatorDTO;
-import com.ptithcm.intern_project.dto.request.CollectionRequest;
-import com.ptithcm.intern_project.dto.response.CollectionDetailResponse;
-import com.ptithcm.intern_project.dto.response.CollectionResponse;
-import com.ptithcm.intern_project.jpa.model.Collection;
-import com.ptithcm.intern_project.jpa.model.UserInfo;
+import com.ptithcm.intern_project.model.dto.general.EntityDelegatorDTO;
+import com.ptithcm.intern_project.model.dto.request.CollectionRequest;
+import com.ptithcm.intern_project.model.dto.response.CollectionDetailResponse;
+import com.ptithcm.intern_project.model.dto.response.CollectionResponse;
+import com.ptithcm.intern_project.model.Collection;
+import com.ptithcm.intern_project.model.UserInfo;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;

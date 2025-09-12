@@ -1,10 +1,10 @@
 package com.ptithcm.intern_project.mapper;
 
-import com.ptithcm.intern_project.jpa.model.enums.GroupRole;
-import com.ptithcm.intern_project.dto.response.GroupUserResponse;
-import com.ptithcm.intern_project.jpa.model.Group;
-import com.ptithcm.intern_project.jpa.model.GroupHasUsers;
-import com.ptithcm.intern_project.jpa.model.UserInfo;
+import com.ptithcm.intern_project.model.enums.GroupRole;
+import com.ptithcm.intern_project.model.dto.response.GroupUserResponse;
+import com.ptithcm.intern_project.model.Group;
+import com.ptithcm.intern_project.model.GroupHasUsers;
+import com.ptithcm.intern_project.model.UserInfo;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

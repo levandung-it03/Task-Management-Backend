@@ -1,13 +1,13 @@
 package com.ptithcm.intern_project.controller;
 
-import com.ptithcm.intern_project.dto.response.*;
-import com.ptithcm.intern_project.exception.enums.SuccessCodes;
-import com.ptithcm.intern_project.dto.general.RestApiResponse;
-import com.ptithcm.intern_project.dto.general.ShortUserInfoDTO;
-import com.ptithcm.intern_project.dto.request.ChangeGroupStatusRequest;
-import com.ptithcm.intern_project.dto.request.GroupRequest;
-import com.ptithcm.intern_project.dto.request.PaginationRequest;
-import com.ptithcm.intern_project.dto.request.UpdatedGroupRequest;
+import com.ptithcm.intern_project.config.enums.SuccessCodes;
+import com.ptithcm.intern_project.model.dto.general.RestApiResponse;
+import com.ptithcm.intern_project.model.dto.general.ShortUserInfoDTO;
+import com.ptithcm.intern_project.model.dto.request.ChangeGroupStatusRequest;
+import com.ptithcm.intern_project.model.dto.request.GroupRequest;
+import com.ptithcm.intern_project.model.dto.request.PaginationRequest;
+import com.ptithcm.intern_project.model.dto.request.UpdatedGroupRequest;
+import com.ptithcm.intern_project.model.dto.response.*;
 import com.ptithcm.intern_project.service.GroupService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static com.ptithcm.intern_project.security.constvalues.AuthorityValues.*;
+import static com.ptithcm.intern_project.config.constvalues.AuthorityValues.*;
 
 @RestController
 @RequestMapping("/api/private")

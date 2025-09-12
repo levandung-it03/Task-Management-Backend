@@ -1,11 +1,11 @@
 package com.ptithcm.intern_project.mapper;
 
-import com.ptithcm.intern_project.dto.general.EntityDelegatorDTO;
-import com.ptithcm.intern_project.dto.request.PhaseRequest;
-import com.ptithcm.intern_project.dto.response.PhaseDetailResponse;
-import com.ptithcm.intern_project.dto.response.PhaseResponse;
-import com.ptithcm.intern_project.jpa.model.Phase;
-import com.ptithcm.intern_project.jpa.model.UserInfo;
+import com.ptithcm.intern_project.model.dto.general.EntityDelegatorDTO;
+import com.ptithcm.intern_project.model.dto.request.PhaseRequest;
+import com.ptithcm.intern_project.model.dto.response.PhaseDetailResponse;
+import com.ptithcm.intern_project.model.dto.response.PhaseResponse;
+import com.ptithcm.intern_project.model.Phase;
+import com.ptithcm.intern_project.model.UserInfo;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 

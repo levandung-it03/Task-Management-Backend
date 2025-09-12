@@ -1,16 +1,16 @@
 package com.ptithcm.intern_project.service;
 
-import com.ptithcm.intern_project.dto.general.EmailTaskDTO;
-import com.ptithcm.intern_project.exception.enums.ErrorCodes;
-import com.ptithcm.intern_project.exception.AppExc;
-import com.ptithcm.intern_project.dto.request.CommentCreationRequest;
-import com.ptithcm.intern_project.jpa.model.CommentOfReport;
-import com.ptithcm.intern_project.jpa.model.Report;
-import com.ptithcm.intern_project.jpa.model.UserInfo;
-import com.ptithcm.intern_project.jpa.repository.CommentOfRequestRepository;
-import com.ptithcm.intern_project.security.enums.AuthorityEnum;
-import com.ptithcm.intern_project.service.messages.CommentOfReportMsg;
-import com.ptithcm.intern_project.service.supports.EmailService;
+import com.ptithcm.intern_project.model.dto.general.EmailTaskDTO;
+import com.ptithcm.intern_project.config.enums.ErrorCodes;
+import com.ptithcm.intern_project.config.exception.AppExc;
+import com.ptithcm.intern_project.model.dto.request.CommentCreationRequest;
+import com.ptithcm.intern_project.model.CommentOfReport;
+import com.ptithcm.intern_project.model.Report;
+import com.ptithcm.intern_project.model.UserInfo;
+import com.ptithcm.intern_project.repository.CommentOfRequestRepository;
+import com.ptithcm.intern_project.config.enums.AuthorityEnum;
+import com.ptithcm.intern_project.service.email.messages.CommentOfReportMsg;
+import com.ptithcm.intern_project.service.email.EmailService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

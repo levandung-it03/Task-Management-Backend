@@ -1,26 +1,30 @@
 package com.ptithcm.intern_project.service;
 
-import com.ptithcm.intern_project.dto.general.EmailTaskDTO;
-import com.ptithcm.intern_project.dto.general.ShortUserInfoDTO;
-import com.ptithcm.intern_project.dto.general.UserStatisticDTO;
-import com.ptithcm.intern_project.dto.request.*;
-import com.ptithcm.intern_project.dto.response.*;
-import com.ptithcm.intern_project.exception.enums.ErrorCodes;
-import com.ptithcm.intern_project.exception.AppExc;
-import com.ptithcm.intern_project.jpa.model.*;
-import com.ptithcm.intern_project.jpa.model.enums.ProjectStatus;
-import com.ptithcm.intern_project.jpa.model.enums.ReportStatus;
+import com.ptithcm.intern_project.model.dto.general.EmailTaskDTO;
+import com.ptithcm.intern_project.model.dto.general.ShortUserInfoDTO;
+import com.ptithcm.intern_project.model.dto.general.UserStatisticDTO;
+import com.ptithcm.intern_project.config.enums.ErrorCodes;
+import com.ptithcm.intern_project.config.exception.AppExc;
+import com.ptithcm.intern_project.model.*;
+import com.ptithcm.intern_project.model.dto.request.AddedLeaderRequest;
+import com.ptithcm.intern_project.model.dto.request.KickedLeaderRequest;
+import com.ptithcm.intern_project.model.dto.request.PhaseRequest;
+import com.ptithcm.intern_project.model.dto.request.ProjectRequest;
+import com.ptithcm.intern_project.model.dto.response.*;
+import com.ptithcm.intern_project.model.enums.ProjectStatus;
+import com.ptithcm.intern_project.model.enums.ReportStatus;
 import com.ptithcm.intern_project.mapper.PhaseMapper;
 import com.ptithcm.intern_project.mapper.ProjectMapper;
 import com.ptithcm.intern_project.mapper.ProjectRoleMapper;
-import com.ptithcm.intern_project.jpa.model.enums.RoleOnEntity;
-import com.ptithcm.intern_project.jpa.repository.ProjectRepository;
+import com.ptithcm.intern_project.model.enums.RoleOnEntity;
+import com.ptithcm.intern_project.repository.ProjectRepository;
 import com.ptithcm.intern_project.mapper.UserInfoMapper;
-import com.ptithcm.intern_project.security.service.JwtService;
+import com.ptithcm.intern_project.service.auth.JwtService;
+//import com.ptithcm.intern_project.service.authzed.AuthProjectSvc;
 import com.ptithcm.intern_project.service.interfaces.IProjectService;
-import com.ptithcm.intern_project.service.messages.ProjectMsg;
-import com.ptithcm.intern_project.service.supports.EmailQueueService;
-import com.ptithcm.intern_project.service.supports.EmailService;
+import com.ptithcm.intern_project.service.email.messages.ProjectMsg;
+import com.ptithcm.intern_project.service.email.EmailQueueService;
+import com.ptithcm.intern_project.service.email.EmailService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -50,6 +54,7 @@ public class ProjectService implements IProjectService {
     ReportService reportService;
     TaskService taskService;
     TaskForUsersService taskForUsersService;
+//    AuthProjectSvc authProjectSvc;
 
     @Override
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
@@ -66,8 +71,10 @@ public class ProjectService implements IProjectService {
                 .build())
         );
         project.getProjectUsers().addAll(projectRoles);
-
         savedProject.getProjectUsers().addAll(new ArrayList<>(projectRoles));
+
+//        authProjectSvc.addOwnerPermission(userInfoCreated.getId(), savedProject.getId());
+
         return IdResponse.builder().id(savedProject.getId()).build();
     }
 
@@ -79,9 +86,6 @@ public class ProjectService implements IProjectService {
             .collect(Collectors.toMap(
                 projRole -> projRole.getUserInfo().getEmail(),
                 projRole -> projRole));
-
-        var isProjectInProgress = project.getStatus().equals(ProjectStatus.IN_PROGRESS);
-        if (!isProjectInProgress) throw new AppExc(ErrorCodes.PROJECT_IS_NOT_IN_PROGRESS);
 
         var newLeadersInfo = userInfoService.findAllByEmailIn(request.getAssignedEmails());
         var newProjectRoles = newLeadersInfo.stream()
@@ -95,6 +99,8 @@ public class ProjectService implements IProjectService {
 
         project.getProjectUsers().addAll(newProjectRoles);
         projectRepository.save(project);
+
+//        authProjectSvc.addMembersPermission(newProjectRoles, project.getId());
 
         this.notifyViaEmail(newProjectRoles, ProjectMsg.ADDED_INTO_PROJECT);
     }
@@ -123,7 +129,8 @@ public class ProjectService implements IProjectService {
     public Project getUpdatableProject(Long id, String token) {
         var project = this.getProjectByOwner(id, token);
 
-        var isProjectInProgress = project.getStatus().equals(ProjectStatus.IN_PROGRESS);
+        var isProjectInProgress = project.getStatus().equals(ProjectStatus.IN_PROGRESS)
+            || project.getStatus().equals(ProjectStatus.CREATED);
         if (!isProjectInProgress) throw new AppExc(ErrorCodes.PROJECT_IS_NOT_IN_PROGRESS);
 
         return project;
@@ -218,7 +225,10 @@ public class ProjectService implements IProjectService {
     @Override
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public void complete(String token, Long id) {
-        var updatedProject = this.getUpdatableProject(id, token);
+        var updatedProject = this.getProjectByOwner(id, token);
+
+        var isProjectInProgress = updatedProject.getStatus().equals(ProjectStatus.IN_PROGRESS);
+        if (!isProjectInProgress) throw new AppExc(ErrorCodes.PROJECT_IS_NOT_IN_PROGRESS);
 
         var existNotCompletePhase = phaseService.existsNotCompleteByProjectId(updatedProject.getId());
         if (existNotCompletePhase)  throw new AppExc(ErrorCodes.CANT_COMPLETE_PROJECT);
@@ -233,7 +243,12 @@ public class ProjectService implements IProjectService {
     @Override
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public IdResponse createPhase(Long projectId, PhaseRequest request, String token) {
-        var project = this.getUpdatableProject(projectId, token);
+        var project = this.getProjectByOwner(projectId, token);
+
+        if (!project.getStatus().equals(ProjectStatus.CREATED)
+            && !project.getStatus().equals(ProjectStatus.IN_PROGRESS))
+            throw new AppExc(ErrorCodes.PROJECT_IS_NOT_IN_PROGRESS);
+
         return phaseService.create(project, request, token);
     }
 

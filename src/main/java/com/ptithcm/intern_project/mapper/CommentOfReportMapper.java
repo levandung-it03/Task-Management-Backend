@@ -1,7 +1,7 @@
 package com.ptithcm.intern_project.mapper;
 
-import com.ptithcm.intern_project.dto.response.CommentResponse;
-import com.ptithcm.intern_project.jpa.model.CommentOfReport;
+import com.ptithcm.intern_project.model.dto.response.CommentResponse;
+import com.ptithcm.intern_project.model.CommentOfReport;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 

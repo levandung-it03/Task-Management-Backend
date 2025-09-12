@@ -1,20 +1,19 @@
 package com.ptithcm.intern_project.service;
 
-import com.ptithcm.intern_project.dto.request.PaginationRequest;
-import com.ptithcm.intern_project.dto.response.PaginationResponse;
-import com.ptithcm.intern_project.dto.response.UserInfoResponse;
-import com.ptithcm.intern_project.dto.response.UserOverviewResponse;
-import com.ptithcm.intern_project.security.enums.AuthorityEnum;
-import com.ptithcm.intern_project.exception.enums.ErrorCodes;
-import com.ptithcm.intern_project.exception.AppExc;
+import com.ptithcm.intern_project.model.dto.request.PaginationRequest;
+import com.ptithcm.intern_project.model.dto.response.PaginationResponse;
+import com.ptithcm.intern_project.model.dto.response.UserInfoResponse;
+import com.ptithcm.intern_project.model.dto.response.UserOverviewResponse;
+import com.ptithcm.intern_project.config.enums.AuthorityEnum;
+import com.ptithcm.intern_project.config.enums.ErrorCodes;
+import com.ptithcm.intern_project.config.exception.AppExc;
 import com.ptithcm.intern_project.mapper.UserInfoMapper;
-import com.ptithcm.intern_project.dto.general.ShortUserInfoDTO;
-import com.ptithcm.intern_project.jpa.model.UserInfo;
-import com.ptithcm.intern_project.jpa.repository.UserInfoRepository;
-import com.ptithcm.intern_project.dto.request.UpdatedUserInfoRequest;
-import com.ptithcm.intern_project.security.service.JwtService;
+import com.ptithcm.intern_project.model.dto.general.ShortUserInfoDTO;
+import com.ptithcm.intern_project.model.UserInfo;
+import com.ptithcm.intern_project.repository.UserInfoRepository;
+import com.ptithcm.intern_project.model.dto.request.UpdatedUserInfoRequest;
+import com.ptithcm.intern_project.service.auth.JwtService;
 import com.ptithcm.intern_project.service.interfaces.IUserInfoService;
-import com.ptithcm.intern_project.service.supports.PaginationService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -167,5 +166,13 @@ public class UserInfoService implements IUserInfoService {
             .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
         userInfo.getAccount().setStatus(!userInfo.getAccount().isStatus());
         userInfoRepository.save(userInfo);
+    }
+
+    public Optional<UserInfo> findByAccountId(Long id) {
+        return userInfoRepository.findByAccountId(id);
+    }
+
+    public boolean existsByExpertiseId(Long id) {
+        return userInfoRepository.existsByExpertiseId(id);
     }
 }

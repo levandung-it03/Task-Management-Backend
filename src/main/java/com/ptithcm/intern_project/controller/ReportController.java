@@ -1,11 +1,11 @@
 package com.ptithcm.intern_project.controller;
 
-import com.ptithcm.intern_project.dto.response.CommentResponse;
-import com.ptithcm.intern_project.exception.enums.SuccessCodes;
-import com.ptithcm.intern_project.dto.general.RestApiResponse;
-import com.ptithcm.intern_project.dto.request.CommentCreationRequest;
-import com.ptithcm.intern_project.dto.request.ReportRejectedRequest;
-import com.ptithcm.intern_project.dto.request.UpdatedReportRequest;
+import com.ptithcm.intern_project.model.dto.response.CommentResponse;
+import com.ptithcm.intern_project.config.enums.SuccessCodes;
+import com.ptithcm.intern_project.model.dto.general.RestApiResponse;
+import com.ptithcm.intern_project.model.dto.request.CommentCreationRequest;
+import com.ptithcm.intern_project.model.dto.request.ReportRejectedRequest;
+import com.ptithcm.intern_project.model.dto.request.UpdatedReportRequest;
 import com.ptithcm.intern_project.service.ReportService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -15,7 +15,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static com.ptithcm.intern_project.security.constvalues.AuthorityValues.*;
+import static com.ptithcm.intern_project.config.constvalues.AuthorityValues.*;
 
 @RestController
 @RequestMapping("/api/private")

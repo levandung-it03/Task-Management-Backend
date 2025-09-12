@@ -1,11 +1,11 @@
 package com.ptithcm.intern_project.service.interfaces;
 
-import com.ptithcm.intern_project.dto.general.ShortUserInfoDTO;
-import com.ptithcm.intern_project.dto.request.ChangeGroupStatusRequest;
-import com.ptithcm.intern_project.dto.request.GroupRequest;
-import com.ptithcm.intern_project.dto.request.PaginationRequest;
-import com.ptithcm.intern_project.dto.request.UpdatedGroupRequest;
-import com.ptithcm.intern_project.dto.response.*;
+import com.ptithcm.intern_project.model.dto.general.ShortUserInfoDTO;
+import com.ptithcm.intern_project.model.dto.request.ChangeGroupStatusRequest;
+import com.ptithcm.intern_project.model.dto.request.GroupRequest;
+import com.ptithcm.intern_project.model.dto.request.PaginationRequest;
+import com.ptithcm.intern_project.model.dto.request.UpdatedGroupRequest;
+import com.ptithcm.intern_project.model.dto.response.*;
 
 import java.util.List;
 

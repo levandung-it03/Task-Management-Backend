@@ -1,10 +1,10 @@
 package com.ptithcm.intern_project.service.interfaces;
 
-import com.ptithcm.intern_project.dto.general.StatusDTO;
-import com.ptithcm.intern_project.dto.request.TaskRequest;
-import com.ptithcm.intern_project.dto.request.UpdatedTaskRequest;
-import com.ptithcm.intern_project.dto.response.*;
-import com.ptithcm.intern_project.dto.general.ShortUserInfoDTO;
+import com.ptithcm.intern_project.model.dto.general.StatusDTO;
+import com.ptithcm.intern_project.model.dto.request.TaskRequest;
+import com.ptithcm.intern_project.model.dto.request.UpdatedTaskRequest;
+import com.ptithcm.intern_project.model.dto.general.ShortUserInfoDTO;
+import com.ptithcm.intern_project.model.dto.response.*;
 
 import java.util.List;
 

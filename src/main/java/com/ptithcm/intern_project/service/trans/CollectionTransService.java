@@ -1,6 +1,6 @@
 package com.ptithcm.intern_project.service.trans;
 
-import com.ptithcm.intern_project.jpa.model.Project;
+import com.ptithcm.intern_project.model.Project;
 import com.ptithcm.intern_project.service.TaskForUsersService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

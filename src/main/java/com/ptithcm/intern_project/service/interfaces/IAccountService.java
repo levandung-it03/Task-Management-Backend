@@ -1,12 +1,11 @@
 package com.ptithcm.intern_project.service.interfaces;
 
-import com.ptithcm.intern_project.dto.request.RegisterRequest;
-import com.ptithcm.intern_project.dto.general.TokenDTO;
-import com.ptithcm.intern_project.dto.request.*;
-import com.ptithcm.intern_project.dto.response.AuthResponse;
-import com.ptithcm.intern_project.dto.response.EmailResponse;
-import com.ptithcm.intern_project.dto.response.IdResponse;
-import com.ptithcm.intern_project.dto.response.VerifyEmailResponse;
+import com.ptithcm.intern_project.model.dto.request.*;
+import com.ptithcm.intern_project.model.dto.general.TokenDTO;
+import com.ptithcm.intern_project.model.dto.response.AuthResponse;
+import com.ptithcm.intern_project.model.dto.response.EmailResponse;
+import com.ptithcm.intern_project.model.dto.response.IdResponse;
+import com.ptithcm.intern_project.model.dto.response.VerifyEmailResponse;
 import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 

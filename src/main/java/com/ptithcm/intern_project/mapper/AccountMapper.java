@@ -1,10 +1,10 @@
 package com.ptithcm.intern_project.mapper;
 
-import com.ptithcm.intern_project.dto.general.AccountCreationDTO;
-import com.ptithcm.intern_project.exception.AppExc;
-import com.ptithcm.intern_project.exception.enums.ErrorCodes;
-import com.ptithcm.intern_project.security.enums.AuthorityEnum;
-import com.ptithcm.intern_project.security.service.OtpHelper;
+import com.ptithcm.intern_project.model.dto.general.AccountCreationDTO;
+import com.ptithcm.intern_project.config.exception.AppExc;
+import com.ptithcm.intern_project.config.enums.ErrorCodes;
+import com.ptithcm.intern_project.config.enums.AuthorityEnum;
+import com.ptithcm.intern_project.service.auth.OtpHelper;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -28,6 +28,7 @@ public class AccountMapper {
                 .phone(infoRow[3].toString().trim())
                 .authority(AuthorityEnum.valueOf(infoRow[4].toString().trim()))
                 .departmentId((long) Double.parseDouble(infoRow[5].toString().trim()))
+                .expertiseId((long) Double.parseDouble(infoRow[6].toString().trim()))
                 .build();
         } catch (Exception e) {
             throw new AppExc(ErrorCodes.INVALID_DATA_FILE);

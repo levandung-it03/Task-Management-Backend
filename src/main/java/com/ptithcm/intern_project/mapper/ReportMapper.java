@@ -1,11 +1,11 @@
 package com.ptithcm.intern_project.mapper;
 
-import com.ptithcm.intern_project.dto.request.ReportRequest;
-import com.ptithcm.intern_project.dto.response.ReportCommentsResponse;
-import com.ptithcm.intern_project.dto.response.ReportResponse;
-import com.ptithcm.intern_project.jpa.model.Report;
-import com.ptithcm.intern_project.jpa.model.TaskForUsers;
-import com.ptithcm.intern_project.jpa.model.enums.ReportStatus;
+import com.ptithcm.intern_project.model.dto.request.ReportRequest;
+import com.ptithcm.intern_project.model.dto.response.ReportCommentsResponse;
+import com.ptithcm.intern_project.model.dto.response.ReportResponse;
+import com.ptithcm.intern_project.model.Report;
+import com.ptithcm.intern_project.model.TaskForUsers;
+import com.ptithcm.intern_project.model.enums.ReportStatus;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 

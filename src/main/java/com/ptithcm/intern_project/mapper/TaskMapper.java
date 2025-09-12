@@ -1,13 +1,13 @@
 package com.ptithcm.intern_project.mapper;
 
-import com.ptithcm.intern_project.dto.general.EntityDelegatorDTO;
-import com.ptithcm.intern_project.dto.general.TaskCreationDTO;
-import com.ptithcm.intern_project.dto.request.UpdatedTaskRequest;
-import com.ptithcm.intern_project.dto.response.ShortTaskResponse;
-import com.ptithcm.intern_project.dto.response.TaskDelegatorResponse;
-import com.ptithcm.intern_project.dto.response.TaskDetailResponse;
-import com.ptithcm.intern_project.dto.response.TaskResponse;
-import com.ptithcm.intern_project.jpa.model.Task;
+import com.ptithcm.intern_project.model.dto.general.EntityDelegatorDTO;
+import com.ptithcm.intern_project.model.dto.general.TaskCreationDTO;
+import com.ptithcm.intern_project.model.dto.request.UpdatedTaskRequest;
+import com.ptithcm.intern_project.model.dto.response.ShortTaskResponse;
+import com.ptithcm.intern_project.model.dto.response.TaskDelegatorResponse;
+import com.ptithcm.intern_project.model.dto.response.TaskDetailResponse;
+import com.ptithcm.intern_project.model.dto.response.TaskResponse;
+import com.ptithcm.intern_project.model.Task;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 

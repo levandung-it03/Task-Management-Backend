@@ -1,16 +1,16 @@
 package com.ptithcm.intern_project.mapper;
 
-import com.ptithcm.intern_project.dto.general.ShortUserInfoDTO;
-import com.ptithcm.intern_project.dto.general.UserStatisticDTO;
-import com.ptithcm.intern_project.dto.request.UpdatedUserInfoRequest;
-import com.ptithcm.intern_project.dto.response.UserInfoResponse;
-import com.ptithcm.intern_project.dto.response.UserOverviewResponse;
-import com.ptithcm.intern_project.jpa.model.Authority;
-import com.ptithcm.intern_project.jpa.model.Report;
-import com.ptithcm.intern_project.jpa.model.TaskForUsers;
-import com.ptithcm.intern_project.jpa.model.UserInfo;
-import com.ptithcm.intern_project.jpa.model.enums.ReportStatus;
-import com.ptithcm.intern_project.jpa.model.enums.TaskLevel;
+import com.ptithcm.intern_project.model.dto.general.ShortUserInfoDTO;
+import com.ptithcm.intern_project.model.dto.general.UserStatisticDTO;
+import com.ptithcm.intern_project.model.dto.request.UpdatedUserInfoRequest;
+import com.ptithcm.intern_project.model.dto.response.UserInfoResponse;
+import com.ptithcm.intern_project.model.dto.response.UserOverviewResponse;
+import com.ptithcm.intern_project.model.Authority;
+import com.ptithcm.intern_project.model.Report;
+import com.ptithcm.intern_project.model.TaskForUsers;
+import com.ptithcm.intern_project.model.UserInfo;
+import com.ptithcm.intern_project.model.enums.ReportStatus;
+import com.ptithcm.intern_project.model.enums.TaskLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;

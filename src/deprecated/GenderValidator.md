@@ -2,7 +2,7 @@
 package com.ptithcm.intern_project.common.annotation.validator;
 
 import com.ptithcm.intern_project.common.annotation.GenderConstraint;
-import com.ptithcm.intern_project.jpa.model.UserInfo;
+import com.ptithcm.intern_project.model.UserInfo;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 

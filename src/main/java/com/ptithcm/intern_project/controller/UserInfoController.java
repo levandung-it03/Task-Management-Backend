@@ -1,14 +1,14 @@
 package com.ptithcm.intern_project.controller;
 
-import com.ptithcm.intern_project.dto.request.PaginationRequest;
-import com.ptithcm.intern_project.dto.response.PaginationResponse;
-import com.ptithcm.intern_project.dto.response.UserInfoResponse;
-import com.ptithcm.intern_project.dto.response.UserOverviewResponse;
-import com.ptithcm.intern_project.exception.enums.SuccessCodes;
-import com.ptithcm.intern_project.dto.general.RestApiResponse;
-import com.ptithcm.intern_project.dto.general.ShortUserInfoDTO;
-import com.ptithcm.intern_project.jpa.model.UserInfo;
-import com.ptithcm.intern_project.dto.request.UpdatedUserInfoRequest;
+import com.ptithcm.intern_project.model.dto.request.PaginationRequest;
+import com.ptithcm.intern_project.model.dto.response.PaginationResponse;
+import com.ptithcm.intern_project.model.dto.response.UserInfoResponse;
+import com.ptithcm.intern_project.model.dto.response.UserOverviewResponse;
+import com.ptithcm.intern_project.config.enums.SuccessCodes;
+import com.ptithcm.intern_project.model.dto.general.RestApiResponse;
+import com.ptithcm.intern_project.model.dto.general.ShortUserInfoDTO;
+import com.ptithcm.intern_project.model.UserInfo;
+import com.ptithcm.intern_project.model.dto.request.UpdatedUserInfoRequest;
 import com.ptithcm.intern_project.service.UserInfoService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -20,8 +20,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static com.ptithcm.intern_project.exception.enums.SuccessCodes.*;
-import static com.ptithcm.intern_project.security.constvalues.AuthorityValues.*;
+import static com.ptithcm.intern_project.config.enums.SuccessCodes.*;
+import static com.ptithcm.intern_project.config.constvalues.AuthorityValues.*;
 
 @RestController
 @RequestMapping("/api/private")

@@ -1,6 +1,6 @@
 package com.ptithcm.intern_project.service.interfaces;
 
-import com.ptithcm.intern_project.jpa.model.enums.GroupRole;
+import com.ptithcm.intern_project.model.enums.GroupRole;
 
 public interface IGroupHasUsersService {
 

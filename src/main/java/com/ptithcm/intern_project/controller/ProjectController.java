@@ -1,13 +1,16 @@
 package com.ptithcm.intern_project.controller;
 
-import com.ptithcm.intern_project.dto.general.ShortUserInfoDTO;
-import com.ptithcm.intern_project.dto.general.UserStatisticDTO;
-import com.ptithcm.intern_project.dto.request.*;
-import com.ptithcm.intern_project.dto.response.*;
-import com.ptithcm.intern_project.exception.enums.SuccessCodes;
-import com.ptithcm.intern_project.dto.general.RestApiResponse;
-import com.ptithcm.intern_project.jpa.model.Project;
-import com.ptithcm.intern_project.jpa.model.enums.ProjectStatus;
+import com.ptithcm.intern_project.model.dto.general.ShortUserInfoDTO;
+import com.ptithcm.intern_project.model.dto.general.UserStatisticDTO;
+import com.ptithcm.intern_project.config.enums.SuccessCodes;
+import com.ptithcm.intern_project.model.dto.general.RestApiResponse;
+import com.ptithcm.intern_project.model.Project;
+import com.ptithcm.intern_project.model.dto.request.AddedLeaderRequest;
+import com.ptithcm.intern_project.model.dto.request.KickedLeaderRequest;
+import com.ptithcm.intern_project.model.dto.request.PhaseRequest;
+import com.ptithcm.intern_project.model.dto.request.ProjectRequest;
+import com.ptithcm.intern_project.model.dto.response.*;
+import com.ptithcm.intern_project.model.enums.ProjectStatus;
 import com.ptithcm.intern_project.service.ProjectService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -20,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
-import static com.ptithcm.intern_project.security.constvalues.AuthorityValues.*;
+import static com.ptithcm.intern_project.config.constvalues.AuthorityValues.*;
 
 @RestController
 @RequestMapping("/api/private")

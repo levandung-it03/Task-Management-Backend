@@ -1,14 +1,12 @@
 package com.ptithcm.intern_project.service;
 
-import com.ptithcm.intern_project.jpa.model.enums.TaskLevel;
+import com.ptithcm.intern_project.model.enums.TaskLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 @NoArgsConstructor

@@ -1,11 +1,11 @@
 package com.ptithcm.intern_project.mapper;
 
-import com.ptithcm.intern_project.dto.request.ProjectRequest;
-import com.ptithcm.intern_project.dto.response.ProjectDetailResponse;
-import com.ptithcm.intern_project.dto.response.ProjectOverviewResponse;
-import com.ptithcm.intern_project.jpa.model.Project;
-import com.ptithcm.intern_project.jpa.model.UserInfo;
-import com.ptithcm.intern_project.jpa.model.enums.ProjectStatus;
+import com.ptithcm.intern_project.model.dto.request.ProjectRequest;
+import com.ptithcm.intern_project.model.dto.response.ProjectDetailResponse;
+import com.ptithcm.intern_project.model.dto.response.ProjectOverviewResponse;
+import com.ptithcm.intern_project.model.Project;
+import com.ptithcm.intern_project.model.UserInfo;
+import com.ptithcm.intern_project.model.enums.ProjectStatus;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
