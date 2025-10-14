@@ -48,6 +48,11 @@ public class EnumsController {
         return RestApiResponse.fromScs(SuccessCodes.GET_ENUMS, enumService.getTaskLevelEnums());
     }
 
+    @GetMapping("/raw-task-level")
+    public ResponseEntity<RestApiResponse<TaskLevel[]>> getRawTaskLevel() {
+        return RestApiResponse.fromScs(SuccessCodes.GET_ENUMS, TaskLevel.values());
+    }
+
     @GetMapping("/task-priority")
     public ResponseEntity<RestApiResponse<TaskPriority[]>> getTaskPriority() {
         return RestApiResponse.fromScs(SuccessCodes.GET_ENUMS, TaskPriority.values());
