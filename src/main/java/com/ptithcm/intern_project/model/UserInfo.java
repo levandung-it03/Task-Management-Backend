@@ -34,10 +34,6 @@ public class UserInfo {
     @JoinColumn(name = "department_id", referencedColumnName = "id", nullable = false)
     Department department;
 
-    @ManyToOne
-    @JoinColumn(name = "expertise_id", referencedColumnName = "id", nullable = false)
-    Expertise expertise;
-
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id", referencedColumnName = "id", nullable = false)
     @JsonIgnore

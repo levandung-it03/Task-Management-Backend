@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,4 +45,7 @@ public interface GroupHasUsersRepository extends JpaRepository<GroupHasUsers, Lo
         AND ghu.active = TRUE
     """)
     List<UserInfo> findAllUsersGroupToAssign(@Param("id") Long id, @Param("username") String username);
+
+    @Query("SELECT ghu FROM GroupHasUsers ghu WHERE ghu.joinedUserInfo.id IN :recIds")
+    List<GroupHasUsers> findAllByUserInfoIds(@Param("recIds") Collection<Long> recOrderedUsersIds);
 }

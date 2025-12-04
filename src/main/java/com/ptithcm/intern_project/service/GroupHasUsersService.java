@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -124,5 +125,9 @@ public class GroupHasUsersService implements IGroupHasUsersService {
             .subject(msgEnum.getSubject())
             .body(msgEnum.format(group.getName()))
             .build());
+    }
+
+    public List<GroupHasUsers> findAllByUserInfoIds(Collection<Long> recOrderedUsersIds) {
+        return groupUserRepository.findAllByUserInfoIds(recOrderedUsersIds);
     }
 }

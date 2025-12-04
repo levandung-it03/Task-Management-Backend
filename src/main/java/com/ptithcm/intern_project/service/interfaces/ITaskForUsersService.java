@@ -4,6 +4,8 @@ import com.ptithcm.intern_project.model.dto.general.ShortUserInfoDTO;
 import com.ptithcm.intern_project.model.dto.request.ReportRequest;
 import com.ptithcm.intern_project.model.dto.response.IdResponse;
 import com.ptithcm.intern_project.model.dto.response.ReportCommentsResponse;
+import com.ptithcm.intern_project.model.enums.Domain;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 import java.util.Map;
@@ -21,4 +23,6 @@ public interface ITaskForUsersService {
     List<ReportCommentsResponse> getReportsAndComments(Long taskUserId, String token);
 
     Map<String, Boolean> checkIsAssignedUserTask(Long taskUserId, String token);
+
+    List<Long> getBusyUserIdsOnTaskType(Domain taskType);
 }

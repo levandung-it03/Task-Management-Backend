@@ -4,6 +4,7 @@ import com.ptithcm.intern_project.model.dto.response.UserTaskResponse;
 import com.ptithcm.intern_project.model.Task;
 import com.ptithcm.intern_project.model.TaskForUsers;
 import com.ptithcm.intern_project.model.UserInfo;
+import com.ptithcm.intern_project.model.enums.Domain;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -28,7 +29,7 @@ public interface TaskForUsersRepository extends JpaRepository<TaskForUsers, Long
         @Param("owner") String username);
 
     @Query("""
-        SELECT DISTINCT new com.ptithcm.intern_project.dto.response.UserTaskResponse(
+        SELECT DISTINCT new com.ptithcm.intern_project.model.dto.response.UserTaskResponse(
             tfu.id,
             tfu.assignedUser.email,
             tfu.assignedUser.fullName,
@@ -80,7 +81,7 @@ public interface TaskForUsersRepository extends JpaRepository<TaskForUsers, Long
     boolean existsByProjectIdAndAssignedUsername(@Param("projectId") Long projectId, @Param("username") String username);
 
     @Query("""
-        SELECT new com.ptithcm.intern_project.dto.response.UserTaskResponse(
+        SELECT new com.ptithcm.intern_project.model.dto.response.UserTaskResponse(
             tfu.id,
             tfu.assignedUser.email,
             tfu.assignedUser.fullName,
@@ -124,4 +125,14 @@ public interface TaskForUsersRepository extends JpaRepository<TaskForUsers, Long
         WHERE tfu.task.rootTask.id = :rootTaskId
     """)
     boolean existsSubTaskOfRootTask(@Param("rootTaskId") Long rootTaskId);
+
+    @Query("""
+        SELECT DISTINCT tfu_op.assignedUser.id FROM TaskForUsers tfu_op
+        WHERE tfu_op.task.taskType = :taskType
+          AND tfu_op.id NOT IN (
+              SELECT DISTINCT r.userTaskCreated.id FROM Report r
+              WHERE r.reportStatus = com.ptithcm.intern_project.model.enums.ReportStatus.APPROVED
+          )
+    """)
+    List<Long> getBusyUserIdsOnTaskType(@Param("taskType") Domain taskType);
 }

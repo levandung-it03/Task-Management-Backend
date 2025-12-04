@@ -1,7 +1,10 @@
 package com.ptithcm.intern_project.repository;
 
+import com.ptithcm.intern_project.config.enums.AuthorityEnum;
+import com.ptithcm.intern_project.model.dto.response.RecUserInfoResponse;
 import com.ptithcm.intern_project.model.dto.response.UserInfoResponse;
 import com.ptithcm.intern_project.model.UserInfo;
+import com.ptithcm.intern_project.model.enums.Domain;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -72,5 +75,26 @@ public interface UserInfoRepository extends JpaRepository<UserInfo, Long> {
     """)
     Page<UserInfo> searchFullPaginatedInformationUsers(@Param("filter") UserInfoResponse filter, Pageable pageable);
 
-    boolean existsByExpertiseId(Long id);
+    @Query("""
+        SELECT COUNT(DISTINCT u.id) FROM UserInfo u
+        JOIN u.account a
+        JOIN a.authorities auth
+        WHERE (:scopes LIKE '%ROLE_PM%' AND auth.name <> 'ROLE_PM')
+        OR (:scopes LIKE '%ROLE_LEAD%' AND auth.name = 'ROLE_EMP')
+    """)
+    int countAllUsersToRecommend(@Param("scopes") String scopes);
+
+    @Query("SELECT u.id FROM UserInfo u WHERE u.account.status = FALSE")
+    List<Long> findAllInactiveUsersByAccount();
+
+    @Query("""
+        SELECT DISTINCT u FROM UserInfo u
+        JOIN FETCH u.account a
+        JOIN FETCH a.authorities auth
+        WHERE u.id IN :ids
+        AND auth.name = :authEnum
+    """)
+    List<UserInfo> findAllByIdsAndAuthority(
+        @Param("ids") List<Long> rankedUserIds,
+        @Param("authEnum") String authEnum);
 }

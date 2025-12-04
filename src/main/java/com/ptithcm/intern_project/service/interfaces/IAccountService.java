@@ -6,11 +6,9 @@ import com.ptithcm.intern_project.model.dto.response.AuthResponse;
 import com.ptithcm.intern_project.model.dto.response.EmailResponse;
 import com.ptithcm.intern_project.model.dto.response.IdResponse;
 import com.ptithcm.intern_project.model.dto.response.VerifyEmailResponse;
-import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Map;
 
 public interface IAccountService {
     AuthResponse authenticate(AuthRequest dto);
@@ -32,12 +30,4 @@ public interface IAccountService {
     EmailResponse getEmail(String token);
 
     List<IdResponse> createAccounts(MultipartFile file);
-
-    Resource getAccountCreationExample();
-
-    Map<String, Boolean> checkExistsCachedCreatedAccounts();
-
-    Resource getCachedAccountCreation();
-
-    void clearCachedAccountCreation();
 }

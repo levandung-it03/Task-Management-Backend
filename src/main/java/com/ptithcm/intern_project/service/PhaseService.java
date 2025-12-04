@@ -64,8 +64,10 @@ public class PhaseService implements IPhaseService {
                 throw new AppExc(ErrorCodes.END_BEFORE_COLLECTION);
         }
 
-        var isProjectInProgress = phase.getProject().getStatus().equals(ProjectStatus.IN_PROGRESS);
-        if (!isProjectInProgress) throw new AppExc(ErrorCodes.PROJECT_IS_NOT_IN_PROGRESS);
+        var canProjectBeUpdated = phase.getProject().getStatus().equals(ProjectStatus.IN_PROGRESS)
+            || phase.getProject().getStatus().equals(ProjectStatus.CREATED);
+        if (!canProjectBeUpdated)
+            throw new AppExc(ErrorCodes.PROJECT_IS_NOT_IN_PROGRESS);
 
         var isPhaseEnded = phase.getEndDate() != null;
         if (isPhaseEnded)   throw new AppExc(ErrorCodes.PHASE_ENDED);
@@ -109,8 +111,10 @@ public class PhaseService implements IPhaseService {
         var isOwner = deletedPhase.getProject().getUserInfoCreated().getAccount().getUsername().equals(username);
         if (!isOwner)   throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
-        var isProjectInProgress = deletedPhase.getProject().getStatus().equals(ProjectStatus.IN_PROGRESS);
-        if (!isProjectInProgress) throw new AppExc(ErrorCodes.PROJECT_IS_NOT_IN_PROGRESS);
+        var projSts = deletedPhase.getProject().getStatus();
+        var canProjectBeUpdated = projSts.equals(ProjectStatus.IN_PROGRESS) || projSts.equals(ProjectStatus.CREATED);
+        if (!canProjectBeUpdated)
+            throw new AppExc(ErrorCodes.PROJECT_IS_NOT_IN_PROGRESS);
 
         var isPhaseEnded = deletedPhase.getEndDate() != null;
         if (isPhaseEnded)   throw new AppExc(ErrorCodes.PHASE_ENDED);
@@ -126,9 +130,10 @@ public class PhaseService implements IPhaseService {
         var phase = phaseRepository
             .findById(phaseId).orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
 
-        var isProjectInProgress = phase.getProject().getStatus().equals(ProjectStatus.IN_PROGRESS)
-            || phase.getProject().getStatus().equals(ProjectStatus.CREATED);;
-        if (!isProjectInProgress) throw new AppExc(ErrorCodes.PROJECT_IS_NOT_IN_PROGRESS);
+        var projSts = phase.getProject().getStatus();
+        var canProjectBeUpdated = projSts.equals(ProjectStatus.IN_PROGRESS) || projSts.equals(ProjectStatus.CREATED);
+        if (!canProjectBeUpdated)
+            throw new AppExc(ErrorCodes.PROJECT_IS_NOT_IN_PROGRESS);
 
         var isPhaseEnded = phase.getEndDate() != null;
         if (isPhaseEnded)   throw new AppExc(ErrorCodes.PHASE_ENDED);

@@ -13,6 +13,7 @@ import com.ptithcm.intern_project.repository.ReportRepository;
 import com.ptithcm.intern_project.mapper.CommentOfReportMapper;
 import com.ptithcm.intern_project.config.enums.AuthorityEnum;
 import com.ptithcm.intern_project.service.auth.JwtService;
+import com.ptithcm.intern_project.service.interf.TaskUserPredService;
 import com.ptithcm.intern_project.service.interfaces.IReportService;
 import com.ptithcm.intern_project.service.email.messages.ReportMsg;
 import com.ptithcm.intern_project.service.email.EmailService;
@@ -36,6 +37,7 @@ public class ReportService implements IReportService {
     CommentOfReportMapper commentOfReportMapper;
     UserInfoService userInfoService;
     EmailService emailService;
+    TaskUserPredService taskUserPredService;
 
     @Override
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
@@ -114,6 +116,8 @@ public class ReportService implements IReportService {
             taskOwnerInfo.getFullName() + "/" + taskOwnerInfo.getEmail(),
             report,
             ReportMsg.APPROVED_REPORT);
+
+        taskUserPredService.queueNewRecord(report);
     }
 
     @Override

@@ -1,5 +1,7 @@
 package com.ptithcm.intern_project.controller;
 
+import com.ptithcm.intern_project.config.enums.AuthorityEnum;
+import com.ptithcm.intern_project.config.enums.SuccessCodes;
 import com.ptithcm.intern_project.model.dto.request.*;
 import com.ptithcm.intern_project.model.dto.general.RestApiResponse;
 import com.ptithcm.intern_project.model.dto.general.TokenDTO;
@@ -9,6 +11,7 @@ import com.ptithcm.intern_project.model.dto.response.IdResponse;
 import com.ptithcm.intern_project.model.dto.response.VerifyEmailResponse;
 import com.ptithcm.intern_project.service.AccountService;
 
+import com.ptithcm.intern_project.service.files.AccountDataService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -33,6 +36,7 @@ import static com.ptithcm.intern_project.config.constvalues.AuthorityValues.*;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AccountController {
     AccountService accountService;
+    AccountDataService accountDataSvc;
 
     @Operation(summary = "Authenticate Account credentials")
     @PostMapping("/public/v1/account/authenticate")
@@ -125,7 +129,7 @@ public class AccountController {
     public ResponseEntity<RestApiResponse<List<IdResponse>>> createAccounts(
         @RequestParam("file") MultipartFile file) {
         return RestApiResponse.fromScs(
-            CREATED_ACCOUNTS, String.format(CREATED_ACCOUNTS.getMsg(), accountService.EXPIRED_CACHED_ACCOUNTS_MINUTES),
+            CREATED_ACCOUNTS, String.format(CREATED_ACCOUNTS.getMsg(), accountDataSvc.getExpiredCachedAccountsMinutes()),
             accountService.createAccounts(file));
     }
 
@@ -135,14 +139,14 @@ public class AccountController {
         return ResponseEntity.ok()
             .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
             .header(HttpHeaders.CONTENT_DISPOSITION,
-                "attachment; filename=\"" + accountService.ACCOUNT_INFO_CREATION_EX_FILE + "\"")
-            .body(accountService.getAccountCreationExample());
+                "attachment; filename=\"" + accountDataSvc.getAccountInfoCreationExFile() + "\"")
+            .body(accountDataSvc.getAccountCreationExample());
     }
 
     @Operation(description = "Check if server is storing temp latest created Accounts")
     @GetMapping("/private/" + ROLE_ADMIN + "/v1/account/exists-cached-created-accounts")
     public ResponseEntity<RestApiResponse<Map<String, Boolean>>> checkExistsCachedCreatedAccounts() {
-        return RestApiResponse.fromScs(GET_DETAIL, accountService.checkExistsCachedCreatedAccounts());
+        return RestApiResponse.fromScs(GET_DETAIL, accountDataSvc.checkExistsCachedCreatedAccounts());
     }
 
     @Operation(description = "Get the created Accounts file from the last Accounts Creation")
@@ -151,14 +155,25 @@ public class AccountController {
         return ResponseEntity.ok()
             .contentType(MediaType.TEXT_PLAIN)
             .header(HttpHeaders.CONTENT_DISPOSITION,
-                "attachment; filename=\"" + accountService.CREATED_ACCOUNTS_TEMP_FILE + "\"")
-            .body(accountService.getCachedAccountCreation());
+                "attachment; filename=\"" + accountDataSvc.getCreatedAccountsTempFile() + "\"")
+            .body(accountDataSvc.getCachedAccountCreation());
     }
 
     @Operation(description = "Clear created Accounts file from the last Accounts Creation")
     @DeleteMapping("/private/" + ROLE_ADMIN + "/v1/account/cached-accounts-creation")
     public ResponseEntity<RestApiResponse<Void>> clearCachedAccountCreation() {
-        accountService.clearCachedAccountCreation();
+        accountDataSvc.clearCachedAccountCreation();
         return RestApiResponse.fromScs(DELETED);
     }
+
+
+    @GetMapping({
+        "/private/" + ROLE_ADMIN + "/v1/account/authorities",
+        "/private/" + ROLE_PM + "/v1/account/authorities",
+        "/private/" + ROLE_LEAD + "/v1/account/authorities",
+        "/private/" + ROLE_EMP + "/v1/account/authorities",})
+    public ResponseEntity<RestApiResponse<AuthorityEnum[]>> getAuthorityEnums() {
+        return RestApiResponse.fromScs(SuccessCodes.GET_ENUMS, AuthorityEnum.values());
+    }
+
 }

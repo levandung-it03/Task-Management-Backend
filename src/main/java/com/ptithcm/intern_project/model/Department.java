@@ -1,5 +1,6 @@
 package com.ptithcm.intern_project.model;
 
+import com.ptithcm.intern_project.model.enums.Domain;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;

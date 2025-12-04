@@ -28,7 +28,6 @@ public class AccountMapper {
                 .phone(infoRow[3].toString().trim())
                 .authority(AuthorityEnum.valueOf(infoRow[4].toString().trim()))
                 .departmentId((long) Double.parseDouble(infoRow[5].toString().trim()))
-                .expertiseId((long) Double.parseDouble(infoRow[6].toString().trim()))
                 .build();
         } catch (Exception e) {
             throw new AppExc(ErrorCodes.INVALID_DATA_FILE);

@@ -1,6 +1,5 @@
-package com.ptithcm.intern_project.model.dto.request;
+package com.ptithcm.intern_project.model.dto.response;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -10,7 +9,6 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ExpertiseRequest {
-    @NotBlank
-    String name;
+public class MaxUsersForModelResponse {
+    int maxQuantity;
 }

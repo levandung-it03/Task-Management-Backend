@@ -19,33 +19,23 @@ import com.ptithcm.intern_project.config.enums.TokenTypes;
 import com.ptithcm.intern_project.service.auth.JwtService;
 import com.ptithcm.intern_project.service.auth.OtpHelper;
 import com.ptithcm.intern_project.service.cache.*;
+import com.ptithcm.intern_project.service.files.AccountDataService;
 import com.ptithcm.intern_project.service.interfaces.IAccountService;
 import com.ptithcm.intern_project.service.email.messages.AccountMsg;
 import com.ptithcm.intern_project.service.email.EmailService;
 import com.ptithcm.intern_project.service.files.ExcelHelper;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.core.io.Resource;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -53,11 +43,6 @@ import java.util.stream.Collectors;
 @EnableAspectJAutoProxy(exposeProxy = true)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AccountService implements IAccountService {
-    public final String DATA_FILE_ROOT_PATH = "data";
-    public final String ACCOUNT_INFO_CREATION_EX_FILE = "/accounts_creation.xlsx";
-    public final String CREATED_ACCOUNTS_TEMP_FILE = "/created_accounts.txt";
-    public final int EXPIRED_CACHED_ACCOUNTS_MINUTES = 15;
-    @Getter
     AccountRepository accountRepository;
     AuthorityService authorityService;
     InvalidTokenService invalidTokenService;
@@ -71,8 +56,7 @@ public class AccountService implements IAccountService {
     DepartmentService departmentService;
     UserInfoService userInfoService;
     AccountMapper accountMapper;
-    ExpertiseService expertiseService;
-    ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+    AccountDataService accountDataService;
 
     @Override
     public AuthResponse authenticate(AuthRequest dto) {
@@ -325,8 +309,6 @@ public class AccountService implements IAccountService {
             .collect(Collectors.toMap(
                 auth -> AuthorityEnum.valueOf(auth.getName()),
                 auth -> auth));
-        Map<Long, Expertise> expertises = expertiseService.findAll().stream()
-            .collect(Collectors.toMap(Expertise::getId, dep -> dep));
         Map<Long, Department> departments = departmentService.findAll().stream()
             .collect(Collectors.toMap(Department::getId, dep -> dep));
         List<UserInfo> usersInfoRequest = new ArrayList<>();
@@ -348,74 +330,14 @@ public class AccountService implements IAccountService {
                 .account(account)
                 .email(registerReq.getEmail())
                 .department(departments.get(registerReq.getDepartmentId()))
-                .expertise(expertises.get(registerReq.getExpertiseId()))
                 .fullName(registerReq.getFullName())
                 .phone(registerReq.getPhone())
                 .identity(registerReq.getIdentity())
                 .build());
         }
         var savedUsers = userInfoService.saveAll(usersInfoRequest);
-        this.saveCreatedAccountsIntoServer(responses);
+        accountDataService.saveCreatedAccountsIntoServer(responses);
         return savedUsers.stream().map(user -> IdResponse.builder().id(user.getId()).build()).toList();
     }
 
-    private void saveCreatedAccountsIntoServer(List<AccountCreationDTO> accounts) {
-        try (var writer = new FileWriter(DATA_FILE_ROOT_PATH + CREATED_ACCOUNTS_TEMP_FILE)) {
-            var content = new StringBuilder();
-            content
-                .append("fullName,identity,username,password")
-                .append(System.lineSeparator());
-            for (AccountCreationDTO account : accounts)
-                content
-                    .append(account.getFullName()).append(",")
-                    .append(account.getIdentity()).append(",")
-                    .append(account.getUsername()).append(",")
-                    .append(account.getPassword()).append(",")
-                    .append(account.getAuthority()).append(System.lineSeparator());
-            writer.write(content.toString());
-        } catch (Exception e) {
-            throw new AppExc(ErrorCodes.INVALID_DATA_FILE);
-        }
-        scheduler.schedule(this::clearCachedAccountCreation, EXPIRED_CACHED_ACCOUNTS_MINUTES, TimeUnit.MINUTES);
-    }
-
-    @Override
-    public Resource getAccountCreationExample() {
-        try {
-            var file = Path.of(DATA_FILE_ROOT_PATH + ACCOUNT_INFO_CREATION_EX_FILE).toFile();
-            return new InputStreamResource(new FileInputStream(file));
-        } catch (Exception e) {
-            throw new AppExc(ErrorCodes.INVALID_FILE);
-        }
-    }
-
-    @Override
-    public Map<String, Boolean> checkExistsCachedCreatedAccounts() {
-        try {
-            File file = Path.of(DATA_FILE_ROOT_PATH + CREATED_ACCOUNTS_TEMP_FILE).toFile();
-            Scanner scanner = new Scanner(file);
-            return Map.of("result", scanner.hasNext());
-        } catch (Exception e) {
-            throw new AppExc(ErrorCodes.INVALID_FILE);
-        }
-    }
-
-    @Override
-    public Resource getCachedAccountCreation() {
-        try {
-            var file = Path.of(DATA_FILE_ROOT_PATH + CREATED_ACCOUNTS_TEMP_FILE).toFile();
-            return new InputStreamResource(new FileInputStream(file));
-        } catch (Exception e) {
-            throw new AppExc(ErrorCodes.INVALID_FILE);
-        }
-    }
-
-    @Override
-    public void clearCachedAccountCreation() {
-        try (var writer = new FileWriter(DATA_FILE_ROOT_PATH + CREATED_ACCOUNTS_TEMP_FILE)) {
-            writer.write("");
-        } catch (Exception e) {
-            throw new AppExc(ErrorCodes.INVALID_FILE);
-        }
-    }
 }

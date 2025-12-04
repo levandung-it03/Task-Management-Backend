@@ -20,5 +20,4 @@ public class AccountCreationDTO {
     String phone;
     AuthorityEnum authority;
     Long departmentId;
-    Long expertiseId;
 }

@@ -94,10 +94,8 @@ public enum ErrorCodes {
     END_BEFORE_TASK(18004,"End-Date cannot be BEFORE Task End-Date", BAD_REQUEST),
     //--Authzed(19)
     UPDATE_AUTHZED_REL(19000, "Failed to assign user to role: {}", INTERNAL_SERVER_ERROR),
-    //--Department(20)
-    EXPERTISE_NOT_FOUND(20000, "Expertise not found", BAD_REQUEST),
-    EXPERTISE_ALREADY_EXISTS(20001, "Expertise already exists", BAD_REQUEST),
-    EXPERTISE_WAS_USED(20002, "Expertise was used, can not perform action", BAD_REQUEST),
+    //--FastAPIClient(21)
+    CANNOT_GET_TOP_USERS(21003, "Something happened with AI agent, please try it later!", BAD_REQUEST),
     ;
     int code;
     String msg;

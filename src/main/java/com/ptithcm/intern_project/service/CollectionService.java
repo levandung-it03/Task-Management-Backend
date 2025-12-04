@@ -56,16 +56,16 @@ public class CollectionService implements ICollectionService {
         if (request.getDeadline().isAfter(collectionHasTask.getDueDate()))
             throw new AppExc(ErrorCodes.END_AFTER_COLLECTION);
 
+        var isProjectInProgress = collectionHasTask.getPhase().getProject().getStatus()
+            .equals(ProjectStatus.IN_PROGRESS);
+        if (!isProjectInProgress)   throw new AppExc(ErrorCodes.PROJECT_IS_NOT_IN_PROGRESS);
+
         this.validateEndedTimeOnDependedEntity(collectionHasTask);
 
         return taskService.create(collectionHasTask, request, token);
     }
 
     private void validateEndedTimeOnDependedEntity(Collection collectionHasTask) {
-        var isProjectInProgress = collectionHasTask.getPhase().getProject().getStatus()
-            .equals(ProjectStatus.IN_PROGRESS);
-        if (!isProjectInProgress)   throw new AppExc(ErrorCodes.PROJECT_IS_NOT_IN_PROGRESS);
-
         var isPhaseEnded = collectionHasTask.getPhase().getEndDate() != null;
         if (isPhaseEnded)   throw new AppExc(ErrorCodes.PHASE_ENDED);
 
@@ -92,6 +92,12 @@ public class CollectionService implements ICollectionService {
             .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
 
         this.validateCollection(request, collection.getPhase());
+
+        var projSts = collection.getPhase().getProject().getStatus();
+        var canProjectBeUpdated = projSts.equals(ProjectStatus.IN_PROGRESS) || projSts.equals(ProjectStatus.CREATED);
+        if (!canProjectBeUpdated)
+            throw new AppExc(ErrorCodes.PROJECT_IS_NOT_IN_PROGRESS);
+
         this.validateEndedTimeOnDependedEntity(collection);
 
         var tasks = taskService.findAllByCollectionId(id);
@@ -119,6 +125,11 @@ public class CollectionService implements ICollectionService {
             .getAccount()
             .getUsername().equals(username);
         if (!isOwner)   throw new AppExc(ErrorCodes.FORBIDDEN_USER);
+
+        var projSts = deletedCollection.getPhase().getProject().getStatus();
+        var canProjectBeUpdated = projSts.equals(ProjectStatus.IN_PROGRESS) || projSts.equals(ProjectStatus.CREATED);
+        if (!canProjectBeUpdated)
+            throw new AppExc(ErrorCodes.PROJECT_IS_NOT_IN_PROGRESS);
 
         this.validateEndedTimeOnDependedEntity(deletedCollection);
 
@@ -195,6 +206,10 @@ public class CollectionService implements ICollectionService {
 
         var isOwner = collection.getUserInfoCreated().getAccount().getUsername().equals(username);
         if (!isOwner)   throw new AppExc(ErrorCodes.FORBIDDEN_USER);
+
+        var isProjectInProgress = collection.getPhase().getProject().getStatus()
+            .equals(ProjectStatus.IN_PROGRESS);
+        if (!isProjectInProgress)   throw new AppExc(ErrorCodes.PROJECT_IS_NOT_IN_PROGRESS);
 
         this.validateEndedTimeOnDependedEntity(collection);
 

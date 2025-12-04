@@ -22,6 +22,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
+import static com.ptithcm.intern_project.config.constvalues.AuthorityValues.*;
+
 @EnableWebSecurity
 @Configuration
 @RequiredArgsConstructor

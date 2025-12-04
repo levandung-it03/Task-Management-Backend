@@ -4,6 +4,7 @@ import com.ptithcm.intern_project.model.dto.response.UserTaskResponse;
 import com.ptithcm.intern_project.config.enums.ErrorCodes;
 import com.ptithcm.intern_project.config.exception.AppExc;
 import com.ptithcm.intern_project.model.UserInfo;
+import com.ptithcm.intern_project.model.enums.Domain;
 import com.ptithcm.intern_project.model.enums.ProjectStatus;
 import com.ptithcm.intern_project.model.enums.ReportStatus;
 import com.ptithcm.intern_project.mapper.ReportMapper;
@@ -264,5 +265,10 @@ public class TaskForUsersService implements ITaskForUsersService {
 
     public List<TaskForUsers> findAllByTaskCollectionId(Long collectionId) {
         return taskForUsersRepository.findAllByTaskCollectionId(collectionId);
+    }
+
+    @Override
+    public List<Long> getBusyUserIdsOnTaskType(Domain taskType) {
+        return taskForUsersRepository.getBusyUserIdsOnTaskType(taskType);
     }
 }

@@ -172,7 +172,15 @@ public class UserInfoService implements IUserInfoService {
         return userInfoRepository.findByAccountId(id);
     }
 
-    public boolean existsByExpertiseId(Long id) {
-        return userInfoRepository.existsByExpertiseId(id);
+    public int countAllForModel(String scopes) {
+        return userInfoRepository.countAllUsersToRecommend(scopes);
+    }
+
+    public List<Long> findAllInactiveUsersByAccount() {
+        return userInfoRepository.findAllInactiveUsersByAccount();
+    }
+
+    public List<UserInfo> findAllByIdsAndAuthority(List<Long> rankedUserIds, AuthorityEnum authority) {
+        return userInfoRepository.findAllByIdsAndAuthority(rankedUserIds, authority.toString());
     }
 }

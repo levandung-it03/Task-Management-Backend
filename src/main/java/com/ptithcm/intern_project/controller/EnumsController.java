@@ -1,5 +1,6 @@
 package com.ptithcm.intern_project.controller;
 
+import com.ptithcm.intern_project.config.enums.AuthorityEnum;
 import com.ptithcm.intern_project.config.enums.SuccessCodes;
 import com.ptithcm.intern_project.model.dto.general.RestApiResponse;
 import com.ptithcm.intern_project.model.enums.*;

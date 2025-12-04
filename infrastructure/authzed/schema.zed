@@ -1,0 +1,12 @@
+
+definition user {}
+
+definition project {
+    relation owner: user
+    relation member: user
+
+    permission read = owner | member
+    permission update = owner
+    permission delete = owner
+    permission add_member = owner
+}

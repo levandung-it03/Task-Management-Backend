@@ -2,10 +2,14 @@ package com.ptithcm.intern_project.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.ptithcm.intern_project.config.constvalues.BeanNames;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -19,8 +23,12 @@ public class ApplicationBeansConfig {
     private String SECRET_KEY;
 
     @Bean
-    public WebClient webClient() {
-        return WebClient.create();
+    @Qualifier(BeanNames.FAST_API_WEBCLIENT)
+    public WebClient fastApiWebClient(@Value("${env.fastapi.host}") String baseUrl) {
+        return WebClient.builder()
+            .baseUrl(baseUrl)
+            .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .build();
     }
 
     @Bean
