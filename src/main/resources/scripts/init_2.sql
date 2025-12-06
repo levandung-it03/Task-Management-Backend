@@ -1,3 +1,28 @@
+
+USE task_management;
+SET FOREIGN_KEY_CHECKS = 0;
+TRUNCATE TABLE `report`;
+TRUNCATE TABLE `task_for_users`;
+TRUNCATE TABLE `task`;
+TRUNCATE TABLE `collection`;
+TRUNCATE TABLE `phase`;
+TRUNCATE TABLE `project_role`;
+TRUNCATE TABLE `project`;
+SET FOREIGN_KEY_CHECKS = 1;
+
+START TRANSACTION;
+
+INSERT INTO project (`id`, `created_time`, `description`, `due_date`, `expected_start_date`, `name`, `status`, `updated_time`, `created_by_id`)
+VALUES (1, '2025-01-01 06:00:00.000000', 'Application serving daily Todo-jobs.', '2028-12-31', '2025-01-01', 'Todo App', 'IN_PROGRESS', '2025-01-01 06:00:00.000000', 124);
+
+INSERT INTO project_role (`id`, `role`, `project_id`, `user_info_id`) VALUES (1, 'OWNER', 1, 124);
+INSERT INTO project_role (`id`, `role`, `project_id`, `user_info_id`) VALUES (2, 'MEMBER', 1, 121);
+
+INSERT INTO `phase` (`id`, `created_time`, `description`, `due_date`, `name`, `start_date`, `updated_time`, `project_id`, `created_by_id`)
+VALUES (1, '2025-01-01 06:5:00.000000', 'Base Website application design, refactoring and deploying', '2027-12-31', 'Base Website', '2025-01-01', '2025-01-01 06:5:00.000000', 1, '124');
+
+INSERT INTO collection (`id`, `created_time`, `description`, `due_date`, `name`, `start_date`, `updated_time`, `phase_id`, `created_by_id`)
+VALUES (1, '2025-01-01 06:10:00.000000', 'Develop base components', '2026-12-31', 'Base Development', '2025-01-01', '2025-01-01 06:10:00.000000', '1', '124');
 -- 2024-01-01
 -- 2024-01-04
 INSERT INTO task (id, collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked, start_date, end_date, deadline, created_time, updated_time)
@@ -2947,3 +2972,13 @@ VALUES (DEFAULT, 1022, 'Employee 23 submit Report', 'Completed Task.', NULL, 'AP
        (DEFAULT, 1025, 'Employee 53 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-10-25 08:00:00.000000', '2025-10-25 08:00:00.000000', '2025-10-25 08:00:00.000000'),
        (DEFAULT, 1026, 'Employee 55 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-10-25 08:00:00.000000', '2025-10-25 08:00:00.000000', '2025-10-25 08:00:00.000000'),
        (DEFAULT, 1027, 'Employee 57 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-10-25 08:00:00.000000', '2025-10-25 08:00:00.000000', '2025-10-25 08:00:00.000000');
+
+ALTER TABLE project AUTO_INCREMENT = 2;
+ALTER TABLE project_role AUTO_INCREMENT = 3;
+ALTER TABLE `phase` AUTO_INCREMENT = 2;
+ALTER TABLE collection AUTO_INCREMENT = 2;
+ALTER TABLE task AUTO_INCREMENT = 129;
+ALTER TABLE task_for_users AUTO_INCREMENT = 1028;
+ALTER TABLE report AUTO_INCREMENT = 1028;
+
+COMMIT;
