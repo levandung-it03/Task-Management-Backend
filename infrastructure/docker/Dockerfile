@@ -8,6 +8,7 @@ WORKDIR /app
 # Right into /app/
 COPY ../pom.xml .
 # Copy "src" into /app/src
+COPY ../data ./data
 COPY ../src ./src
 
 # Build Source code with Maven
@@ -23,6 +24,7 @@ FROM amazoncorretto:21-alpine3.17-jdk
 # 3. Do all above steps right after app was built successfully
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
+COPY --from=build /app/data ./data
 
 # Command to run application
 # Example: [Terminal]> java -jar app.jar

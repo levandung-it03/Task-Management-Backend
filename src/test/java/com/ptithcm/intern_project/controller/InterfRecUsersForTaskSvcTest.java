@@ -4,16 +4,16 @@ import com.ptithcm.intern_project.model.Report;
 import com.ptithcm.intern_project.model.Task;
 import com.ptithcm.intern_project.model.TaskForUsers;
 import com.ptithcm.intern_project.model.UserInfo;
-import com.ptithcm.intern_project.service.interf.interfaces.ITaskUserPredService;
+import com.ptithcm.intern_project.service.interf.interfaces.IInterfRecUsersForTaskSvc;
 import com.ptithcm.intern_project.util.DateTimeUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-public class TaskUserPredServiceTest {
+public class InterfRecUsersForTaskSvcTest {
     @Autowired
-    ITaskUserPredService taskUserPredService;
+    IInterfRecUsersForTaskSvc taskUserPredService;
 
     @Test
     public void queueNewRecord_mustPass_withValidReportSubmission() {

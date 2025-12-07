@@ -23,6 +23,13 @@ spring:
     driver-class-name: "com.mysql.cj.jdbc.Driver"
     username: ${DBMS_USERNAME:root}
     password: ${DBMS_PASSWORD:sa}
+  sql:
+    init:
+      mode: always
+      encoding: UTF-8
+      data-locations:
+        - classpath:scripts/base_info.sql
+        - classpath:scripts/root_project.sql
   jpa:
     defer-datasource-initialization: true   # Tell Spring to init Schema firstly, before Data is init
     database: mysql
@@ -33,11 +40,6 @@ spring:
     properties:
       hibernate:
         format_sql: true
-    sql:
-      init:
-        mode: always
-        encoding: UTF-8
-        data-locations: classpath:scripts/init.sql
   data:
     redis:
       url: ${REDIS_CONNECTION:redis://localhost:6379}
@@ -45,8 +47,8 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: n21dccn021@student.ptithcm.edu.vn
-    password: klze labx jrgh bwen
+    username: ${MAIL_USERNAME:n21dccn021@student.ptithcm.edu.vn}
+    password: ${MAIL_PASSWORD:klze labx jrgh bwen}
     properties.mail.smtp:
       auth: true
       starttls.enable: true
@@ -73,8 +75,8 @@ env:
     accounts-creations-exl: "data/accounts_creation.xlsx"
     created-accounts-txt: "data/created_accounts.txt"
   services:
-    front-end: "http://localhost:3000"
-    gateway: "http://localhost:9000"
+    front-end: ${SERVICES_FRONTEND:http://localhost:3000}
+    gateway: ${SERVICES_GATEWAY:http://localhost:9000}
   variables:
     min-age: 14
     expired-acc-cache-min: 15
@@ -85,16 +87,18 @@ env:
       renew-model:
         job-name: "intervalRenewModel"
         trigger-name: "intervalRenewModelTrg"
-        cron-time: "0 0 0 * * ?"
+        cron-time: ${QUARTZ_TSKUSRPRED_RENEWMODEL_CRONTIME:0 0 0 ? * MON}
   fastapi:
     host: "http://localhost:8000"
-    communicate-key: "NHvwE8LcyQomnBrYJm4J7s3S"
-    communicate-msg: "C3GW+afWRox8nu6XXUWMjjJP"
+    communicate-key: ${FASTAPI_COMKEY:NHvwE8LcyQomnBrYJm4J7s3S}
+    communicate-msg: ${FASTAPI_COMMSG:C3GW+afWRox8nu6XXUWMjjJP}
     controllers:
       tsk-usr-pred:
         save-records: "/api/private/v1/task-user-pred/update-model"
         users-recommend: "/api/private/v1/task-user-pred/recommend-users"
         renew-model: "/api/private/v1/task-user-pred/renew-model"
+      report-gen:
+        generate-report: "/api/private/v1/report/generate"
   crypto:
     transformation: "AES/ECB/PKCS5Padding"
     algorithm: "AES"

@@ -17,6 +17,12 @@ public class DateTimeUtil {
         return timeFormatter.format(time);
     }
 
+    public static long timeToMilli(LocalDateTime time) {
+        return time.atZone(ZoneId.systemDefault())
+            .toInstant()
+            .toEpochMilli();
+    }
+
     public static LocalDate stringToLocalDate(String dateTime) {
         return LocalDate.parse(dateTime, dateFormatter);
     }

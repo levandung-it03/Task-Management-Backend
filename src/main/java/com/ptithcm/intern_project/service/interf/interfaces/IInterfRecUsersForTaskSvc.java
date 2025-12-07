@@ -6,7 +6,7 @@ import com.ptithcm.intern_project.model.dto.response.UserPredScoreResponse;
 
 import java.util.List;
 
-public interface ITaskUserPredService {
+public interface IInterfRecUsersForTaskSvc {
     void queueNewRecord(Report approvedReport);
     void sendNewRecords();
     int countAllRecordsByWasSent(boolean wasSent);

@@ -246,6 +246,10 @@ public class TaskForUsersService implements ITaskForUsersService {
         return taskForUsersRepository.findByTaskIdAndAssignedUsername(taskId, username);
     }
 
+    public Optional<TaskForUsers> findById(Long taskForUsersId) {
+        return taskForUsersRepository.findById(taskForUsersId);
+    }
+
     @Override
     public Map<String, Boolean> checkIsAssignedUserTask(Long taskUserId, String token) {
         String username = jwtService.readPayload(token).get("sub");

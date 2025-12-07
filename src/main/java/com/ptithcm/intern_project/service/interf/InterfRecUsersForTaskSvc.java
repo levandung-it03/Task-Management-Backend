@@ -11,7 +11,7 @@ import com.ptithcm.intern_project.model.dto.response.UserPredScoreResponse;
 import com.ptithcm.intern_project.model.interf.PredRecordsErrLog;
 import com.ptithcm.intern_project.model.interf.TaskUserRecord;
 import com.ptithcm.intern_project.repository.interf.TaskUserPredRepository;
-import com.ptithcm.intern_project.service.interf.interfaces.ITaskUserPredService;
+import com.ptithcm.intern_project.service.interf.interfaces.IInterfRecUsersForTaskSvc;
 import com.ptithcm.intern_project.util.DateTimeUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,9 +24,9 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class TaskUserPredService implements ITaskUserPredService {
+public class InterfRecUsersForTaskSvc implements IInterfRecUsersForTaskSvc {
     private final TaskUserPredRepository taskUserPredRepo;
-    private final PredRecordStatusService predRecordStsSvc;
+    private final PredRecordStatusSvc predRecordStsSvc;
     private final FastAPIClient fastAPIClient;
 
     @Value("${env.quartz.tsk-usr-pred.save-new-record.min-batch-size}")

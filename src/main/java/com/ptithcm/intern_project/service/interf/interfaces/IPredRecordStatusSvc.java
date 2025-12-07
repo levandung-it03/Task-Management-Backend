@@ -4,7 +4,7 @@ import com.ptithcm.intern_project.model.interf.PredRecordsErrLog;
 
 import java.util.List;
 
-public interface IPredRecordStatusService {
+public interface IPredRecordStatusSvc {
     void save(PredRecordsErrLog recordStatus);
     void saveAll(List<PredRecordsErrLog> recordStatuses);
 }

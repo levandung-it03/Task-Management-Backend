@@ -5,7 +5,7 @@ import com.ptithcm.intern_project.model.Task;
 import com.ptithcm.intern_project.model.TaskForUsers;
 import com.ptithcm.intern_project.model.UserInfo;
 import com.ptithcm.intern_project.repository.interf.TaskUserPredRepository;
-import com.ptithcm.intern_project.service.interf.TaskUserPredService;
+import com.ptithcm.intern_project.service.interf.InterfRecUsersForTaskSvc;
 import com.ptithcm.intern_project.util.DateTimeUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,18 +18,18 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class TaskUserPredServiceTest {
+class InterfRecUsersForTaskSvcTest {
 
     @Mock
     TaskUserPredRepository taskUserPredRepository;
 
     @InjectMocks
-    TaskUserPredService taskUserPredService;
+    InterfRecUsersForTaskSvc interfRecUsersForTaskSvc;
 
     @Test
     void queueNewRecord_mustPass_withValidReportSubmission() {
         var report = getReport();
-        taskUserPredService.queueNewRecord(report);
+        interfRecUsersForTaskSvc.queueNewRecord(report);
         verify(taskUserPredRepository, times(1)).save(any());
     }
 

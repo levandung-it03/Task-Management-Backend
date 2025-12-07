@@ -9,7 +9,7 @@ import com.ptithcm.intern_project.model.dto.response.RecUserInfoResponse;
 import com.ptithcm.intern_project.model.dto.response.UserPredScoreResponse;
 import com.ptithcm.intern_project.model.enums.Domain;
 import com.ptithcm.intern_project.service.auth.JwtService;
-import com.ptithcm.intern_project.service.interf.TaskUserPredService;
+import com.ptithcm.intern_project.service.interf.InterfRecUsersForTaskSvc;
 import com.ptithcm.intern_project.service.interfaces.IRecUsersForTaskService;
 import com.ptithcm.intern_project.service.trans.RecUsersForTaskTransService;
 import lombok.AccessLevel;
@@ -23,7 +23,7 @@ import java.util.*;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class RecUsersForTaskService implements IRecUsersForTaskService {
-    TaskUserPredService taskUserPredSvc;
+    InterfRecUsersForTaskSvc taskUserPredSvc;
     TaskForUsersService taskForUsersSvc;
     UserInfoService userInfoService;
     RecUsersForTaskMapper recUsersForTaskMapper;
@@ -47,7 +47,7 @@ public class RecUsersForTaskService implements IRecUsersForTaskService {
         Set<Long> ignoredIds = new LinkedHashSet<>(inactiveIds);
         ignoredIds.addAll(busyUserIds);
 
-        return inactiveIds;
+        return ignoredIds;
     }
 
     @Override

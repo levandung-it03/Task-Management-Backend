@@ -96,6 +96,7 @@ public enum ErrorCodes {
     UPDATE_AUTHZED_REL(19000, "Failed to assign user to role: {}", INTERNAL_SERVER_ERROR),
     //--FastAPIClient(21)
     CANNOT_GET_TOP_USERS(21003, "Something happened with AI agent, please try it later!", BAD_REQUEST),
+    CANNOT_GENETAE_REPORT(21004, "Something happened with AI Generator, please try it later!", BAD_REQUEST),
     ;
     int code;
     String msg;
