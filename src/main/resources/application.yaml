@@ -90,7 +90,7 @@ env:
         trigger-name: "intervalRenewModelTrg"
         cron-time: ${QUARTZ_TSKUSRPRED_RENEWMODEL_CRONTIME:0 0 0 ? * MON}
   fastapi:
-    host: "http://localhost:8000"
+    host: ${SERVICES_FASTAPI:http://localhost:8000}
     communicate-key: ${FASTAPI_COMKEY:NHvwE8LcyQomnBrYJm4J7s3S}
     communicate-msg: ${FASTAPI_COMMSG:C3GW+afWRox8nu6XXUWMjjJP}
     controllers:
