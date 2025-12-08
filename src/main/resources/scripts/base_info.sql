@@ -1,3 +1,4 @@
+START TRANSACTION;
 USE task_management;-- Reset tất cả table (nếu có dữ liệu cũ)
 SET FOREIGN_KEY_CHECKS = 0;
 TRUNCATE TABLE `authority`;
@@ -485,4 +486,4 @@ ALTER TABLE `group`
 ALTER TABLE group_has_users
     AUTO_INCREMENT = 9;
 
--- COMMIT nếu cần
+COMMIT;

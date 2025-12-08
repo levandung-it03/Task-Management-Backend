@@ -30,6 +30,7 @@ spring:
       data-locations:
         - classpath:scripts/base_info.sql
         - classpath:scripts/root_project.sql
+        - classpath:scripts/interf.sql
   jpa:
     defer-datasource-initialization: true   # Tell Spring to init Schema firstly, before Data is init
     database: mysql
