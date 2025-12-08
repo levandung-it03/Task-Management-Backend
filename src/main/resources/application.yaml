@@ -83,7 +83,7 @@ env:
   quartz:
     tsk-usr-pred:
       save-new-record:
-        min-batch-size: 30
+        min-batch-size: 40
       renew-model:
         job-name: "intervalRenewModel"
         trigger-name: "intervalRenewModelTrg"
