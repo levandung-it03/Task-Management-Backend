@@ -2,9 +2,10 @@ START TRANSACTION;
 USE task_management;-- Reset tất cả table (nếu có dữ liệu cũ)
 SET FOREIGN_KEY_CHECKS = 0;
 TRUNCATE TABLE `interf_task_user`;
+SET FOREIGN_KEY_CHECKS = 1;
 
 INSERT INTO `task_management`.`interf_task_user` (`record_id`, `user_id`,`domain`, `level`, `priority`, `is_on_time`, `free_time_rto`, `punct_score`, `was_sent`)
-VALUES (1, 1, 'FRONTEND', 'HARD', 'URGENT', 1, 0.5, 1, 1),
+VALUES (1, 1, 'BACKEND', 'HARD', 'URGENT', 1, 0.5, 1, 1),
        (2, 1, 'FRONTEND', 'HARD', 'URGENT', 1, 0.45, 1, 1),
        (3, 1, 'FRONTEND', 'HARD', 'URGENT', 1, 0.4, 1, 1),
        (4, 1, 'FRONTEND', 'HARD', 'URGENT', 1, 0.35, 1, 1),
