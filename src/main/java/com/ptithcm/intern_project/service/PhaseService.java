@@ -56,6 +56,12 @@ public class PhaseService implements IPhaseService {
 
         this.validatePhase(request, phase.getProject());
 
+        var existsPhaseName = phaseRepository.existsByUpdatedNameAndProjectId(
+            phase.getId(),
+            request.getName(),
+            phase.getProject().getId());
+        if (existsPhaseName) throw new AppExc(ErrorCodes.DUPLICATED_NAME);
+
         var collections = collectionService.findAllByPhaseId(id);
         for (Collection collection : collections) {
             if (request.getStartDate().isAfter(collection.getStartDate()))
@@ -162,6 +168,9 @@ public class PhaseService implements IPhaseService {
         var createdUser = userInfoService.getUserInfo(token);
 
         this.validatePhase(request, project);
+
+        var existsPhaseName = phaseRepository.existsByNameAndProjectId(request.getName(), project.getId());
+        if (existsPhaseName) throw new AppExc(ErrorCodes.DUPLICATED_NAME);
 
         var phase = phaseMapper.newModel(request, createdUser);
         phase.setProject(project);

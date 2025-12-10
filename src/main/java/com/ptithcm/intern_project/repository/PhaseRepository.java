@@ -1,6 +1,8 @@
 package com.ptithcm.intern_project.repository;
 
 import com.ptithcm.intern_project.model.Phase;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -33,4 +35,15 @@ public interface PhaseRepository extends JpaRepository<Phase, Long> {
         AND p.endDate IS NULL
     """)
     boolean existsNotCompleteByProjectId(@Param("projectId") Long projectId);
+
+    boolean existsByNameAndProjectId(String name, Long projId);
+
+    @Query("""
+            SELECT CASE WHEN COUNT(p) > 0 THEN TRUE ELSE FALSE END FROM Phase p
+            WHERE p.id <> :phaseId AND p.name = :phaseName AND p.project.id = :projId
+    """)
+    boolean existsByUpdatedNameAndProjectId(
+        @Param("phaseId") Long phaseId,
+        @Param("phaseName") String name,
+        @Param("projId") Long projId);
 }

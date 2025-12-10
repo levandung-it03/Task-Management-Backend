@@ -25,4 +25,6 @@ public interface ITaskForUsersService {
     Map<String, Boolean> checkIsAssignedUserTask(Long taskUserId, String token);
 
     List<Long> getBusyUserIdsOnTaskType(Domain taskType);
+
+    void deleteUser(Long taskUserId, String token);
 }

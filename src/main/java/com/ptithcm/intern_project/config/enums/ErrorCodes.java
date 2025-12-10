@@ -22,6 +22,7 @@ public enum ErrorCodes {
     INVALID_IDS(10009, "Some Id in list is not existed in Database", BAD_REQUEST),
     INVALID_DATA_FILE(10010, "Invalid data in sent file", BAD_REQUEST),
     INVALID_FILE(10011, "File is crashed, or invalid type!", BAD_REQUEST),
+    DUPLICATED_NAME(10012, "This Name has been used!" , BAD_REQUEST),
     //--Account(11)
     FORBIDDEN_USER(11000, "User not found or access denied", FORBIDDEN),
     INVALID_CREDENTIALS(11001, "Invalid Credentials", BAD_REQUEST),
@@ -59,6 +60,7 @@ public enum ErrorCodes {
     START_BEFORE_ROOT_TASK(14011, "Start-Date must be after Root-Task Start-Date", BAD_REQUEST),
     END_AFTER_ROOT_TASK(14011, "End-Date must be before Root-Task End-Date", BAD_REQUEST),
     TASK_NEED_AT_LEAST_ONE_USER(14012, "Task need at least ONE User. You can Delete, or Lock it instead!", BAD_REQUEST),
+    CANT_DELETE_USER_TASK(14013, "User had Reports and cannot be deleted, but CAN BE Kicked!", BAD_REQUEST),
     //--Report(15)
     REPORT_REVIEWED(15000, "Report has been reviewed, cannot perform action", BAD_REQUEST),
     //--Project(16)
@@ -96,7 +98,7 @@ public enum ErrorCodes {
     UPDATE_AUTHZED_REL(19000, "Failed to assign user to role: {}", INTERNAL_SERVER_ERROR),
     //--FastAPIClient(21)
     CANNOT_GET_TOP_USERS(21003, "Something happened with AI agent, please try it later!", BAD_REQUEST),
-    CANNOT_GENETAE_REPORT(21004, "Something happened with AI Generator, please try it later!", BAD_REQUEST),
+    CANNOT_GENERATE_REPORT(21004, "Something happened with AI Generator, please try it later!", BAD_REQUEST),
     ;
     int code;
     String msg;

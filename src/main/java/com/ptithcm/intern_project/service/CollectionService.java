@@ -110,6 +110,12 @@ public class CollectionService implements ICollectionService {
         var isOwner = collection.getUserInfoCreated().getAccount().getUsername().equals(username);
         if (!isOwner)   throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
+        var existsCollectionName = collectionRepository.existsByUpdatedNameAndPhaseId(
+            collection.getId(),
+            request.getName(),
+            collection.getPhase().getId());
+        if (existsCollectionName) throw new AppExc(ErrorCodes.DUPLICATED_NAME);
+
         collectionMapper.update(collection, request);
         collectionRepository.save(collection);
     }
@@ -167,6 +173,9 @@ public class CollectionService implements ICollectionService {
         //--Checked phase is not ended
 
         this.validateCollection(request, phase);
+
+        var existsCollectionName = collectionRepository.existsByNameAndPhaseId(request.getName(), phase.getId());
+        if (existsCollectionName) throw new AppExc(ErrorCodes.DUPLICATED_NAME);
 
         var collection = collectionMapper.newModel(request, createdUser);
         collection.setPhase(phase);

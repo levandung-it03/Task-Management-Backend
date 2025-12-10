@@ -38,7 +38,7 @@ public class InterfRecUsersForTaskSvc implements IInterfRecUsersForTaskSvc {
     @Override
     public void queueNewRecord(Report approvedReport) {
         var task = approvedReport.getUserTaskCreated().getTask();
-        var isOnTime = !approvedReport.getUpdatedTime().isAfter(task.getDeadline().atStartOfDay());
+        var isOnTime = !approvedReport.getUpdatedTime().isAfter(task.getDeadline().plusDays(1).atStartOfDay());
 
         var record = TaskUserRecord.builder()
             .userId(approvedReport.getUserTaskCreated().getAssignedUser().getId())
@@ -62,8 +62,9 @@ public class InterfRecUsersForTaskSvc implements IInterfRecUsersForTaskSvc {
         if (!isOnTime)  return 0;
 
         var task = report.getUserTaskCreated().getTask();
-        float totalTaskSeconds = Duration.between(task.getUpdatedTime(), task.getDeadline().atStartOfDay()).toSeconds();
-        float totalFreeSeconds = Duration.between(report.getUpdatedTime(), task.getDeadline().atStartOfDay()).toSeconds();
+        var deadline = task.getDeadline().plusDays(1).atStartOfDay();
+        float totalTaskSeconds = Duration.between(task.getUpdatedTime(), deadline).toSeconds();
+        float totalFreeSeconds = Duration.between(report.getUpdatedTime(), deadline).toSeconds();
         if (totalFreeSeconds <= 0)  return 0;
 
         return totalFreeSeconds / totalTaskSeconds;
@@ -73,8 +74,9 @@ public class InterfRecUsersForTaskSvc implements IInterfRecUsersForTaskSvc {
         if (isOnTime)
             return 1;
         var task = report.getUserTaskCreated().getTask();
-        float totalTaskSeconds = Duration.between(task.getUpdatedTime(), task.getDeadline().atStartOfDay()).toSeconds();
-        float totalLateSeconds = Duration.between(task.getDeadline().atStartOfDay(), report.getUpdatedTime()).toSeconds();
+        var deadline = task.getDeadline().plusDays(1).atStartOfDay();
+        float totalTaskSeconds = Duration.between(task.getUpdatedTime(), deadline).toSeconds();
+        float totalLateSeconds = Duration.between(deadline, report.getUpdatedTime()).toSeconds();
 
         return Math.max(0, 1 - totalLateSeconds/totalTaskSeconds);
     }

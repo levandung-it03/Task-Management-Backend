@@ -40,6 +40,17 @@ public class TaskForUsersController {
             taskForUsersService.searchUsersOfRootToCreateSubTask(taskId, query, token));
     }
 
+    @Operation(description = "Delete User out of specified Task")
+    @PutMapping({
+        ROLE_PM + "/v1/task-user/{taskUserId}/delete-user",
+        ROLE_LEAD + "/v1/task-user/{taskUserId}/delete-user"})
+    public ResponseEntity<RestApiResponse<Void>> deleteUser(
+        @PathVariable("taskUserId") Long taskUserId,
+        @RequestHeader("Authorization") String token) {
+        taskForUsersService.deleteUser(taskUserId, token);
+        return RestApiResponse.fromScs(SuccessCodes.UPDATED);
+    }
+
     @Operation(description = "Kick User out of specified Task")
     @PutMapping({
         ROLE_PM + "/v1/task-user/{taskUserId}/kick-user",

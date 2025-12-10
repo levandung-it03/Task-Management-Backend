@@ -1,6 +1,8 @@
 package com.ptithcm.intern_project.repository;
 
 import com.ptithcm.intern_project.model.Collection;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -33,4 +35,15 @@ public interface CollectionRepository extends JpaRepository<Collection, Long> {
         AND c.endDate IS NULL
     """)
     boolean existsCollectionNotCompletedByPhaseId(@Param("phaseId") Long phaseId);
+
+    boolean existsByNameAndPhaseId(String name, Long phaseId);
+
+    @Query("""
+        SELECT CASE WHEN COUNT(c) > 0 THEN TRUE ELSE FALSE END FROM Collection c
+        WHERE c.id <> :colId AND c.phase.id = :phaseId AND c.name = :colName
+    """)
+    boolean existsByUpdatedNameAndPhaseId(
+        @Param("colId") Long collectionId,
+        @Param("colName") String name,
+        @Param("phaseId") Long phaseId);
 }

@@ -68,7 +68,7 @@ public class UserInfoMapper {
                 totalApproved++;
             }
 
-            var reportWasLate = task.getDeadline().atTime(0, 0, 0).isBefore(report.getUpdatedTime());
+            var reportWasLate = task.getDeadline().plusDays(1).atStartOfDay().isBefore(report.getUpdatedTime());
             if (reportWasLate) {
                 totalDoneTaskLate++;
                 continue;
@@ -77,7 +77,7 @@ public class UserInfoMapper {
             }
 
             float totalFreeHours = Duration.between(
-                task.getDeadline().atTime(0, 0, 0),
+                task.getDeadline().plusDays(1).atStartOfDay(),
                 report.getUpdatedTime()
             ).getSeconds() / 3_600f;
 

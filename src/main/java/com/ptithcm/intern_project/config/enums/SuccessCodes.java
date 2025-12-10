@@ -29,6 +29,7 @@ public enum SuccessCodes {
     UPDATE_USER_INFO(22001, "Update your info successfully", HttpStatus.OK),
     //--Task(23)
     CREATED_TASK(23000, "Task has been created, you can delete it in 12 hours", HttpStatus.CREATED),
+    DELETED_SUB_TASK(23001, "Sub-Task has been deleted, assigned User was back to Task!", HttpStatus.OK),
     ;
     int code;
     String msg;

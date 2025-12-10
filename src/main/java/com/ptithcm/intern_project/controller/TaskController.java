@@ -78,12 +78,11 @@ public class TaskController {
     @PutMapping({
         ROLE_PM + "/v1/task/{id}",
         ROLE_LEAD + "/v1/task/{id}"})
-    public ResponseEntity<RestApiResponse<Void>> updateTask(
+    public ResponseEntity<RestApiResponse<UpdatedTaskResponse>> updateTask(
         @PathVariable("id") Long id,
         @Valid @RequestBody UpdatedTaskRequest request,
         @RequestHeader("Authorization") String token) {
-        taskService.update(id, request, token);
-        return RestApiResponse.fromScs(SuccessCodes.UPDATED);
+        return RestApiResponse.fromScs(SuccessCodes.UPDATED, taskService.update(id, request, token));
     }
 
     @Operation(description = "Get all Users by Task-Id to render on Task-Detail")
@@ -173,8 +172,8 @@ public class TaskController {
     public ResponseEntity<RestApiResponse<Void>> delete(
         @PathVariable("id") Long id,
         @RequestHeader("Authorization") String token) {
-        taskService.delete(id, token);
-        return RestApiResponse.fromScs(SuccessCodes.DELETED);
+        SuccessCodes msg = taskService.delete(id, token);
+        return RestApiResponse.fromScs(msg);
     }
 
     @Operation(description = "Get Task Detail (to support Create-Task Page)")

@@ -1,5 +1,6 @@
 package com.ptithcm.intern_project.service.interfaces;
 
+import com.ptithcm.intern_project.config.enums.SuccessCodes;
 import com.ptithcm.intern_project.model.dto.general.StatusDTO;
 import com.ptithcm.intern_project.model.dto.request.TaskRequest;
 import com.ptithcm.intern_project.model.dto.request.UpdatedTaskRequest;
@@ -18,7 +19,7 @@ public interface ITaskService {
 
     void updateReportFormat(Long id, String content, String token);
 
-    void update(Long id, UpdatedTaskRequest request, String token);
+    UpdatedTaskResponse update(Long id, UpdatedTaskRequest request, String token);
 
     List<UserTaskResponse> getUsersOfTask(Long id, String token);
 
@@ -34,7 +35,7 @@ public interface ITaskService {
 
     List<ShortUserInfoDTO> searchRootTaskUsers(Long rootId, String query, String token);
 
-    void delete(Long id, String token);
+    SuccessCodes delete(Long id, String token);
 
     TaskDetailResponse getRootTaskDetail(Long taskId, String token);
 

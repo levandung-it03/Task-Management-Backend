@@ -4,6 +4,7 @@ import com.ptithcm.intern_project.config.enums.ErrorCodes;
 import com.ptithcm.intern_project.config.exception.AppExc;
 import com.ptithcm.intern_project.model.Task;
 import com.ptithcm.intern_project.model.enums.ProjectStatus;
+import com.ptithcm.intern_project.model.enums.RoleOnEntity;
 import com.ptithcm.intern_project.model.enums.UserTaskStatus;
 import com.ptithcm.intern_project.repository.TaskRepository;
 import com.ptithcm.intern_project.service.auth.JwtService;
@@ -67,7 +68,8 @@ public class TaskTransService {
         //--Project Member absolutely has ProjectRole.ADMIN for PM, and he/she owns Phase, Collection too.
         var isProjectMember = task.getCollection().getPhase().getProject()
             .getProjectUsers().stream()
-            .anyMatch(projectUser -> projectUser.getUserInfo().getAccount().getUsername().equals(username));
+            .anyMatch(projectUser -> projectUser.getUserInfo().getAccount().getUsername().equals(username)
+                && projectUser.getRole().equals(RoleOnEntity.OWNER));
         return isTaskOwner
             || this.isTaskAssigned(task, username)
             || isProjectMember;

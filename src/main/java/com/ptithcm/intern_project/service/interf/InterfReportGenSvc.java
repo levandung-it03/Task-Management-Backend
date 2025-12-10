@@ -25,7 +25,7 @@ public class InterfReportGenSvc implements IInterfaceReportGenSvc {
             return fastAPIClient.post(REPORT_GEN_PATH, request, ReportGenResponse.class);
         } catch (Exception e) {
             log.error(e.getMessage());
-            throw new AppExc(ErrorCodes.CANNOT_GENETAE_REPORT);
+            throw new AppExc(ErrorCodes.CANNOT_GENERATE_REPORT);
         }
     }
 }

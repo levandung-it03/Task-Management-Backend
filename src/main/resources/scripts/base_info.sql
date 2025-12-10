@@ -1,6 +1,7 @@
 START TRANSACTION;
 USE task_management;-- Reset tất cả table (nếu có dữ liệu cũ)
 SET FOREIGN_KEY_CHECKS = 0;
+TRUNCATE TABLE `account_authorities`;
 TRUNCATE TABLE `authority`;
 TRUNCATE TABLE `account`;
 TRUNCATE TABLE `user_info`;
@@ -293,23 +294,16 @@ VALUES
 
 -- ROLE_LEAD cho 3 lead
 INSERT INTO account_authorities (account_id, authority_id)
-SELECT a.id, au.id
-FROM account a
-         JOIN authority au ON au.name = 'ROLE_LEAD'
-WHERE a.username IN ('lead1', 'lead2', 'lead3');
+VALUES (121, 3),
+       (122, 3),
+       (123, 3);
 
 -- ROLE_PM cho 1 PM
 INSERT INTO account_authorities (account_id, authority_id)
-SELECT a.id, au.id
-FROM account a
-         JOIN authority au ON au.name = 'ROLE_PM'
-WHERE a.username = 'pm1';
+VALUES (124, 2);
 
 INSERT INTO account_authorities (account_id, authority_id)
-SELECT a.id, au.id
-FROM account a
-         JOIN authority au ON au.name = 'ROLE_ADMIN'
-WHERE a.username = 'admin';
+VALUES (125, 1);
 
 -- 6. Tạo UserInfo liên kết Account, 10 employee + 3 lead + 1 pm, phòng ban assign đơn giản
 INSERT INTO user_info (full_name, email, phone, identity, department_id, account_id)
@@ -449,11 +443,11 @@ VALUES
        ('Employee 120', 'employee120@example.com', '0900000120', '120', 1, 120);
 INSERT INTO user_info (full_name, email, phone, identity, department_id, account_id)
 VALUES
-       ('Lead 1', 'levandung.it03@gmail.com', '0910000001', '121', 2, 121),
-       ('Lead 2', 'lead2@example.com', '0910000002', '122', 2, 122),
-       ('Lead 3', 'lead3@example.com', '0910000003', '123', 2, 123),
-       ('PM 1', 'pm1@example.com', '0920000001', '123', 3, 124),
-       ('ADMIN', 'admin@example.com', '0920000001', '125', 3, 125);
+       ('Lead 1', 'levandung.it03@gmail.com', '0910000001', '121', 1, 121),
+       ('Lead 2', 'lead2@example.com', '0910000002', '122', 1, 122),
+       ('Lead 3', 'lead3@example.com', '0910000003', '123', 1, 123),
+       ('PM 1', 'pm1@example.com', '0920000001', '123', 1, 124),
+       ('ADMIN', 'admin@example.com', '0920000001', '125', 1, 125);
 
 -- Tạo các Groups
 INSERT INTO `group` (created_by_id, name, active, created_time, updated_time)

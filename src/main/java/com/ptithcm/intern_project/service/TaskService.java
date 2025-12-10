@@ -1,5 +1,6 @@
 package com.ptithcm.intern_project.service;
 
+import com.ptithcm.intern_project.config.enums.SuccessCodes;
 import com.ptithcm.intern_project.model.dto.general.EmailTaskDTO;
 import com.ptithcm.intern_project.model.dto.general.StatusDTO;
 import com.ptithcm.intern_project.model.dto.response.*;
@@ -68,6 +69,9 @@ public class TaskService implements ITaskService {
             );
         if (!isProjectMemberOrAdmin) throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
+        var existsTaskName = taskRepository.existsByNameAndCollectionId(request.getName(), collection.getId());
+        if (existsTaskName) throw new AppExc(ErrorCodes.DUPLICATED_NAME);
+
         var rootTask = taskMapper.newModel(TaskCreationDTO.builder()
             .collectionOfTask(collection)
             .request(request)
@@ -107,6 +111,9 @@ public class TaskService implements ITaskService {
 
         var existsReportOnUsers = reportService.existsByEmailsInAndTaskId(request.getAssignedEmails(), rootTask.getId());
         if (existsReportOnUsers) throw new AppExc(ErrorCodes.USER_SUBMITTED_REPORT);
+
+        var existsTaskName = taskRepository.existsByNameAndCollectionId(request.getName(), rootTask.getCollection().getId());
+        if (existsTaskName) throw new AppExc(ErrorCodes.DUPLICATED_NAME);
 
         var subTask = taskMapper.newModel(TaskCreationDTO.builder()
             .collectionOfTask(rootTask.getCollection())
@@ -180,7 +187,8 @@ public class TaskService implements ITaskService {
 
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
-    public void update(Long id, UpdatedTaskRequest request, String token) {
+    public UpdatedTaskResponse update(Long id, UpdatedTaskRequest request, String token) {
+        var result = UpdatedTaskResponse.builder().build();
         var foundTask = this.findUpdatableTaskNotHasReport(id, token);
 
         var isStartingBeforeCollection = request.getStartDate().isBefore(foundTask.getCollection().getStartDate());
@@ -198,7 +206,10 @@ public class TaskService implements ITaskService {
         }
         taskMapper.mappingBaseInfo(foundTask, request);
 
-        if (request.getAddedUserEmail() != null && !request.getAddedUserEmail().isEmpty()) {
+        if (foundTask.getRootTask() == null
+            && request.getAddedUserEmail() != null
+            && !request.getAddedUserEmail().isEmpty()
+        ) {
             var addedUser = userInfoService.findByEmail(request.getAddedUserEmail())
                 .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_EMAIL));
             var newUserTask = TaskForUsers.builder()
@@ -208,10 +219,12 @@ public class TaskService implements ITaskService {
                 .userTaskStatus(UserTaskStatus.JOINED)
                 .build();
             foundTask.getTaskForUsers().add(newUserTask);
-            taskForUsersService.save(newUserTask);
+            var addedResult = taskForUsersService.save(newUserTask);
+            result.setNewUsers(List.of(taskForUsersMapper.toResponse(addedResult)));
         }
         foundTask.setUpdatedTime(LocalDateTime.now());
         taskRepository.save(foundTask);
+        return result;
     }
 
     private Task findUpdatableTaskNotHasReport(Long id, String token) {
@@ -227,6 +240,7 @@ public class TaskService implements ITaskService {
         return foundTask;
     }
 
+    @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     @Override
     public List<UserTaskResponse> getUsersOfTask(Long taskId, String token) {
         String username = jwtService.readPayload(token).get("sub");
@@ -235,15 +249,17 @@ public class TaskService implements ITaskService {
         if (!taskTransService.canSeeTask(task, username))
             throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
-        var userInfo = userInfoService.findByAccountUsername(username)
-            .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_TOKEN));
-
-        var currentAuthority = userInfo.getAccount().getAuthorities().getFirst().getAuthority();
-        if (currentAuthority.equals(AuthorityEnum.ROLE_EMP.toString())) {
-            var justAssignedEmployee = taskForUsersService.getUserOfTask(taskId, username);
-            return justAssignedEmployee.map(List::of).orElseGet(List::of);
+        var isTaskOwner = task.getUserInfoCreated().getAccount().getUsername().equals(username);
+        var isAssignedUser = task.getTaskForUsers().stream()
+            .anyMatch(userTask -> userTask.getAssignedUser().getAccount().getUsername().equals(username));
+        if (isAssignedUser && !isTaskOwner) {
+            var justAssignedUser = taskForUsersService.getUserOfTask(taskId, username);
+            return justAssignedUser
+                .map(taskForUsers -> List.of(taskForUsersMapper.toResponse(taskForUsers)))
+                .orElseGet(List::of);
         }
-        return taskForUsersService.getAllUsersOfTask(taskId);
+        var queryResult = taskForUsersService.getAllUsersOfTask(taskId);
+        return queryResult.stream().map(taskForUsersMapper::toResponse).toList();
     }
 
     @Override
@@ -301,20 +317,19 @@ public class TaskService implements ITaskService {
 
         var isTaskOwner = rootTask.getUserInfoCreated().getAccount().getUsername().equals(username);
         var isAssignedUser = taskTransService.isTaskAssigned(rootTask, username);
-        //--Project Member absolutely has ProjectRole.ADMIN for PM, and he/she owns Phase, Collection too.
-        var isProjectMember = rootTask.getCollection().getPhase().getProject()
-            .getProjectUsers().stream()
-            .anyMatch(projectUser -> projectUser.getUserInfo().getAccount().getUsername().equals(username));
-        var canSeeTask = isTaskOwner || isProjectMember || isAssignedUser;
+        var isProjectOwner = rootTask.getCollection().getPhase().getProject()
+            .getUserInfoCreated().getAccount().getUsername().equals(username);
+
+        var canSeeTask = isTaskOwner || isProjectOwner || isAssignedUser;
         if (!canSeeTask) throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
-        if (isAssignedUser) {
-            return taskForUsersService
-                .findByRootIdAndAssignedUsername(rootTaskId, userInfo.getAccount().getUsername())
+        if (isTaskOwner || isProjectOwner) {
+            return taskRepository.findAllByRootTaskId(rootTaskId)
                 .stream().map(taskMapper::shortenTaskResponse)
                 .toList();
         }
-        return taskRepository.findAllByRootTaskId(rootTaskId)
+        return taskForUsersService
+            .findByRootIdAndAssignedUsername(rootTaskId, userInfo.getAccount().getUsername())
             .stream().map(taskMapper::shortenTaskResponse)
             .toList();
     }
@@ -368,7 +383,7 @@ public class TaskService implements ITaskService {
 
     @Override
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
-    public void delete(Long id, String token) {
+    public SuccessCodes delete(Long id, String token) {
         var task = taskTransService.findUpdatableTaskByOwner(id, token);
         //--Checked project is in-progress by "task"
         //--Checked phase is ended by "task"
@@ -384,12 +399,17 @@ public class TaskService implements ITaskService {
             task.getId());
         if (existsReportOnUsers) throw new AppExc(ErrorCodes.EXISTS_REPORT_ON_TASK);
 
-        if (task.getRootTask() != null)
+        SuccessCodes returnMsg;
+        if (task.getRootTask() != null) {
             this.deleteSubTask(task);
-        else
+            returnMsg = SuccessCodes.DELETED;
+        } else {
             this.deleteRootTask(task);
+            returnMsg = SuccessCodes.DELETED_SUB_TASK;
+        }
 
         this.notifyViaEmail(copiedTaskForUsers, TaskMsg.DELETED_TASK);
+        return returnMsg;
     }
 
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
@@ -428,7 +448,7 @@ public class TaskService implements ITaskService {
                     .stream().anyMatch(projectRole ->
                         projectRole.getUserInfo().getAccount().getUsername().equals(username)
                             && projectRole.getRole().equals(RoleOnEntity.OWNER)
-                    );
+                    );     //--May be just Project Manager (but this code will be used in the future).
                 var isAssignedUser = task.getTaskForUsers().stream()
                     .anyMatch(userTask -> userTask.getAssignedUser()
                         .getAccount()

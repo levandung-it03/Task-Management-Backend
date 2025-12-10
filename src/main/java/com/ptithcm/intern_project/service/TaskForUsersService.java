@@ -137,11 +137,11 @@ public class TaskForUsersService implements ITaskForUsersService {
         taskForUsersRepository.saveAll(restUsersOfRootTask);
     }
 
-    public void save(TaskForUsers newUserTask) {
-        taskForUsersRepository.save(newUserTask);
+    public TaskForUsers save(TaskForUsers newUserTask) {
+        return taskForUsersRepository.save(newUserTask);
     }
 
-    public List<UserTaskResponse> getAllUsersOfTask(Long taskId) {
+    public List<TaskForUsers> getAllUsersOfTask(Long taskId) {
         return taskForUsersRepository.findAllByTaskId(taskId);
     }
 
@@ -164,33 +164,33 @@ public class TaskForUsersService implements ITaskForUsersService {
         //--Checked task is not ended by "reAddedUserTask"
         var kickedUserTask = this.findUserTaskByTaskOwner(taskUserId, username);
 
-        if (kickedUserTask.getTask().getRootTask() == null)
-            this.rootTaskKickUser(kickedUserTask);
-        else
-            this.validateSubTaskKickUser(kickedUserTask);
-
-        var isAssignedUserHasReport = reportService.existsReportByUserTaskCreatedId(taskUserId);
-        if (isAssignedUserHasReport) {
-            kickedUserTask.setUserTaskStatus(UserTaskStatus.KICKED_OUT);
-            kickedUserTask.setUpdatedTime(LocalDateTime.now());
-            taskForUsersRepository.save(kickedUserTask);
-        } else {
-            kickedUserTask.getTask().getTaskForUsers().remove(kickedUserTask);
-            taskForUsersRepository.deleteById(taskUserId);
-        }
-    }
-
-    public void rootTaskKickUser(TaskForUsers kickedUserTask) {
         var existsSubTask = taskForUsersRepository.existsSubTaskOfRootTask(kickedUserTask.getTask().getId());
         var isTheLastUser = kickedUserTask.getTask().getTaskForUsers().size() == 1;
 
         if (isTheLastUser && !existsSubTask)
             throw new AppExc(ErrorCodes.TASK_NEED_AT_LEAST_ONE_USER);
+
+        kickedUserTask.setUserTaskStatus(UserTaskStatus.KICKED_OUT);
+        kickedUserTask.setUpdatedTime(LocalDateTime.now());
+        taskForUsersRepository.save(kickedUserTask);
     }
 
-    public void validateSubTaskKickUser(TaskForUsers kickedUserTask) {
-        var isTheLastUser = kickedUserTask.getTask().getTaskForUsers().size() == 1;
-        if (isTheLastUser)  throw new AppExc(ErrorCodes.TASK_NEED_AT_LEAST_ONE_USER);
+    @Override
+    @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
+    public void deleteUser(Long taskUserId, String token) {
+        String username = jwtService.readPayload(token).get("sub");
+
+        //--Checked project in-progress by "kickedUserTask"
+        //--Checked phase is not ended by "reAddedUserTask"
+        //--Checked collection is not ended by "reAddedUserTask"
+        //--Checked task is not ended by "reAddedUserTask"
+        var kickedUserTask = this.findUserTaskByTaskOwner(taskUserId, username);
+
+        if (!kickedUserTask.getReports().isEmpty())
+            throw new AppExc(ErrorCodes.CANT_DELETE_USER_TASK);
+
+        kickedUserTask.getTask().getTaskForUsers().remove(kickedUserTask);
+        taskForUsersRepository.deleteById(taskUserId);
     }
 
     @Override
@@ -242,7 +242,7 @@ public class TaskForUsersService implements ITaskForUsersService {
         return taskForUsersRepository.existsByProjectIdAndAssignedUsername(projectId, username);
     }
 
-    public Optional<UserTaskResponse> getUserOfTask(Long taskId, String username) {
+    public Optional<TaskForUsers> getUserOfTask(Long taskId, String username) {
         return taskForUsersRepository.findByTaskIdAndAssignedUsername(taskId, username);
     }
 

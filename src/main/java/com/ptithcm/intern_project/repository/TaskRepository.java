@@ -94,4 +94,6 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     List<Task> findAllByCollectionId(Long id);
 
     List<Task> findAllDistinctByCollectionId(Long id);
+
+    boolean existsByNameAndCollectionId(String name, Long colId);
 }
