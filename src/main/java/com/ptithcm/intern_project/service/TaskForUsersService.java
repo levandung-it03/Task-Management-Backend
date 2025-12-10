@@ -184,12 +184,17 @@ public class TaskForUsersService implements ITaskForUsersService {
         //--Checked phase is not ended by "reAddedUserTask"
         //--Checked collection is not ended by "reAddedUserTask"
         //--Checked task is not ended by "reAddedUserTask"
-        var kickedUserTask = this.findUserTaskByTaskOwner(taskUserId, username);
+        var removedUserTask = this.findUserTaskByTaskOwner(taskUserId, username);
 
-        if (!kickedUserTask.getReports().isEmpty())
+        if (!removedUserTask.getReports().isEmpty())
             throw new AppExc(ErrorCodes.CANT_DELETE_USER_TASK);
 
-        kickedUserTask.getTask().getTaskForUsers().remove(kickedUserTask);
+        var existsSubTask = taskForUsersRepository.existsSubTaskOfRootTask(removedUserTask.getTask().getId());
+        var isTheLastUser = removedUserTask.getTask().getTaskForUsers().size() == 1;
+        if (isTheLastUser && !existsSubTask)
+            throw new AppExc(ErrorCodes.TASK_NEED_AT_LEAST_ONE_USER);
+
+        removedUserTask.getTask().getTaskForUsers().remove(removedUserTask);
         taskForUsersRepository.deleteById(taskUserId);
     }
 
