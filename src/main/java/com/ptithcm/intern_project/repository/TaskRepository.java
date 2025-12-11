@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface TaskRepository extends JpaRepository<Task, Long> {
@@ -96,4 +97,6 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     List<Task> findAllDistinctByCollectionId(Long id);
 
     boolean existsByNameAndCollectionId(String name, Long colId);
+
+    Optional<Task> findByRootTaskId(Long id);
 }

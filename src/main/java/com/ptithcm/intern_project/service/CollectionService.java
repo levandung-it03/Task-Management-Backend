@@ -155,12 +155,16 @@ public class CollectionService implements ICollectionService {
             .sorted((prev, next) -> {
                 int prevValue = prev.getEndDate() == null ? -1 : 1;
                 int nextValue = next.getEndDate() == null ? -1 : 1;
-                return prevValue - nextValue;
-            })
-            .sorted(Comparator.comparing(ShortTaskResponse::getStartDate))
-            .sorted((prev, next) ->
-                next.getPriority().ordinal() - prev.getPriority().ordinal()
-            ).toList();
+                if (prevValue != nextValue) return nextValue - prevValue;
+
+                int prevPrior = prev.getPriority().ordinal();
+                int nextPrior = next.getPriority().ordinal();
+                if (prevPrior != nextPrior) return prevPrior - nextPrior;
+
+                LocalDate prevStart = prev.getStartDate();
+                LocalDate nextStart = next.getStartDate();
+                return prevStart.compareTo(nextStart);
+            }).toList();
     }
 
     public boolean existsByPhaseId(Long id) {

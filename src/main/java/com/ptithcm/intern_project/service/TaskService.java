@@ -36,6 +36,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -402,10 +403,10 @@ public class TaskService implements ITaskService {
         SuccessCodes returnMsg;
         if (task.getRootTask() != null) {
             this.deleteSubTask(task);
-            returnMsg = SuccessCodes.DELETED;
+            returnMsg = SuccessCodes.DELETED_SUB_TASK;
         } else {
             this.deleteRootTask(task);
-            returnMsg = SuccessCodes.DELETED_SUB_TASK;
+            returnMsg = SuccessCodes.DELETED;
         }
 
         this.notifyViaEmail(copiedTaskForUsers, TaskMsg.DELETED_TASK);
@@ -414,6 +415,9 @@ public class TaskService implements ITaskService {
 
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public void deleteRootTask(Task task) {
+        Optional<Task> subTask = taskRepository.findByRootTaskId(task.getId());
+        if (subTask.isPresent())    taskRepository.delete(subTask.get());
+
         task.getTaskForUsers().clear();
         taskRepository.delete(task);    //--Has orphanRemoval delete relationships
     }

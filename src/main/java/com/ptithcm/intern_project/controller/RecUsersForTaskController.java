@@ -31,7 +31,11 @@ public class RecUsersForTaskController {
     })
     public ResponseEntity<RestApiResponse<List<RecUserInfoResponse>>> recommendUsers(
         @RequestBody RecUsersRequest request) {
-        return RestApiResponse.fromScs(SuccessCodes.GET_LIST, recUsersSvc.recommendUsers(request));
+        var result = recUsersSvc.recommendUsers(request);
+        if (result.isEmpty())
+            return RestApiResponse.fromScs(SuccessCodes.EMPTY_USERS, result);
+        else
+            return RestApiResponse.fromScs(SuccessCodes.GET_LIST, result);
     }
 
     @GetMapping({
