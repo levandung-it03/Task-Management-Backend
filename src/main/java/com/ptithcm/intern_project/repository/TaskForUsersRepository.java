@@ -45,6 +45,10 @@ public interface TaskForUsersRepository extends JpaRepository<TaskForUsers, Long
         AND (LOWER(tfu.assignedUser.fullName) LIKE LOWER(CONCAT('%',:query,'%'))
             OR LOWER(tfu.assignedUser.email) LIKE LOWER(CONCAT('%',:query,'%')))
         AND NOT tfu.userTaskStatus = 'KICKED_OUT'
+        AND NOT (
+            SELECT CASE WHEN COUNT(r) > 0 THEN TRUE ELSE FALSE END FROM Report r
+            WHERE r.userTaskCreated.id = tfu.id
+        )
     """)
     List<UserInfo> searchTheRestUsersOnRoot(
         @Param("rootId") Long rootId,
