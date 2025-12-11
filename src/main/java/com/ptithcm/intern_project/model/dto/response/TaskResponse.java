@@ -1,6 +1,7 @@
 package com.ptithcm.intern_project.model.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ptithcm.intern_project.model.dto.general.ShortUserInfoDTO;
 import com.ptithcm.intern_project.model.enums.TaskLevel;
 import com.ptithcm.intern_project.model.enums.TaskPriority;
@@ -27,6 +28,8 @@ public class TaskResponse {
     TaskLevel level;
     Domain taskType;
     TaskPriority priority;
+
+    @JsonProperty("isLocked")
     boolean isLocked;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")

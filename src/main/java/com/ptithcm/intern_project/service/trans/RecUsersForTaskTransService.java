@@ -49,11 +49,12 @@ public class RecUsersForTaskTransService {
             .toList();
 
         List<GroupHasUsers> relatedGroups = groupHasUsersService.findAllByGroupId(request.getGroupId());
-        Map<Long, UserInfo> relatedUsers = relatedGroups.stream()
-            .collect(Collectors.toMap(ghu -> ghu.getJoinedUserInfo().getId(), GroupHasUsers::getJoinedUserInfo));
+        Map<Long, GroupHasUsers> relatedUsers = relatedGroups.stream()
+            .collect(Collectors.toMap(ghu -> ghu.getJoinedUserInfo().getId(), ghu -> ghu));
         return rankedUserIdsResult.stream()
-            .filter(relatedUsers::containsKey)
-            .map(userId -> recUsersForTaskMapper.toResponse(
+            .filter(userId ->
+                relatedUsers.containsKey(userId) && relatedUsers.get(userId).isActive()
+            ).map(userId -> recUsersForTaskMapper.toResponse(
                 usersResultMap.get(userId),
                 userScoresMap.get(userId)
             )).toList();

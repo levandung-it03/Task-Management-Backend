@@ -35,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -298,6 +299,8 @@ public class TaskService implements ITaskService {
         //--Checked task is ended by "lockedTask"
 
         lockedTask.setLocked(request.getStatus());
+        if (lockedTask.getUpdatedTime().equals(lockedTask.getCreatedTime()))
+            lockedTask.setUpdatedTime(LocalDateTime.now()); //--First time unlock is starting Task.
         taskRepository.save(lockedTask);
 
         this.notifyViaEmail(lockedTask.getTaskForUsers(), TaskMsg.LOCKED_TASK);
@@ -374,12 +377,17 @@ public class TaskService implements ITaskService {
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public List<ShortTaskResponse> getAllRelatedUndoneTasks(String token) {
         String username = jwtService.readPayload(token).get("sub");
-        var resultList = new ArrayList<Task>();
+        var taskMap = new HashMap<Long, Task>();
 
-        resultList.addAll(taskRepository.findAllCreatedAndUndoneByUsername(username));
-        resultList.addAll(taskRepository.findAllAssignedAndUndoneByUsername(username));
+        taskMap.putAll(taskRepository
+            .findAllCreatedAndUndoneByUsername(username).stream()
+            .collect(Collectors.toMap(Task::getId, t -> t)));
+        taskMap.putAll(taskRepository
+            .findAllAssignedAndUndoneByUsername(username).stream()
+            .filter(task -> !taskMap.containsKey(task.getId()))
+            .collect(Collectors.toMap(Task::getId, t -> t)));
 
-        return resultList.stream().map(taskMapper::shortenTaskResponse).toList();
+        return taskMap.values().stream().map(taskMapper::shortenTaskResponse).toList();
     }
 
     @Override
