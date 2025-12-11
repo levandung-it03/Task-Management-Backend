@@ -43,18 +43,20 @@ public class RecUsersForTaskTransService {
 
         if (request.getNumOfEmp() > rankedUserIds.size())
             request.setNumOfEmp(rankedUserIds.size());
-        var rankedUserIdsResult = rankedUserIds.stream()
-            .filter(usersResultMap::containsKey)
-            .limit(request.getNumOfEmp())
-            .toList();
 
         List<GroupHasUsers> relatedGroups = groupHasUsersService.findAllByGroupId(request.getGroupId());
         Map<Long, GroupHasUsers> relatedUsers = relatedGroups.stream()
             .collect(Collectors.toMap(ghu -> ghu.getJoinedUserInfo().getId(), ghu -> ghu));
-        return rankedUserIdsResult.stream()
+        var rankedUserIdsResult = rankedUserIds.stream()
             .filter(userId ->
-                relatedUsers.containsKey(userId) && relatedUsers.get(userId).isActive()
-            ).map(userId -> recUsersForTaskMapper.toResponse(
+                usersResultMap.containsKey(userId)
+                    && relatedUsers.containsKey(userId)
+                    && relatedUsers.get(userId).isActive()
+            ).limit(request.getNumOfEmp())
+            .toList();
+
+        return rankedUserIdsResult.stream()
+            .map(userId -> recUsersForTaskMapper.toResponse(
                 usersResultMap.get(userId),
                 userScoresMap.get(userId)
             )).toList();
