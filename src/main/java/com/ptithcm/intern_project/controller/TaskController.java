@@ -3,6 +3,7 @@ package com.ptithcm.intern_project.controller;
 import com.ptithcm.intern_project.model.dto.general.StatusDTO;
 import com.ptithcm.intern_project.config.enums.SuccessCodes;
 import com.ptithcm.intern_project.model.dto.general.RestApiResponse;
+import com.ptithcm.intern_project.model.dto.request.ReassignUserSubTaskRequest;
 import com.ptithcm.intern_project.model.dto.request.TaskRequest;
 import com.ptithcm.intern_project.model.dto.request.UpdatedContentRequest;
 import com.ptithcm.intern_project.model.dto.request.UpdatedTaskRequest;
@@ -186,5 +187,18 @@ public class TaskController {
         @RequestHeader("Authorization") String token) {
         return RestApiResponse.fromScs(SuccessCodes.GET_DETAIL,
             taskService.getTaskDelegator(taskId, token));
+    }
+
+    @Operation(description = "Re-assign User of Sub-Task (replace with a new one)")
+    @PutMapping({
+        ROLE_EMP + "/v1/task/{taskId}/sub-tasks/re-assign",
+        ROLE_PM + "/v1/task/{taskId}/sub-tasks/re-assign",
+        ROLE_LEAD + "/v1/task/{taskId}/sub-tasks/re-assign"})
+    public ResponseEntity<RestApiResponse<UpdatedTaskResponse>> reassignUserSubTask(
+        @PathVariable("taskId") Long taskId,
+        @RequestBody ReassignUserSubTaskRequest request,
+        @RequestHeader("Authorization") String token) {
+        return RestApiResponse.fromScs(SuccessCodes.REASSIGNED_USERS,
+            taskService.reassignUserSubTask(taskId, request, token));
     }
 }

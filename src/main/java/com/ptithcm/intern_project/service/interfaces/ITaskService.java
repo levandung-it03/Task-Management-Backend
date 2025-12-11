@@ -2,6 +2,7 @@ package com.ptithcm.intern_project.service.interfaces;
 
 import com.ptithcm.intern_project.config.enums.SuccessCodes;
 import com.ptithcm.intern_project.model.dto.general.StatusDTO;
+import com.ptithcm.intern_project.model.dto.request.ReassignUserSubTaskRequest;
 import com.ptithcm.intern_project.model.dto.request.TaskRequest;
 import com.ptithcm.intern_project.model.dto.request.UpdatedTaskRequest;
 import com.ptithcm.intern_project.model.dto.general.ShortUserInfoDTO;
@@ -40,4 +41,6 @@ public interface ITaskService {
     TaskDetailResponse getRootTaskDetail(Long taskId, String token);
 
     TaskDelegatorResponse getTaskDelegator(Long taskId, String token);
+
+    UpdatedTaskResponse reassignUserSubTask(Long taskId, ReassignUserSubTaskRequest request, String token);
 }

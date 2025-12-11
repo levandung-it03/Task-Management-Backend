@@ -36,6 +36,7 @@ public interface UserInfoRepository extends JpaRepository<UserInfo, Long> {
             SELECT tfu.assignedUser.id
             FROM TaskForUsers tfu
             WHERE tfu.task.id = :rootTaskId
+              OR tfu.task.rootTask.id = :rootTaskId
         )
         AND (LOWER(u.fullName) LIKE LOWER(CONCAT('%', :query, '%'))
         OR LOWER(u.email) LIKE LOWER(CONCAT('%', :query, '%')))

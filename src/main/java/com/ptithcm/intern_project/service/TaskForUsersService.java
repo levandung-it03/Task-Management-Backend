@@ -1,6 +1,5 @@
 package com.ptithcm.intern_project.service;
 
-import com.ptithcm.intern_project.model.dto.response.UserTaskResponse;
 import com.ptithcm.intern_project.config.enums.ErrorCodes;
 import com.ptithcm.intern_project.config.exception.AppExc;
 import com.ptithcm.intern_project.model.UserInfo;
@@ -145,8 +144,12 @@ public class TaskForUsersService implements ITaskForUsersService {
         return taskForUsersRepository.findAllByTaskId(taskId);
     }
 
-    public List<Task> findByRootIdAndAssignedUsername(Long rootTaskId, String username) {
-        return taskForUsersRepository.findByRootIdAndAssignedUsername(rootTaskId, username);
+    public Optional<TaskForUsers> findByRootIdAndAssignedEmail(Long rootTaskId, String email) {
+        return taskForUsersRepository.findByRootIdAndAssignedEmil(rootTaskId, email);
+    }
+
+    public List<Task> findTaskByRootIdAndAssignedUsername(Long rootTaskId, String username) {
+        return taskForUsersRepository.findTaskByRootIdAndAssignedUsername(rootTaskId, username);
     }
 
     public List<UserInfo> searchRootTaskUsers(Long rootId, String query, String username) {
@@ -279,5 +282,9 @@ public class TaskForUsersService implements ITaskForUsersService {
     @Override
     public List<Long> getBusyUserIdsOnTaskType(Domain taskType) {
         return taskForUsersRepository.getBusyUserIdsOnTaskType(taskType);
+    }
+
+    public void deleteById(Long id) {
+        taskForUsersRepository.deleteById(id);
     }
 }

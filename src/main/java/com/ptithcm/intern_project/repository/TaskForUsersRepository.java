@@ -36,7 +36,7 @@ public interface TaskForUsersRepository extends JpaRepository<TaskForUsers, Long
         WHERE t.rootTask IS NOT NULL AND t.rootTask.id = :rootId
         AND tfu.assignedUser.account.username = :assignedUsername
     """)
-    List<Task> findByRootIdAndAssignedUsername(@Param("rootId") Long rootId, @Param("assignedUsername") String username);
+    List<Task> findTaskByRootIdAndAssignedUsername(@Param("rootId") Long rootId, @Param("assignedUsername") String username);
 
     @Query("""
         SELECT tfu.assignedUser FROM TaskForUsers tfu
@@ -108,4 +108,13 @@ public interface TaskForUsersRepository extends JpaRepository<TaskForUsers, Long
           )
     """)
     List<Long> getBusyUserIdsOnTaskType(@Param("taskType") Domain taskType);
+
+    @Query("""
+        SELECT DISTINCT tfu FROM TaskForUsers tfu
+        WHERE tfu.task.id = :rootId
+        AND tfu.assignedUser.email = :email
+    """)
+    Optional<TaskForUsers> findByRootIdAndAssignedEmil(
+        @Param("rootId") Long rootId,
+        @Param("email") String email);
 }

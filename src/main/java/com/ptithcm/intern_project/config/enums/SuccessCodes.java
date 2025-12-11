@@ -30,6 +30,7 @@ public enum SuccessCodes {
     //--Task(23)
     CREATED_TASK(23000, "Task has been created, you can delete it in 12 hours", HttpStatus.CREATED),
     DELETED_SUB_TASK(23001, "Sub-Task has been deleted, assigned User was back to Task!", HttpStatus.OK),
+    REASSIGNED_USERS(23002, "New User added, and the current one has been moved to Task!", HttpStatus.OK),
     //--RecUsersForTask(24)
     EMPTY_USERS(24000, "Employees are busy, or no body meets the demand!", HttpStatus.NO_CONTENT),
     ;

@@ -3,6 +3,7 @@ package com.ptithcm.intern_project.service;
 import com.ptithcm.intern_project.config.enums.SuccessCodes;
 import com.ptithcm.intern_project.model.dto.general.EmailTaskDTO;
 import com.ptithcm.intern_project.model.dto.general.StatusDTO;
+import com.ptithcm.intern_project.model.dto.request.ReassignUserSubTaskRequest;
 import com.ptithcm.intern_project.model.dto.response.*;
 import com.ptithcm.intern_project.model.enums.RoleOnEntity;
 import com.ptithcm.intern_project.config.enums.AuthorityEnum;
@@ -34,10 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -191,7 +189,11 @@ public class TaskService implements ITaskService {
     @Transactional(rollbackFor = RuntimeException.class)
     public UpdatedTaskResponse update(Long id, UpdatedTaskRequest request, String token) {
         var result = UpdatedTaskResponse.builder().build();
-        var foundTask = this.findUpdatableTaskNotHasReport(id, token);
+        Task foundTask = taskTransService.findUpdatableTaskByOwner(id, token);
+        //--Checked project in-progress by "foundTask"
+        //--Checked phase is ended by "foundTask"
+        //--Checked collection is ended by "foundTask"
+        //--Checked task is ended by "foundTask"
 
         var isStartingBeforeCollection = request.getStartDate().isBefore(foundTask.getCollection().getStartDate());
         if (isStartingBeforeCollection)    throw new AppExc(ErrorCodes.START_BEFORE_COLLECTION);
@@ -206,7 +208,6 @@ public class TaskService implements ITaskService {
             if (request.getDeadline().isBefore(subTask.getDeadline()))
                 throw new AppExc(ErrorCodes.END_BEFORE_SUB_TASK);
         }
-        taskMapper.mappingBaseInfo(foundTask, request);
 
         if (foundTask.getRootTask() == null
             && request.getAddedUserEmail() != null
@@ -225,6 +226,18 @@ public class TaskService implements ITaskService {
             result.setNewUsers(List.of(taskForUsersMapper.toResponse(addedResult)));
         }
         foundTask.setUpdatedTime(LocalDateTime.now());
+
+
+        var existsDoneReport = reportService.existsReportByTaskId(id);
+        if (existsDoneReport && (
+            !request.getStartDate().isEqual(foundTask.getStartDate())
+                || request.getLevel() != foundTask.getLevel()
+                || request.getPriority() != foundTask.getPriority()
+                || request.getTaskType() != foundTask.getTaskType()
+            ))
+            throw new AppExc(ErrorCodes.EXISTS_REPORT_ON_TASK);
+        taskMapper.mappingBaseInfo(foundTask, request);
+
         taskRepository.save(foundTask);
         return result;
     }
@@ -333,7 +346,7 @@ public class TaskService implements ITaskService {
                 .toList();
         }
         return taskForUsersService
-            .findByRootIdAndAssignedUsername(rootTaskId, userInfo.getAccount().getUsername())
+            .findTaskByRootIdAndAssignedUsername(rootTaskId, userInfo.getAccount().getUsername())
             .stream().map(taskMapper::shortenTaskResponse)
             .toList();
     }
@@ -541,5 +554,42 @@ public class TaskService implements ITaskService {
 
     public List<Task> findAllByCollectionId(Long id) {
         return taskRepository.findAllByCollectionId(id);
+    }
+
+    @Override
+    @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
+    public UpdatedTaskResponse reassignUserSubTask(Long taskId, ReassignUserSubTaskRequest request, String token) {
+        var result = new UpdatedTaskResponse();
+        var foundTask = this.findUpdatableTaskNotHasReport(taskId, token);
+
+        var newUserOpt = taskForUsersService
+            .findByRootIdAndAssignedEmail(foundTask.getRootTask().getId(), request.getAddedUserEmail());
+
+        if (newUserOpt.isEmpty())
+            throw new AppExc(ErrorCodes.FORBIDDEN_USER);
+
+        var oldUser = foundTask.getTaskForUsers().getFirst();
+        var newUserSubTask = TaskForUsers.builder()
+            .task(foundTask)
+            .assignedUser(newUserOpt.get().getAssignedUser())
+            .userTaskStatus(UserTaskStatus.JOINED)
+            .updatedTime(LocalDateTime.now())
+            .build();
+        foundTask.getTaskForUsers().removeFirst();
+        foundTask.getTaskForUsers().add(newUserSubTask);
+
+        var rootTask = foundTask.getRootTask();
+        var oldUserRootTask = TaskForUsers.builder()
+            .task(foundTask.getRootTask())
+            .assignedUser(oldUser.getAssignedUser())
+            .userTaskStatus(UserTaskStatus.JOINED)
+            .updatedTime(LocalDateTime.now())
+            .build();
+        rootTask.getTaskForUsers().remove(newUserOpt.get());
+        rootTask.getTaskForUsers().add(oldUserRootTask);
+        taskRepository.save(rootTask);
+        taskRepository.save(foundTask);
+        //--JPA automatically dirty, and flush.
+        return result;
     }
 }
