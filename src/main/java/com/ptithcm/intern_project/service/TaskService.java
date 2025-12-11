@@ -454,9 +454,9 @@ public class TaskService implements ITaskService {
                             && projectRole.getRole().equals(RoleOnEntity.OWNER)
                     );     //--May be just Project Manager (but this code will be used in the future).
                 var isAssignedUser = task.getTaskForUsers().stream()
-                    .anyMatch(userTask -> userTask.getAssignedUser()
-                        .getAccount()
-                        .getUsername().equals(username));
+                    .anyMatch(userTask ->
+                        userTask.getAssignedUser().getAccount().getUsername().equals(username)
+                            && !userTask.getUserTaskStatus().equals(UserTaskStatus.KICKED_OUT));
                 return isOwner || isRelatedPM || isAssignedUser;
             })
             .map(task -> task.getRootTask() == null ? task : task.getRootTask())

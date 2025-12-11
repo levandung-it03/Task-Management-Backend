@@ -130,4 +130,8 @@ public class GroupHasUsersService implements IGroupHasUsersService {
     public List<GroupHasUsers> findAllByUserInfoIds(Collection<Long> recOrderedUsersIds) {
         return groupUserRepository.findAllByUserInfoIds(recOrderedUsersIds);
     }
+
+    public List<GroupHasUsers> findAllByGroupId(Long groupId) {
+        return groupUserRepository.findAllByGroupId(groupId);
+    }
 }

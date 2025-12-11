@@ -21,14 +21,13 @@ public class RecUsersForTaskMapper {
         return result;
     }
 
-    public RecUserInfoResponse toResponse(UserInfo userInfo, UserPredScoreResponse userScore, List<Long> groupIds) {
+    public RecUserInfoResponse toResponse(UserInfo userInfo, UserPredScoreResponse userScore) {
         return RecUserInfoResponse.builder()
             .email(userInfo.getEmail())
             .fullName(userInfo.getFullName())
             .department(userInfo.getDepartment().getName())
             .role(userInfo.getAccount().getAuthorities().getFirst().getAuthority())
             .score(userScore.getScore())
-            .groupIds(groupIds)
             .build();
     }
 }

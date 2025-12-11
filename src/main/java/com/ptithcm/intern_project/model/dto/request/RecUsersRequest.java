@@ -37,4 +37,6 @@ public class RecUsersRequest {
 
     @NotNull
     AuthorityEnum authority;    //--AI won't use this
+
+    Long groupId;   //--AI won't use this
 }

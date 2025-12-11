@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,26 +46,16 @@ public class RecUsersForTaskTransService {
         var rankedUserIdsResult = rankedUserIds.stream()
             .filter(usersResultMap::containsKey)
             .limit(request.getNumOfEmp())
-            .collect(Collectors.toList());
+            .toList();
 
-        List<GroupHasUsers> relatedGroups = groupHasUsersService.findAllByUserInfoIds(rankedUserIdsResult);
-        var userGroupsMap = new HashMap<Long, List<Long>>();
-        for (GroupHasUsers groupUser : relatedGroups) {
-            var group = groupUser.getGroup();   //--LAZY fetch here
-            var userInfo = groupUser.getJoinedUserInfo();
-
-            if (userGroupsMap.containsKey(userInfo.getId())) {
-                userGroupsMap.get(userInfo.getId()).add(group.getId());
-            } else {
-                var groupIds = new ArrayList<>(List.of(group.getId()));
-                userGroupsMap.put(userInfo.getId(), groupIds);
-            }
-        }
+        List<GroupHasUsers> relatedGroups = groupHasUsersService.findAllByGroupId(request.getGroupId());
+        Map<Long, UserInfo> relatedUsers = relatedGroups.stream()
+            .collect(Collectors.toMap(ghu -> ghu.getJoinedUserInfo().getId(), GroupHasUsers::getJoinedUserInfo));
         return rankedUserIdsResult.stream()
+            .filter(relatedUsers::containsKey)
             .map(userId -> recUsersForTaskMapper.toResponse(
                 usersResultMap.get(userId),
-                userScoresMap.get(userId),
-                userGroupsMap.containsKey(userId) ? userGroupsMap.get(userId) : List.of()
+                userScoresMap.get(userId)
             )).toList();
     }
 }

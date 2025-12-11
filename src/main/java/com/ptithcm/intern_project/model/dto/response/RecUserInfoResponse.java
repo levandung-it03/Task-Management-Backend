@@ -17,5 +17,4 @@ public class RecUserInfoResponse {
     String role;
     String department;
     float score;
-    List<Long> groupIds;
 }

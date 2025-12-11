@@ -48,4 +48,6 @@ public interface GroupHasUsersRepository extends JpaRepository<GroupHasUsers, Lo
 
     @Query("SELECT ghu FROM GroupHasUsers ghu WHERE ghu.joinedUserInfo.id IN :recIds")
     List<GroupHasUsers> findAllByUserInfoIds(@Param("recIds") Collection<Long> recOrderedUsersIds);
+
+    List<GroupHasUsers> findAllByGroupId(Long groupId);
 }
