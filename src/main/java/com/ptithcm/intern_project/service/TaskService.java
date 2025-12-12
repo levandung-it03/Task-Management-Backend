@@ -312,8 +312,12 @@ public class TaskService implements ITaskService {
         //--Checked task is ended by "lockedTask"
 
         lockedTask.setLocked(request.getStatus());
-        if (lockedTask.getUpdatedTime().equals(lockedTask.getCreatedTime()))
-            lockedTask.setUpdatedTime(LocalDateTime.now()); //--First time unlock is starting Task.
+        var notStartedYet = lockedTask.getUpdatedTime().equals(lockedTask.getCreatedTime());
+        if (notStartedYet)  lockedTask.setUpdatedTime(LocalDateTime.now());
+
+        if (LocalDate.now().isAfter(lockedTask.getDeadline()))
+            throw new AppExc(ErrorCodes.STARTED_ON_DATE_AFTER_DEADLINE);
+
         taskRepository.save(lockedTask);
 
         this.notifyViaEmail(lockedTask.getTaskForUsers(), TaskMsg.LOCKED_TASK);

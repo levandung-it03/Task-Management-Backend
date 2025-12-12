@@ -61,6 +61,7 @@ public enum ErrorCodes {
     END_AFTER_ROOT_TASK(14011, "End-Date must be before Root-Task End-Date", BAD_REQUEST),
     TASK_NEED_AT_LEAST_ONE_USER(14012, "Task need at least ONE User. You can Delete, or Lock it instead!", BAD_REQUEST),
     CANT_DELETE_USER_TASK(14013, "User had Reports and cannot be deleted, but CAN BE Kicked!", BAD_REQUEST),
+    STARTED_ON_DATE_AFTER_DEADLINE(14014, "Cannot start after Deadline, update Deadline to continue process!", BAD_REQUEST),
     //--Report(15)
     REPORT_REVIEWED(15000, "Report has been reviewed, cannot perform action", BAD_REQUEST),
     //--Project(16)
