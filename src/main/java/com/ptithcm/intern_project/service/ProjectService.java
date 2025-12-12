@@ -274,18 +274,22 @@ public class ProjectService implements IProjectService {
 
         var response = new ProjectStatisticResponse();
         for (Project project : relatedProjects) {
-            var isEndedProject = project.getEndDate() != null;
+            var isEndedProject = project.getStatus().equals(ProjectStatus.CLOSED)
+                || project.getStatus().equals(ProjectStatus.COMPLETED);
             if (isEndedProject) {
                 response.setEndedProjects(response.getEndedProjects() + 1);
                 continue;
             }
-            var isStartedProject = project.getStartDate() != null;
-            if (isStartedProject) {
-                response.setRunningProjects(response.getRunningProjects() + 1);
+
+            var isPendingProject = project.getStatus().equals(ProjectStatus.CREATED)
+                || project.getStatus().equals(ProjectStatus.PAUSED);
+            if (isPendingProject) {
+                response.setPendingProjects(response.getPendingProjects() + 1);
                 continue;
             }
-            var isPendingProject = project.getStatus().equals(ProjectStatus.CREATED);
-            if (isPendingProject)   response.setPendingProjects(response.getPendingProjects() + 1);
+
+            if (project.getStatus().equals(ProjectStatus.IN_PROGRESS))
+                response.setRunningProjects(response.getRunningProjects() + 1);
         }
         response.setTotalProjects(relatedProjects.size());
         return response;
