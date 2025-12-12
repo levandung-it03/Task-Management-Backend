@@ -26,11 +26,9 @@ public class UpdatedTaskRequest {
     @NotNull
     TaskPriority priority;
 
-    @NotNull
     @FutureDateConstraint
     LocalDate startDate;
 
-    @NotNull
     @FutureDateConstraint
     LocalDate deadline;
 

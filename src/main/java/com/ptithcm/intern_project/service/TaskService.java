@@ -195,24 +195,37 @@ public class TaskService implements ITaskService {
         //--Checked collection is ended by "foundTask"
         //--Checked task is ended by "foundTask"
 
-        var isStartingBeforeCollection = request.getStartDate().isBefore(foundTask.getCollection().getStartDate());
+        var isStartingBeforeCollection = request.getStartDate() != null
+            && request.getStartDate().isBefore(foundTask.getCollection().getStartDate());
         if (isStartingBeforeCollection)    throw new AppExc(ErrorCodes.START_BEFORE_COLLECTION);
 
-        var isEndingAfterCollection = request.getDeadline().isAfter(foundTask.getCollection().getDueDate());
+        var isEndingAfterCollection = request.getDeadline() != null
+            && request.getDeadline().isAfter(foundTask.getCollection().getDueDate());
         if (isEndingAfterCollection)    throw new AppExc(ErrorCodes.END_AFTER_COLLECTION);
 
-        var subTasks = taskRepository.findAllByRootTaskId(id);
-        for (Task subTask : subTasks) {
-            if (request.getStartDate().isAfter(subTask.getStartDate()))
-                throw new AppExc(ErrorCodes.START_AFTER_SUB_TASK);
-            if (request.getDeadline().isBefore(subTask.getDeadline()))
-                throw new AppExc(ErrorCodes.END_BEFORE_SUB_TASK);
+        var isTodayAfterDeadline = (request.getDeadline() == null)
+            && LocalDate.now().isAfter(foundTask.getDeadline());
+        if (isTodayAfterDeadline)   throw new AppExc(ErrorCodes.UPDATED_ON_DATE_AFTER_DEADLINE);
+
+        var isRootTask = foundTask.getRootTask() == null;
+        if (isRootTask) {
+            var subTasks = taskRepository.findAllByRootTaskId(id);
+            for (Task subTask : subTasks) {
+                if (request.getStartDate() != null && request.getStartDate().isAfter(subTask.getStartDate()))
+                    throw new AppExc(ErrorCodes.START_AFTER_SUB_TASK);
+                if (request.getDeadline() != null && request.getDeadline().isBefore(subTask.getDeadline()))
+                    throw new AppExc(ErrorCodes.END_BEFORE_SUB_TASK);
+            }
+        } else {
+            var rootTask = foundTask.getRootTask();
+            if (request.getStartDate() != null && request.getStartDate().isBefore(rootTask.getStartDate()))
+                throw new AppExc(ErrorCodes.START_AFTER_ROOT_TASK);
+            if (request.getDeadline() != null && request.getDeadline().isAfter(rootTask.getDeadline()))
+                throw new AppExc(ErrorCodes.END_BEFORE_ROOT_TASK);
         }
 
-        if (foundTask.getRootTask() == null
-            && request.getAddedUserEmail() != null
-            && !request.getAddedUserEmail().isEmpty()
-        ) {
+        var isAddingNewUsers = request.getAddedUserEmail() != null && !request.getAddedUserEmail().isEmpty();
+        if (isRootTask && isAddingNewUsers) {
             var addedUser = userInfoService.findByEmail(request.getAddedUserEmail())
                 .orElseThrow(() -> new AppExc(ErrorCodes.INVALID_EMAIL));
             var newUserTask = TaskForUsers.builder()
@@ -226,7 +239,6 @@ public class TaskService implements ITaskService {
             result.setNewUsers(List.of(taskForUsersMapper.toResponse(addedResult)));
         }
         foundTask.setUpdatedTime(LocalDateTime.now());
-
 
         var existsDoneReport = reportService.existsReportByTaskId(id);
         if (existsDoneReport && (

@@ -41,8 +41,10 @@ public class TaskMapper {
     public void mappingBaseInfo(Task updatedTask, UpdatedTaskRequest request) {
         updatedTask.setLevel(request.getLevel());
         updatedTask.setTaskType(request.getTaskType());
-        updatedTask.setStartDate(request.getStartDate());
-        updatedTask.setDeadline(request.getDeadline());
+        if (request.getStartDate() != null)
+            updatedTask.setStartDate(request.getStartDate());
+        if (request.getDeadline() != null)
+            updatedTask.setDeadline(request.getDeadline());
         updatedTask.setPriority(request.getPriority());
         updatedTask.setUpdatedTime(LocalDateTime.now());
     }

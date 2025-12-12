@@ -62,6 +62,7 @@ public enum ErrorCodes {
     TASK_NEED_AT_LEAST_ONE_USER(14012, "Task need at least ONE User. You can Delete, or Lock it instead!", BAD_REQUEST),
     CANT_DELETE_USER_TASK(14013, "User had Reports and cannot be deleted, but CAN BE Kicked!", BAD_REQUEST),
     STARTED_ON_DATE_AFTER_DEADLINE(14014, "Cannot start after Deadline, update Deadline to continue process!", BAD_REQUEST),
+    UPDATED_ON_DATE_AFTER_DEADLINE(14015, "Cannot update after Deadline, update Deadline too to continue process!", BAD_REQUEST),
     //--Report(15)
     REPORT_REVIEWED(15000, "Report has been reviewed, cannot perform action", BAD_REQUEST),
     //--Project(16)
@@ -77,6 +78,8 @@ public enum ErrorCodes {
     END_BEFORE_SUB_TASK(16009, "Deadline cannot be BEFORE Sub-Task Deadline", BAD_REQUEST),
     PROJECT_OVERDUE(16010, "Project is Over-Due, update its Due-Date to perform action!", BAD_REQUEST),
     EXPECT_BEFORE_PROJECT(16011, "Start-Date must be after Project Expected-Start-Date", BAD_REQUEST),
+    START_AFTER_ROOT_TASK(16012, "Start-Date cannot be BEFORE Root-Task Start-Date" , BAD_REQUEST),
+    END_BEFORE_ROOT_TASK(16013, "Deadline cannot be AFTER Root-Task Deadline", BAD_REQUEST),
     //--Phase(17)
     CANT_DELETE_PHASE(17000, "Phase has already had Collection, cannot perform action", BAD_REQUEST),
     START_BEFORE_PHASE(17001, "Start-Date must be after Phase Start-Date", BAD_REQUEST),
