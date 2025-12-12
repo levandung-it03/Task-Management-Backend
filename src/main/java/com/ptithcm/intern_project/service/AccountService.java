@@ -305,6 +305,10 @@ public class AccountService implements IAccountService {
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public List<IdResponse> createAccounts(MultipartFile file) {
         Object[][] accountInfo = ExcelHelper.readExcel(file);
+        HashMap<String, Integer> colIdxMap = new HashMap<>();
+        for (int i = 0; i < accountInfo[0].length; i++)
+            if (accountInfo[0][i] != null)  colIdxMap.put(accountInfo[0][i].toString(), i);
+
         Map<AuthorityEnum, Authority> authorityMap = authorityService.findAll().stream()
             .collect(Collectors.toMap(
                 auth -> AuthorityEnum.valueOf(auth.getName()),
@@ -315,7 +319,7 @@ public class AccountService implements IAccountService {
         List<AccountCreationDTO> responses = new ArrayList<>();
 
         for (int row = 1; row < accountInfo.length; row++) {
-            var registerReq = accountMapper.toRegisterRequest(accountInfo[row]);
+            var registerReq = accountMapper.toRegisterRequest(accountInfo[row], colIdxMap);
             responses.add(registerReq);
 
             var account = Account.builder()

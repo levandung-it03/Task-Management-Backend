@@ -53,7 +53,7 @@ public class ExcelHelper {
                         temp[j] = cell;
                     }
                 }
-                if (Arrays.stream(temp).allMatch(Objects::nonNull))
+                if (!Arrays.stream(temp).allMatch(Objects::isNull))
                     data.add(temp);
             }
             return data.toArray(new Object[data.size()][]);
