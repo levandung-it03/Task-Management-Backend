@@ -54,6 +54,7 @@ public class TaskMapper {
             .level(task.getLevel())
             .priority(task.getPriority())
             .startDate(task.getStartDate())
+            .endDate(task.getEndDate())
             .deadline(task.getDeadline())
             .taskType(task.getTaskType())
             .build();

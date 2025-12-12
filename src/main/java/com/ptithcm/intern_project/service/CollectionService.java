@@ -153,9 +153,10 @@ public class CollectionService implements ICollectionService {
             .stream()
             .map(taskMapper::shortenTaskResponse)
             .sorted((prev, next) -> {
-                int prevValue = prev.getEndDate() == null ? -1 : 1;
-                int nextValue = next.getEndDate() == null ? -1 : 1;
-                if (prevValue != nextValue) return nextValue - prevValue;
+                if (prev.getEndDate() == null)  return -1;
+                if (next.getEndDate() == null)  return 1;
+                if (prev.getEndDate() != next.getEndDate())
+                    return next.getEndDate().compareTo(prev.getEndDate());
 
                 int prevPrior = prev.getPriority().ordinal();
                 int nextPrior = next.getPriority().ordinal();
