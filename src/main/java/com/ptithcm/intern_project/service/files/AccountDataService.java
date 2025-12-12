@@ -66,7 +66,7 @@ public class AccountDataService implements IAccountDataService {
         try (var writer = new FileWriter(CREATED_ACCOUNTS_TEMP_FILE)) {
             var content = new StringBuilder();
             content
-                .append("fullName,identity,username,password")
+                .append("fullName,identity,username,password,authority")
                 .append(System.lineSeparator());
             for (AccountCreationDTO account : accounts)
                 content
