@@ -69,6 +69,9 @@ public class GroupService implements IGroupService {
         if (joinedUserList.size() != request.getAssignedEmails().size())
             throw new AppExc(ErrorCodes.INVALID_IDS);
 
+        if (groupRepository.existsByName(request.getName()))
+            throw new AppExc(ErrorCodes.DUPLICATED_NAME);
+
         var savedGroup = groupRepository.save(groupMapper.newModel(request.getName(), curUser));
 
         var groupUserRelationships = new ArrayList<>(joinedUserList.stream()
@@ -191,5 +194,18 @@ public class GroupService implements IGroupService {
                 .build());
         }
         emailQueueService.processQueue();
+    }
+
+    @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
+    public StatsResponse checkIfIsAdmin(Long id, String token) {
+        var group = groupRepository.findById(id).orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
+        var username = jwtService.readPayload(token).get("sub");
+
+        return StatsResponse.builder()
+            .status(group.getGroupUsers().stream().anyMatch(groupUser ->
+                groupUser.getJoinedUserInfo().getAccount().getUsername().equals(username)
+                    && groupUser.getRole().equals(GroupRole.ADMIN)
+            ))
+            .build();
     }
 }

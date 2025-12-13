@@ -28,7 +28,7 @@ public class Group {
     @JoinColumn(name = "created_by_id", referencedColumnName = "id", nullable = false)
     UserInfo userInfoCreated;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", unique = true, nullable = false)
     String name;
 
     @Column(name = "active", nullable = false, columnDefinition = "BIT DEFAULT 1")

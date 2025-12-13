@@ -117,7 +117,9 @@ public class ReportService implements IReportService {
             report,
             ReportMsg.APPROVED_REPORT);
 
-        interfRecUsersForTaskSvc.queueNewRecord(report);
+        var isNotReportOfTaskOwner = !report.getUserTaskCreated().getTask().getUserInfoCreated().getEmail()
+            .equals(report.getUserTaskCreated().getAssignedUser().getEmail());
+        if (isNotReportOfTaskOwner)     interfRecUsersForTaskSvc.queueNewRecord(report);
     }
 
     @Override

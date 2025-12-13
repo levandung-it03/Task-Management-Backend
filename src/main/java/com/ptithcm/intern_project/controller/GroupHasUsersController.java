@@ -48,5 +48,4 @@ public class GroupHasUsersController {
         groupHasUsersService.reAddUser(id, token);
         return RestApiResponse.fromScs(SuccessCodes.UPDATED);
     }
-
 }

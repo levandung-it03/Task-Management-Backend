@@ -92,4 +92,12 @@ public class GroupController {
         @RequestHeader("Authorization") String token) {
         return RestApiResponse.fromScs(SuccessCodes.GET_LIST, groupService.getUsersGroupToAssign(id, token));
     }
+
+    @Operation(description = "Check if this user-group of cur-user in this group relationship is ADMIN or not")
+    @GetMapping({ROLE_PM + "/v1/group/{id}/is-admin", ROLE_LEAD + "/v1/group/{id}/is-admin"})
+    public ResponseEntity<RestApiResponse<StatsResponse>> checkIfIsAdmin(
+        @PathVariable("id") Long id,
+        @RequestHeader("Authorization") String token) {
+        return RestApiResponse.fromScs(SuccessCodes.UPDATED, groupService.checkIfIsAdmin(id, token));
+    }
 }
