@@ -41,6 +41,9 @@ public class TaskForUsers {
     @Column(name = "updated_time", nullable = false)
     LocalDateTime updatedTime = LocalDateTime.now();
 
+    @Column(name = "started_time")
+    LocalDateTime startedTime = null;
+
     @OneToMany(mappedBy = "userTaskCreated", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonIgnore
     @Builder.Default    //--Keep default value is our manually set value (or will be null)

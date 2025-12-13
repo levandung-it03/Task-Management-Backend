@@ -17,7 +17,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Documented
 @Constraint(validatedBy = { FutureDateValidator.class })
 public @interface FutureDateConstraint {
-    String message() default "Date must be in the future";
+    String message() default "Field '${field}' cannot be in the past!";
     Class<?>[] groups() default { };
     Class<? extends Payload>[] payload() default { };
 }

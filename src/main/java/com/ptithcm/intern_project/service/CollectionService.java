@@ -160,7 +160,7 @@ public class CollectionService implements ICollectionService {
 
                 int prevPrior = prev.getPriority().ordinal();
                 int nextPrior = next.getPriority().ordinal();
-                if (prevPrior != nextPrior) return prevPrior - nextPrior;
+                if (prevPrior != nextPrior) return nextPrior - prevPrior;
 
                 LocalDate prevStart = prev.getStartDate();
                 LocalDate nextStart = next.getStartDate();
