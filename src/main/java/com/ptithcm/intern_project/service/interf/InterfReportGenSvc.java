@@ -20,9 +20,29 @@ public class InterfReportGenSvc implements IInterfaceReportGenSvc {
     @Value("${env.fastapi.controllers.report-gen.generate-report}") String REPORT_GEN_PATH;
 
     @Override
-    public ReportGenResponse generateReport(ReportGenClientRequest request) {
+    public ReportGenResponse generateCompletedReport(ReportGenClientRequest request) {
         try {
-            return fastAPIClient.post(REPORT_GEN_PATH, request, ReportGenResponse.class);
+            return fastAPIClient.post(REPORT_GEN_PATH + "/completed-report", request, ReportGenResponse.class);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new AppExc(ErrorCodes.CANNOT_GENERATE_REPORT);
+        }
+    }
+
+    @Override
+    public ReportGenResponse generateProcessingReport(ReportGenClientRequest request) {
+        try {
+            return fastAPIClient.post(REPORT_GEN_PATH + "/processing-report", request, ReportGenResponse.class);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new AppExc(ErrorCodes.CANNOT_GENERATE_REPORT);
+        }
+    }
+
+    @Override
+    public ReportGenResponse generateDailyReport(ReportGenClientRequest request) {
+        try {
+            return fastAPIClient.post(REPORT_GEN_PATH + "/daily-report", request, ReportGenResponse.class);
         } catch (Exception e) {
             log.error(e.getMessage());
             throw new AppExc(ErrorCodes.CANNOT_GENERATE_REPORT);
