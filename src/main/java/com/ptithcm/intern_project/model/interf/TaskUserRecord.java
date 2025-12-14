@@ -58,11 +58,10 @@ public class TaskUserRecord {
     @JsonProperty("free_time_rto")
     float freeTimeRto;
 
-    @Column(name = "punct_score")
+    @Column(name = "used_time_rto")
     @Min(0)
-    @Max(1)
-    @JsonProperty("punct_score")
-    float punctScore;
+    @JsonProperty("used_time_rto")
+    float usedTimeRto;
 
     @Column(name = "was_sent", nullable = false, columnDefinition = "BIT")
     @Builder.Default

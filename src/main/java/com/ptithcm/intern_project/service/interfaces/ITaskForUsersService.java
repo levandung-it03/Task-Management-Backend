@@ -27,4 +27,6 @@ public interface ITaskForUsersService {
     List<Long> getBusyUserIdsOnTaskType(Domain taskType);
 
     void deleteUser(Long taskUserId, String token);
+
+    void startTaskByAssignedUser(Long taskUserId, String token);
 }

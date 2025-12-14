@@ -36,6 +36,7 @@ public class TaskForUsersMapper {
             .fullName(taskForUsers.getAssignedUser().getFullName())
             .email(taskForUsers.getAssignedUser().getEmail())
             .department(taskForUsers.getAssignedUser().getDepartment().getName())
+            .startedTime(taskForUsers.getStartedTime())
             .role(taskForUsers.getAssignedUser().getAccount().getAuthorities().getFirst().getAuthority())
             .userTaskStatus(taskForUsers.getUserTaskStatus())
             .build();

@@ -11,8 +11,6 @@ import java.util.List;
 @Repository
 public interface ReportRepository extends JpaRepository<Report, Long> {
 
-    boolean existsByUserTaskCreatedTaskId(Long taskId);
-
     List<Report> findAllByUserTaskCreatedId(Long id);
 
     @Query("""

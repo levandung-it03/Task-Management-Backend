@@ -53,13 +53,17 @@ public class TaskForUsersService implements ITaskForUsersService {
     public ArrayList<TaskForUsers> saveAllByEmails(List<String> emails, Task task) {
         var savedRelationships = new ArrayList<>(
             userInfoService.findAllByEmailIn(emails)
-            .stream().map(user -> TaskForUsers.builder()
-                .task(task)
-                .userTaskStatus(UserTaskStatus.JOINED)
-                .updatedTime(LocalDateTime.now())
-                .assignedUser(user)
-                .build()
-            ).toList()
+                .stream().map(user -> {
+                    var tfu = TaskForUsers.builder()
+                        .task(task)
+                        .userTaskStatus(UserTaskStatus.JOINED)
+                        .updatedTime(LocalDateTime.now())
+                        .assignedUser(user)
+                        .build();
+                    if (user.getId().equals(task.getUserInfoCreated().getId()))
+                        tfu.setStartedTime(LocalDateTime.now()); //--Owner doesn't have to start Task (to write Report).
+                    return tfu;
+                }).toList()
         );
         task.getTaskForUsers().addAll(savedRelationships);
         return savedRelationships;
@@ -83,7 +87,7 @@ public class TaskForUsersService implements ITaskForUsersService {
         this.validateEndedParentEntities(taskUserCreating);
 
         var isNotStartedTask = LocalDate.now().isBefore(taskUserCreating.getTask().getStartDate());
-        if (isNotStartedTask)   throw new AppExc(ErrorCodes.TASK_HASNT_STARTED);
+        if (isNotStartedTask) throw new AppExc(ErrorCodes.TASK_HASNT_STARTED);
 
         var containsApprovedReport = taskUserCreating.getReports()
             .stream().anyMatch(report -> report.getReportStatus().equals(ReportStatus.APPROVED));
@@ -240,10 +244,10 @@ public class TaskForUsersService implements ITaskForUsersService {
         if (isPhaseEnded) throw new AppExc(ErrorCodes.PHASE_ENDED);
 
         var isCollectionEnded = taskForUser.getTask().getCollection().getEndDate() != null;
-        if (isCollectionEnded)  throw new AppExc(ErrorCodes.COLLECTION_ENDED);
+        if (isCollectionEnded) throw new AppExc(ErrorCodes.COLLECTION_ENDED);
 
         var isTaskEnded = taskForUser.getTask().getEndDate() != null;
-        if (isTaskEnded)  throw new AppExc(ErrorCodes.TASK_ENDED);
+        if (isTaskEnded) throw new AppExc(ErrorCodes.TASK_ENDED);
     }
 
     public boolean existsByProjectIdAndAssignedUsername(Long projectId, String username) {
@@ -286,5 +290,17 @@ public class TaskForUsersService implements ITaskForUsersService {
 
     public void deleteById(Long id) {
         taskForUsersRepository.deleteById(id);
+    }
+
+    @Override
+    public void startTaskByAssignedUser(Long taskUserId, String token) {
+        var username = jwtService.readPayload(token).get("sub");
+        var userTask = taskForUsersRepository.findById(taskUserId).orElseThrow(() -> new AppExc(ErrorCodes.INVALID_ID));
+
+        var isAssignedUser = userTask.getAssignedUser().getAccount().getUsername().equals(username);
+        if (!isAssignedUser) throw new AppExc(ErrorCodes.FORBIDDEN_USER);
+
+        userTask.setStartedTime(LocalDateTime.now());
+        taskForUsersRepository.save(userTask);
     }
 }

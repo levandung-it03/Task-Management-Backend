@@ -62,7 +62,7 @@ public class TaskMapper {
             .build();
     }
 
-    public TaskResponse toResponse(Task foundTask, boolean hasAtLeastOneReport) {
+    public TaskResponse toResponse(Task foundTask) {
         return TaskResponse.builder()
             .id(foundTask.getId())
             .userInfo(userInfoMapper.shortenUserInfo(foundTask.getUserInfoCreated()))
@@ -79,7 +79,6 @@ public class TaskMapper {
             .deadline(foundTask.getDeadline())
             .createdTime(foundTask.getCreatedTime())
             .updatedTime(foundTask.getUpdatedTime())
-            .hasAtLeastOneReport(hasAtLeastOneReport)
             .build();
     }
 

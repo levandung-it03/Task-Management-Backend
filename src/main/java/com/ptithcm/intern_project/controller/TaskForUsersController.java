@@ -111,4 +111,17 @@ public class TaskForUsersController {
         return RestApiResponse.fromScs(SuccessCodes.GET_DETAIL,
             taskForUsersService.checkIsAssignedUserTask(taskUserId, token));
     }
+
+    @Operation(description = "Assigned User start their Task")
+    @PutMapping({
+        ROLE_EMP + "/v1/task-user/{taskUserId}/start",
+        ROLE_LEAD + "/v1/task-user/{taskUserId}/start",
+        ROLE_PM + "/v1/task-user/{taskUserId}/start"})
+    public ResponseEntity<RestApiResponse<Void>> startTaskByAssignedUser(
+        @PathVariable("taskUserId") Long taskUserId,
+        @RequestHeader("Authorization") String token) {
+        taskForUsersService.startTaskByAssignedUser(taskUserId, token);
+        return RestApiResponse.fromScs(SuccessCodes.UPDATED);
+    }
+
 }

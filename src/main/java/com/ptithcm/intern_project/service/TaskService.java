@@ -1,10 +1,12 @@
 package com.ptithcm.intern_project.service;
 
 import com.ptithcm.intern_project.config.enums.SuccessCodes;
+import com.ptithcm.intern_project.model.Report;
 import com.ptithcm.intern_project.model.dto.general.EmailTaskDTO;
 import com.ptithcm.intern_project.model.dto.general.StatusDTO;
 import com.ptithcm.intern_project.model.dto.request.ReassignUserSubTaskRequest;
 import com.ptithcm.intern_project.model.dto.response.*;
+import com.ptithcm.intern_project.model.enums.ReportStatus;
 import com.ptithcm.intern_project.model.enums.RoleOnEntity;
 import com.ptithcm.intern_project.config.enums.AuthorityEnum;
 import com.ptithcm.intern_project.config.enums.ErrorCodes;
@@ -153,8 +155,18 @@ public class TaskService implements ITaskService {
         if (!this.taskTransService.canSeeTask(foundTask, currentUsername))
             throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
-        var hasAtLeastOneReport = reportService.hasAtLeastOneReport(id);
-        return taskMapper.toResponse(foundTask, hasAtLeastOneReport);
+        var response = taskMapper.toResponse(foundTask);
+        response.setHasApprovedReport(
+            foundTask.getTaskForUsers().stream()
+                .flatMap(tfu -> tfu.getReports().stream())
+                .anyMatch(report -> report.getReportStatus().equals(ReportStatus.APPROVED))
+        );
+        response.setReportsQty(
+            foundTask.getTaskForUsers().stream()
+                .flatMap(tfu -> tfu.getReports().stream())
+                .toList()
+                .size());
+        return response;
     }
 
     @Override
@@ -188,6 +200,7 @@ public class TaskService implements ITaskService {
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
     public UpdatedTaskResponse update(Long id, UpdatedTaskRequest request, String token) {
+        var username = jwtService.readPayload(token).get("sub");
         var result = UpdatedTaskResponse.builder().build();
         Task foundTask = taskTransService.findUpdatableTaskByOwner(id, token);
         //--Checked project in-progress by "foundTask"
@@ -202,10 +215,6 @@ public class TaskService implements ITaskService {
         var isEndingAfterCollection = request.getDeadline() != null
             && request.getDeadline().isAfter(foundTask.getCollection().getDueDate());
         if (isEndingAfterCollection)    throw new AppExc(ErrorCodes.END_AFTER_COLLECTION);
-
-        var isTodayAfterDeadline = (request.getDeadline() == null)
-            && LocalDate.now().isAfter(foundTask.getDeadline());
-        if (isTodayAfterDeadline)   throw new AppExc(ErrorCodes.UPDATED_ON_DATE_AFTER_DEADLINE);
 
         var isRootTask = foundTask.getRootTask() == null;
         if (isRootTask) {
@@ -233,36 +242,49 @@ public class TaskService implements ITaskService {
                 .assignedUser(addedUser)
                 .updatedTime(LocalDateTime.now())
                 .userTaskStatus(UserTaskStatus.JOINED)
+                .startedTime(foundTask.getUserInfoCreated().getAccount().getUsername().equals(username)
+                    ? LocalDateTime.now()   //--Default set startTime (Task owner doesn't have to start Task manually).
+                    : null)
                 .build();
             foundTask.getTaskForUsers().add(newUserTask);
             var addedResult = taskForUsersService.save(newUserTask);
             result.setNewUsers(List.of(taskForUsersMapper.toResponse(addedResult)));
         }
-        foundTask.setUpdatedTime(LocalDateTime.now());
 
-        var existsDoneReport = reportService.existsReportByTaskId(id);
+        var isAlreadyStarted = foundTask.getStartDate().isBefore(LocalDate.now());
+        if (isAlreadyStarted && !request.getStartDate().isEqual(foundTask.getStartDate()))
+            throw new AppExc(ErrorCodes.UPDATE_START_DATE_ON_STARTED_TASK);
+
+        var existsDoneReport = foundTask.getTaskForUsers().stream()
+            .flatMap(tfu -> tfu.getReports().stream())
+            .anyMatch(report -> report.getReportStatus().equals(ReportStatus.APPROVED));
         if (existsDoneReport && (
-            !request.getStartDate().isEqual(foundTask.getStartDate())
-                || request.getLevel() != foundTask.getLevel()
+                request.getLevel() != foundTask.getLevel()
                 || request.getPriority() != foundTask.getPriority()
                 || request.getTaskType() != foundTask.getTaskType()
             ))
-            throw new AppExc(ErrorCodes.EXISTS_REPORT_ON_TASK);
+            throw new AppExc(ErrorCodes.EXISTS_APPROVED_REPORT_ON_TASK);
+
+        foundTask.setUpdatedTime(LocalDateTime.now());
         taskMapper.mappingBaseInfo(foundTask, request);
 
         taskRepository.save(foundTask);
         return result;
     }
 
-    private Task findUpdatableTaskNotHasReport(Long id, String token) {
+    private Task findUpdatableTaskNotHasReport(Long id, String token) { //--For Update Desc, ReportFormat
         Task foundTask = taskTransService.findUpdatableTaskByOwner(id, token);
         //--Checked project in-progress by "foundTask"
         //--Checked phase is ended by "foundTask"
         //--Checked collection is ended by "foundTask"
         //--Checked task is ended by "foundTask"
 
+        var isAlreadyStarted = foundTask.getStartDate().isBefore(LocalDate.now());
+        if (isAlreadyStarted)
+            throw new AppExc(ErrorCodes.CANNOT_UPDATE_STARTED_TASK);
+
         var existsDoneReport = reportService.existsReportByTaskId(id);
-        if (existsDoneReport) throw new AppExc(ErrorCodes.EXISTS_REPORT_ON_TASK);
+        if (existsDoneReport) throw new AppExc(ErrorCodes.EXISTS_APPROVED_REPORT_ON_TASK);
 
         return foundTask;
     }
@@ -324,12 +346,6 @@ public class TaskService implements ITaskService {
         //--Checked task is ended by "lockedTask"
 
         lockedTask.setLocked(request.getStatus());
-        var notStartedYet = lockedTask.getUpdatedTime().equals(lockedTask.getCreatedTime());
-        if (notStartedYet)  lockedTask.setUpdatedTime(LocalDateTime.now());
-
-        if (LocalDate.now().isAfter(lockedTask.getDeadline()))
-            throw new AppExc(ErrorCodes.STARTED_ON_DATE_AFTER_DEADLINE);
-
         taskRepository.save(lockedTask);
 
         this.notifyViaEmail(lockedTask.getTaskForUsers(), TaskMsg.LOCKED_TASK);
@@ -576,6 +592,7 @@ public class TaskService implements ITaskService {
     @Transactional(rollbackFor = RuntimeException.class, propagation = Propagation.REQUIRED)
     public UpdatedTaskResponse reassignUserSubTask(Long taskId, ReassignUserSubTaskRequest request, String token) {
         var result = new UpdatedTaskResponse();
+        var username = jwtService.readPayload(token).get("sub");
         var foundTask = this.findUpdatableTaskNotHasReport(taskId, token);
 
         var newUserOpt = taskForUsersService
@@ -584,25 +601,31 @@ public class TaskService implements ITaskService {
         if (newUserOpt.isEmpty())
             throw new AppExc(ErrorCodes.FORBIDDEN_USER);
 
-        var oldUser = foundTask.getTaskForUsers().getFirst();
-        var newUserSubTask = TaskForUsers.builder()
+        var rolledBackUser = foundTask.getTaskForUsers().getFirst();
+        var addedUserFromRoot = TaskForUsers.builder()
             .task(foundTask)
             .assignedUser(newUserOpt.get().getAssignedUser())
             .userTaskStatus(UserTaskStatus.JOINED)
             .updatedTime(LocalDateTime.now())
+            .startedTime(foundTask.getUserInfoCreated().getAccount().getUsername().equals(username)
+                ? LocalDateTime.now()   //--Auto-set start for Task-Owner.
+                : null)
             .build();
         foundTask.getTaskForUsers().removeFirst();
-        foundTask.getTaskForUsers().add(newUserSubTask);
+        foundTask.getTaskForUsers().add(addedUserFromRoot);
 
         var rootTask = foundTask.getRootTask();
-        var oldUserRootTask = TaskForUsers.builder()
+        var addedUserTask = TaskForUsers.builder()
             .task(foundTask.getRootTask())
-            .assignedUser(oldUser.getAssignedUser())
+            .assignedUser(rolledBackUser.getAssignedUser())
             .userTaskStatus(UserTaskStatus.JOINED)
             .updatedTime(LocalDateTime.now())
+            .startedTime(foundTask.getUserInfoCreated().getAccount().getUsername().equals(username)
+                ? LocalDateTime.now()   //--Auto-set start for Task-Owner.
+                : null)
             .build();
         rootTask.getTaskForUsers().remove(newUserOpt.get());
-        rootTask.getTaskForUsers().add(oldUserRootTask);
+        rootTask.getTaskForUsers().add(addedUserTask);
         taskRepository.save(rootTask);
         taskRepository.save(foundTask);
         //--JPA automatically dirty, and flush.

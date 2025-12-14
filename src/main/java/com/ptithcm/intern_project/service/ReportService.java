@@ -144,10 +144,6 @@ public class ReportService implements IReportService {
             ReportMsg.REJECTED_REPORT);
     }
 
-    public boolean hasAtLeastOneReport(Long taskId) {
-        return reportRepository.existsByUserTaskCreatedTaskId(taskId);
-    }
-
     public Report save(Report report) {
         return reportRepository.save(report);
     }

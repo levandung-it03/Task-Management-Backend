@@ -47,7 +47,7 @@ public class InterfRecUsersForTaskSvc implements IInterfRecUsersForTaskSvc {
             .priority(task.getPriority())
             .isOnTime(isOnTime ? 1 : 0)
             .freeTimeRto(this.calcFreeTimeRatio(isOnTime, approvedReport))
-            .punctScore(this.calcPunctScore(isOnTime, approvedReport))
+            .usedTimeRto(this.calcUsedTimeRatio(approvedReport))
             .wasSent(false)
             .build();
         taskUserPredRepo.save(record);
@@ -63,22 +63,27 @@ public class InterfRecUsersForTaskSvc implements IInterfRecUsersForTaskSvc {
 
         var task = report.getUserTaskCreated().getTask();
         var deadline = task.getDeadline().plusDays(1).atStartOfDay();
-        float totalTaskSeconds = Duration.between(task.getUpdatedTime(), deadline).toSeconds();
-        float totalFreeSeconds = Duration.between(report.getUpdatedTime(), deadline).toSeconds();
+        var startTime = task.getStartDate().atStartOfDay();
+        float totalTaskSeconds = Duration.between(startTime, deadline).toSeconds();
+        float totalFreeSeconds = totalTaskSeconds - Duration.between(
+            report.getUserTaskCreated().getStartedTime(),
+            report.getUpdatedTime()
+        ).toSeconds();
         if (totalFreeSeconds <= 0)  return 0;
 
         return totalFreeSeconds / totalTaskSeconds;
     }
 
-    private float calcPunctScore(boolean isOnTime, Report report) {
-        if (isOnTime)
-            return 1;
+    private float calcUsedTimeRatio(Report report) {
         var task = report.getUserTaskCreated().getTask();
         var deadline = task.getDeadline().plusDays(1).atStartOfDay();
-        float totalTaskSeconds = Duration.between(task.getUpdatedTime(), deadline).toSeconds();
-        float totalLateSeconds = Duration.between(deadline, report.getUpdatedTime()).toSeconds();
-
-        return Math.max(0, 1 - totalLateSeconds/totalTaskSeconds);
+        var startTime = task.getStartDate().atStartOfDay();
+        float totalTaskSeconds = Duration.between(startTime, deadline).toSeconds();
+        float totalUsedSeconds = Duration.between(
+            report.getUserTaskCreated().getStartedTime(),
+            report.getUpdatedTime()
+        ).toSeconds();
+        return totalUsedSeconds / totalTaskSeconds;
     }
 
     @Override

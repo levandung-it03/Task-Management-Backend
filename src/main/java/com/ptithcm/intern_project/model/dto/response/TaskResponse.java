@@ -47,5 +47,6 @@ public class TaskResponse {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime updatedTime;
 
-    boolean hasAtLeastOneReport;
+    boolean hasApprovedReport;
+    int reportsQty;
 }
