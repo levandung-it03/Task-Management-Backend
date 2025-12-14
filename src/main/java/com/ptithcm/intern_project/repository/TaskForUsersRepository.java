@@ -106,7 +106,7 @@ public interface TaskForUsersRepository extends JpaRepository<TaskForUsers, Long
               SELECT DISTINCT r.userTaskCreated.id FROM Report r
               WHERE r.reportStatus = com.ptithcm.intern_project.model.enums.ReportStatus.APPROVED
           )
-    """)
+        """)
     List<Long> getBusyUserIdsOnTaskType(@Param("taskType") Domain taskType);
 
     @Query("""

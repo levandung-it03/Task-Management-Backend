@@ -50,8 +50,8 @@ public class RecUsersForTaskTransService {
         var rankedUserIdsResult = rankedUserIds.stream()
             .filter(userId ->
                 usersResultMap.containsKey(userId)
-                    && relatedUsers.containsKey(userId)
-                    && relatedUsers.get(userId).isActive()
+                    && (relatedUsers.isEmpty()
+                        || (relatedUsers.containsKey(userId) && relatedUsers.get(userId).isActive()))
             ).limit(request.getNumOfEmp())
             .toList();
 

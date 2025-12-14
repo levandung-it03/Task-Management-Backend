@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -38,14 +39,18 @@ public class CustomExceptionHandler {
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     public ResponseEntity<RestApiResponse<Void>> handleHibernateValidatorException(
         MethodArgumentNotValidException exception) {
-        var plainErr = exception.getMessage().split(";")[0];
-        var startInd = plainErr.indexOf("field '") + 7;
-        var endInd = plainErr.indexOf("'", startInd);
-        var response = RestApiResponse.fromErr(
-            ErrorCodes.VALIDATOR_ERR_RESPONSE,
-            ErrorCodes.VALIDATOR_ERR_RESPONSE.getMsg().replace("${field}", plainErr.substring(startInd, endInd)));
-        log.error("[HANDLER]_ValidatorException: {}", plainErr);
-        return response;
+        log.error("[HANDLER]_ValidatorException: {}", exception.getMessage());
+
+        FieldError field = exception.getBindingResult().getFieldError();
+        if (field == null)
+            return RestApiResponse.fromErr(ErrorCodes.VALIDATOR_ERR_RESPONSE, exception.getMessage());
+
+        var fieldName = field.getField();
+        var defMsg = exception.getBindingResult().getAllErrors().getFirst().getDefaultMessage();
+        if (defMsg == null)
+            return RestApiResponse.fromErr(ErrorCodes.VALIDATOR_ERR_RESPONSE, exception.getMessage());
+
+        return RestApiResponse.fromErr(ErrorCodes.VALIDATOR_ERR_RESPONSE, defMsg.replace("${field}", fieldName));
     }
 
     @ExceptionHandler(AppExc.class)
