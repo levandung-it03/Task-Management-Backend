@@ -36,7 +36,7 @@ public class Report {
     String title;
 
     @Lob
-    @Column(name = "content", nullable = false)
+    @Column(name = "content", nullable = false, columnDefinition = "TEXT")
     String content;
 
     @Column(name = "rejected_reason")

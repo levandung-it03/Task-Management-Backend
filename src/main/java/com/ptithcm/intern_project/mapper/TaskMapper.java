@@ -29,7 +29,7 @@ public class TaskMapper {
             .level(request.getRequest().getLevel())
             .taskType(request.getRequest().getTaskType())
             .priority(request.getRequest().getPriority())
-            .isLocked(true) //--Locking a new Task (for any updating action)
+            .isLocked(false)
             .startDate(request.getRequest().getStartDate())
             .endDate(null)
             .deadline(request.getRequest().getDeadline())
