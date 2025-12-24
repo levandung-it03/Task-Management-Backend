@@ -11,5 +11,6 @@ public enum Domain {
     MAINTENANCE,
     RESEARCH,
     TRAINING,
-    AI
+    AI,
+    HR
 }

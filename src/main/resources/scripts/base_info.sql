@@ -153,7 +153,37 @@ VALUES ('employee1', '$2a$08$ljSypDfSMuIH0tR0c3.GeuyKO20K77u.UBK/0Koxkmr5BOdTjTT
        ('employee117', '$2a$08$ljSypDfSMuIH0tR0c3.GeuyKO20K77u.UBK/0Koxkmr5BOdTjTTVy', 1, NOW(), NOW()),
        ('employee118', '$2a$08$ljSypDfSMuIH0tR0c3.GeuyKO20K77u.UBK/0Koxkmr5BOdTjTTVy', 1, NOW(), NOW()),
        ('employee119', '$2a$08$ljSypDfSMuIH0tR0c3.GeuyKO20K77u.UBK/0Koxkmr5BOdTjTTVy', 1, NOW(), NOW()),
-       ('employee120', '$2a$08$ljSypDfSMuIH0tR0c3.GeuyKO20K77u.UBK/0Koxkmr5BOdTjTTVy', 1, NOW(), NOW());
+       ('employee120', '$2a$08$ljSypDfSMuIH0tR0c3.GeuyKO20K77u.UBK/0Koxkmr5BOdTjTTVy', 1, NOW(), NOW()),
+       ('employee121', '$2a$08$ljSypDfSMuIH0tR0c3.GeuyKO20K77u.UBK/0Koxkmr5BOdTjTTVy', 1, NOW(), NOW()),
+       ('employee122', '$2a$08$ljSypDfSMuIH0tR0c3.GeuyKO20K77u.UBK/0Koxkmr5BOdTjTTVy', 1, NOW(), NOW()),
+       ('employee123', '$2a$08$ljSypDfSMuIH0tR0c3.GeuyKO20K77u.UBK/0Koxkmr5BOdTjTTVy', 1, NOW(), NOW()),
+       ('employee124', '$2a$08$ljSypDfSMuIH0tR0c3.GeuyKO20K77u.UBK/0Koxkmr5BOdTjTTVy', 1, NOW(), NOW()),
+       ('employee125', '$2a$08$ljSypDfSMuIH0tR0c3.GeuyKO20K77u.UBK/0Koxkmr5BOdTjTTVy', 1, NOW(), NOW()),
+       ('employee126', '$2a$08$ljSypDfSMuIH0tR0c3.GeuyKO20K77u.UBK/0Koxkmr5BOdTjTTVy', 1, NOW(), NOW()),
+       ('employee127', '$2a$08$ljSypDfSMuIH0tR0c3.GeuyKO20K77u.UBK/0Koxkmr5BOdTjTTVy', 1, NOW(), NOW()),
+       ('employee128', '$2a$08$ljSypDfSMuIH0tR0c3.GeuyKO20K77u.UBK/0Koxkmr5BOdTjTTVy', 1, NOW(), NOW()),
+       ('employee129', '$2a$08$ljSypDfSMuIH0tR0c3.GeuyKO20K77u.UBK/0Koxkmr5BOdTjTTVy', 1, NOW(), NOW()),
+       ('employee130', '$2a$08$ljSypDfSMuIH0tR0c3.GeuyKO20K77u.UBK/0Koxkmr5BOdTjTTVy', 1, NOW(), NOW()),
+       ('employee131', '$2a$08$ljSypDfSMuIH0tR0c3.GeuyKO20K77u.UBK/0Koxkmr5BOdTjTTVy', 1, NOW(), NOW()),
+       ('employee132', '$2a$08$ljSypDfSMuIH0tR0c3.GeuyKO20K77u.UBK/0Koxkmr5BOdTjTTVy', 1, NOW(), NOW()),
+       ('employee133', '$2a$08$ljSypDfSMuIH0tR0c3.GeuyKO20K77u.UBK/0Koxkmr5BOdTjTTVy', 1, NOW(), NOW()),
+       ('employee134', '$2a$08$ljSypDfSMuIH0tR0c3.GeuyKO20K77u.UBK/0Koxkmr5BOdTjTTVy', 1, NOW(), NOW()),
+       ('employee135', '$2a$08$ljSypDfSMuIH0tR0c3.GeuyKO20K77u.UBK/0Koxkmr5BOdTjTTVy', 1, NOW(), NOW()),
+       ('employee136', '$2a$08$ljSypDfSMuIH0tR0c3.GeuyKO20K77u.UBK/0Koxkmr5BOdTjTTVy', 1, NOW(), NOW()),
+       ('employee137', '$2a$08$ljSypDfSMuIH0tR0c3.GeuyKO20K77u.UBK/0Koxkmr5BOdTjTTVy', 1, NOW(), NOW()),
+       ('employee138', '$2a$08$ljSypDfSMuIH0tR0c3.GeuyKO20K77u.UBK/0Koxkmr5BOdTjTTVy', 1, NOW(), NOW()),
+       ('employee139', '$2a$08$ljSypDfSMuIH0tR0c3.GeuyKO20K77u.UBK/0Koxkmr5BOdTjTTVy', 1, NOW(), NOW()),
+       ('employee140', '$2a$08$ljSypDfSMuIH0tR0c3.GeuyKO20K77u.UBK/0Koxkmr5BOdTjTTVy', 1, NOW(), NOW()),
+       ('employee141', '$2a$08$ljSypDfSMuIH0tR0c3.GeuyKO20K77u.UBK/0Koxkmr5BOdTjTTVy', 1, NOW(), NOW()),
+       ('employee142', '$2a$08$ljSypDfSMuIH0tR0c3.GeuyKO20K77u.UBK/0Koxkmr5BOdTjTTVy', 1, NOW(), NOW()),
+       ('employee143', '$2a$08$ljSypDfSMuIH0tR0c3.GeuyKO20K77u.UBK/0Koxkmr5BOdTjTTVy', 1, NOW(), NOW()),
+       ('employee144', '$2a$08$ljSypDfSMuIH0tR0c3.GeuyKO20K77u.UBK/0Koxkmr5BOdTjTTVy', 1, NOW(), NOW()),
+       ('employee145', '$2a$08$ljSypDfSMuIH0tR0c3.GeuyKO20K77u.UBK/0Koxkmr5BOdTjTTVy', 1, NOW(), NOW()),
+       ('employee146', '$2a$08$ljSypDfSMuIH0tR0c3.GeuyKO20K77u.UBK/0Koxkmr5BOdTjTTVy', 1, NOW(), NOW()),
+       ('employee147', '$2a$08$ljSypDfSMuIH0tR0c3.GeuyKO20K77u.UBK/0Koxkmr5BOdTjTTVy', 1, NOW(), NOW()),
+       ('employee148', '$2a$08$ljSypDfSMuIH0tR0c3.GeuyKO20K77u.UBK/0Koxkmr5BOdTjTTVy', 1, NOW(), NOW()),
+       ('employee149', '$2a$08$ljSypDfSMuIH0tR0c3.GeuyKO20K77u.UBK/0Koxkmr5BOdTjTTVy', 1, NOW(), NOW()),
+       ('employee150', '$2a$08$ljSypDfSMuIH0tR0c3.GeuyKO20K77u.UBK/0Koxkmr5BOdTjTTVy', 1, NOW(), NOW());
 
 -- 4. Tạo 3 Account ROLE_LEAD
 INSERT INTO account (username, password, status, created_time, updated_time)
@@ -290,20 +320,50 @@ VALUES
     (117,4),
     (118,4),
     (119,4),
-    (120,4);
+    (120,4),
+    (121, 4),
+    (122, 4),
+    (123, 4),
+    (124, 4),
+    (125, 4),
+    (126, 4),
+    (127, 4),
+    (128, 4),
+    (129, 4),
+    (130, 4),
+    (131, 4),
+    (132, 4),
+    (133, 4),
+    (134, 4),
+    (135, 4),
+    (136, 4),
+    (137, 4),
+    (138, 4),
+    (139, 4),
+    (140, 4),
+    (141, 4),
+    (142, 4),
+    (143, 4),
+    (144, 4),
+    (145, 4),
+    (146, 4),
+    (147, 4),
+    (148, 4),
+    (149, 4),
+    (150, 4);
 
 -- ROLE_LEAD cho 3 lead
 INSERT INTO account_authorities (account_id, authority_id)
-VALUES (121, 3),
-       (122, 3),
-       (123, 3);
+VALUES (151, 3),
+       (152, 3),
+       (153, 3);
 
 -- ROLE_PM cho 1 PM
 INSERT INTO account_authorities (account_id, authority_id)
-VALUES (124, 2);
+VALUES (154, 2);
 
 INSERT INTO account_authorities (account_id, authority_id)
-VALUES (125, 1);
+VALUES (155, 1);
 
 -- 6. Tạo UserInfo liên kết Account, 10 employee + 3 lead + 1 pm, phòng ban assign đơn giản
 INSERT INTO user_info (full_name, email, phone, identity, department_id, account_id)
@@ -443,11 +503,47 @@ VALUES
        ('Employee 120', 'employee120@example.com', '0900000120', '120', 1, 120);
 INSERT INTO user_info (full_name, email, phone, identity, department_id, account_id)
 VALUES
-       ('Lead 1', 'levandung.it03@gmail.com', '0910000001', '121', 1, 121),
-       ('Lead 2', 'lead2@example.com', '0910000002', '122', 1, 122),
-       ('Lead 3', 'lead3@example.com', '0910000003', '123', 1, 123),
-       ('PM 1', 'pm1@example.com', '0920000001', '123', 1, 124),
-       ('ADMIN', 'admin@example.com', '0920000001', '125', 1, 125);
+    ('Employee 121', 'employee121@example.com', '0900000101', '121', 1, 121),
+    ('Employee 122', 'employee122@example.com', '0900000102', '122', 1, 122),
+    ('Employee 123', 'employee123@example.com', '0900000103', '123', 1, 123),
+    ('Employee 124', 'employee124@example.com', '0900000104', '124', 1, 124),
+    ('Employee 125', 'employee125@example.com', '0900000105', '125', 1, 125),
+    ('Employee 126', 'employee126@example.com', '0900000106', '126', 1, 126),
+    ('Employee 127', 'employee127@example.com', '0900000107', '127', 1, 127),
+    ('Employee 128', 'employee128@example.com', '0900000108', '128', 1, 128),
+    ('Employee 129', 'employee129@example.com', '0900000109', '129', 1, 129),
+    ('Employee 130', 'employee130@example.com', '0900000110', '130', 1, 130);
+INSERT INTO user_info (full_name, email, phone, identity, department_id, account_id)
+VALUES
+    ('Employee 131', 'employee131@example.com', '0900000101', '131', 1, 131),
+    ('Employee 132', 'employee132@example.com', '0900000102', '132', 1, 132),
+    ('Employee 133', 'employee133@example.com', '0900000103', '133', 1, 133),
+    ('Employee 134', 'employee134@example.com', '0900000104', '134', 1, 134),
+    ('Employee 135', 'employee135@example.com', '0900000105', '135', 1, 135),
+    ('Employee 136', 'employee136@example.com', '0900000106', '136', 1, 136),
+    ('Employee 137', 'employee137@example.com', '0900000107', '137', 1, 137),
+    ('Employee 138', 'employee138@example.com', '0900000108', '138', 1, 138),
+    ('Employee 139', 'employee139@example.com', '0900000109', '139', 1, 139),
+    ('Employee 140', 'employee140@example.com', '0900000110', '140', 1, 140);
+INSERT INTO user_info (full_name, email, phone, identity, department_id, account_id)
+VALUES
+    ('Employee 141', 'employee141@example.com', '0900000111', '141', 1, 141),
+    ('Employee 142', 'employee142@example.com', '0900000112', '142', 1, 142),
+    ('Employee 143', 'employee143@example.com', '0900000113', '143', 1, 143),
+    ('Employee 144', 'employee144@example.com', '0900000114', '144', 1, 144),
+    ('Employee 145', 'employee145@example.com', '0900000115', '145', 1, 145),
+    ('Employee 146', 'employee146@example.com', '0900000116', '146', 1, 146),
+    ('Employee 147', 'employee147@example.com', '0900000117', '147', 1, 147),
+    ('Employee 148', 'employee148@example.com', '0900000118', '148', 1, 148),
+    ('Employee 149', 'employee149@example.com', '0900000119', '149', 1, 149),
+    ('Employee 150', 'employee150@example.com', '0900000120', '150', 1, 150);
+INSERT INTO user_info (full_name, email, phone, identity, department_id, account_id)
+VALUES
+       ('Lead 1', 'levandung.it03@gmail.com', '0910000001', '151', 1, 151),
+       ('Lead 2', 'lead2@example.com', '0910000002', '152', 1, 152),
+       ('Lead 3', 'lead3@example.com', '0910000003', '153', 1, 153),
+       ('PM 1', 'pm1@example.com', '0920000001', '154', 1, 154),
+       ('ADMIN', 'admin@example.com', '0920000001', '155', 1, 155);
 
 -- Tạo các Groups
 INSERT INTO `group` (created_by_id, name, active, created_time, updated_time)
@@ -470,9 +566,9 @@ VALUES
 ALTER TABLE authority
     AUTO_INCREMENT = 5;
 ALTER TABLE account
-    AUTO_INCREMENT = 126;
+    AUTO_INCREMENT = 156;
 ALTER TABLE user_info
-    AUTO_INCREMENT = 126;
+    AUTO_INCREMENT = 156;
 ALTER TABLE department
     AUTO_INCREMENT = 4;
 ALTER TABLE `group`
