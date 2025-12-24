@@ -2,7 +2,7 @@
 START TRANSACTION;
 
 INSERT INTO project (`id`, `created_time`, `description`, `due_date`, `expected_start_date`, `name`, `status`, `updated_time`, `created_by_id`)
-VALUES (3, '2020-01-01 00:00:00.000000', 'This is CVWritingSupporter QualityAssurance', '2024-07-18', '2020-01-01', 'CVWritingSupporter QualityAssurance', 'IN_PROGRESS', '2020-01-01 00:00:00.000000', 154);
+VALUES (3, '2020-01-01 00:00:00.000000', 'This is CVWritingSupporter QualityAssurance', '2025-04-21', '2020-01-01', 'CVWritingSupporter QualityAssurance', 'IN_PROGRESS', '2020-01-01 00:00:00.000000', 154);
 
 
 INSERT INTO project_role (`id`, `role`, `project_id`, `user_info_id`) VALUES (5, 'OWNER', 3, 154);
@@ -9807,12 +9807,1410 @@ VALUES
 (DEFAULT, 19321, 'Employee 134 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-07-04 01:49:48.000000', '2024-07-04 01:49:48.000000', '2024-07-04 01:54:48.000000'),
 (DEFAULT, 19322, 'Employee 135 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-07-03 11:33:00.000000', '2024-07-03 11:33:00.000000', '2024-07-03 11:38:00.000000');
 
+INSERT INTO `phase` (`id`, `created_time`, `description`, `due_date`, `start_date`, `name`, `updated_time`, `project_id`, `created_by_id`)
+VALUES (11, '2024-07-07 00:45:00.000000', 'This is Post-Refactor & Release Validation', '2025-04-21', '2024-07-07', 'Post-Refactor & Release Validation', '2024-07-07 00:45:00.000000', 3, 154);
+
+
+INSERT INTO collection (`id`, `created_time`, `description`, `due_date`, `start_date`, `name`, `updated_time`, `phase_id`, `created_by_id`)
+VALUES (62, '2024-07-07 00:50:00.000000', 'This is UAT & Business Validation', '2024-09-05', '2024-07-07', 'UAT & Business Validation', '2024-07-07 00:50:00.000000', 11, 154);
+
+
+-- 2024-07-08 00:55:00.000000
+-- 2024-07-08
+INSERT INTO task (id, collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked, start_date, end_date, deadline, created_time, updated_time)
+VALUES (870, 62, 151, NULL, 'Validate User Acceptance Scenarios', 'This is Validate User Acceptance Scenarios', NULL, 'NORMAL', 'TEST', 'NORMAL', FALSE, '2024-07-08', '2024-07-11', '2024-07-12', '2024-07-08 00:55:00.000000', '2024-07-08 00:55:00.000000');
+
+INSERT INTO task_for_users (id, task_id, assigned_to_id, user_task_status, updated_time, started_time)
+VALUES
+(19324, 870, 118, 'JOINED', '2024-07-08 00:55:00.000000', '2024-07-08 15:07:28.800000'),
+(19325, 870, 124, 'JOINED', '2024-07-08 00:55:00.000000', '2024-07-09 15:13:14.400000');
+INSERT INTO report (id, created_by_id, title, content, rejected_reason, report_status, created_time, updated_time, reviewed_time)
+VALUES
+(DEFAULT, 19324, 'Employee 118 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-07-09 10:54:02.400000', '2024-07-09 10:54:02.400000', '2024-07-09 10:59:02.400000'),
+(DEFAULT, 19325, 'Employee 124 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-07-11 00:14:40.800000', '2024-07-11 00:14:40.800000', '2024-07-11 00:19:40.800000');
+
+-- 2024-07-13 00:55:00.000000
+-- 2024-07-13
+INSERT INTO task (id, collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked, start_date, end_date, deadline, created_time, updated_time)
+VALUES (871, 62, 151, NULL, 'Validate End-user CV Creation Journey', 'This is Validate End-user CV Creation Journey', NULL, 'ADVANCED', 'TEST', 'NORMAL', FALSE, '2024-07-13', '2024-07-31', '2024-07-18', '2024-07-13 00:55:00.000000', '2024-07-13 00:55:00.000000');
+
+INSERT INTO task_for_users (id, task_id, assigned_to_id, user_task_status, updated_time, started_time)
+VALUES
+(19327, 871, 116, 'JOINED', '2024-07-13 00:55:00.000000', '2024-07-13 05:50:12.000000'),
+(19328, 871, 117, 'JOINED', '2024-07-13 00:55:00.000000', '2024-07-17 12:55:00.000000'),
+(19329, 871, 118, 'JOINED', '2024-07-13 00:55:00.000000', '2024-07-13 14:39:24.000000'),
+(19330, 871, 119, 'JOINED', '2024-07-13 00:55:00.000000', '2024-07-14 04:02:12.000000'),
+(19331, 871, 120, 'JOINED', '2024-07-13 00:55:00.000000', '2024-07-14 01:38:12.000000'),
+(19332, 871, 121, 'JOINED', '2024-07-13 00:55:00.000000', '2024-07-13 11:43:00.000000'),
+(19333, 871, 122, 'JOINED', '2024-07-13 00:55:00.000000', '2024-07-14 21:26:12.000000'),
+(19334, 871, 123, 'JOINED', '2024-07-13 00:55:00.000000', '2024-07-13 06:26:12.000000'),
+(19335, 871, 124, 'JOINED', '2024-07-13 00:55:00.000000', '2024-07-14 05:50:12.000000'),
+(19336, 871, 125, 'JOINED', '2024-07-13 00:55:00.000000', '2024-07-17 12:55:00.000000'),
+(19337, 871, 126, 'JOINED', '2024-07-13 00:55:00.000000', '2024-07-16 15:47:48.000000'),
+(19338, 871, 127, 'JOINED', '2024-07-13 00:55:00.000000', '2024-07-13 21:08:12.000000'),
+(19339, 871, 128, 'JOINED', '2024-07-13 00:55:00.000000', '2024-07-14 04:31:00.000000'),
+(19340, 871, 129, 'JOINED', '2024-07-13 00:55:00.000000', '2024-07-16 08:43:00.000000'),
+(19341, 871, 130, 'JOINED', '2024-07-13 00:55:00.000000', '2024-07-15 10:23:48.000000'),
+(19342, 871, 131, 'JOINED', '2024-07-13 00:55:00.000000', '2024-07-17 12:55:00.000000'),
+(19343, 871, 132, 'JOINED', '2024-07-13 00:55:00.000000', '2024-07-15 16:02:12.000000'),
+(19344, 871, 133, 'JOINED', '2024-07-13 00:55:00.000000', '2024-07-17 12:55:00.000000'),
+(19345, 871, 134, 'JOINED', '2024-07-13 00:55:00.000000', '2024-07-14 11:21:24.000000'),
+(19346, 871, 135, 'JOINED', '2024-07-13 00:55:00.000000', '2024-07-17 12:55:00.000000');
+INSERT INTO report (id, created_by_id, title, content, rejected_reason, report_status, created_time, updated_time, reviewed_time)
+VALUES
+(DEFAULT, 19327, 'Employee 116 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-07-14 08:28:36.000000', '2024-07-14 08:28:36.000000', '2024-07-14 08:33:36.000000'),
+(DEFAULT, 19328, 'Employee 117 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-07-31 12:33:24.000000', '2024-07-31 12:33:24.000000', '2024-07-31 12:38:24.000000'),
+(DEFAULT, 19329, 'Employee 118 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-07-22 11:10:36.000000', '2024-07-22 11:10:36.000000', '2024-07-22 11:15:36.000000'),
+(DEFAULT, 19330, 'Employee 119 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-07-15 03:26:12.000000', '2024-07-15 03:26:12.000000', '2024-07-15 03:31:12.000000'),
+(DEFAULT, 19331, 'Employee 120 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-07-15 14:43:00.000000', '2024-07-15 14:43:00.000000', '2024-07-15 14:48:00.000000'),
+(DEFAULT, 19332, 'Employee 121 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-07-14 08:14:12.000000', '2024-07-14 08:14:12.000000', '2024-07-14 08:19:12.000000'),
+(DEFAULT, 19333, 'Employee 122 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-07-15 21:47:48.000000', '2024-07-15 21:47:48.000000', '2024-07-15 21:52:48.000000'),
+(DEFAULT, 19334, 'Employee 123 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-07-22 19:23:48.000000', '2024-07-22 19:23:48.000000', '2024-07-22 19:28:48.000000'),
+(DEFAULT, 19335, 'Employee 124 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-07-17 17:14:12.000000', '2024-07-17 17:14:12.000000', '2024-07-17 17:19:12.000000'),
+(DEFAULT, 19336, 'Employee 125 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-07-28 05:28:36.000000', '2024-07-28 05:28:36.000000', '2024-07-28 05:33:36.000000'),
+(DEFAULT, 19337, 'Employee 126 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-07-17 21:47:48.000000', '2024-07-17 21:47:48.000000', '2024-07-17 21:52:48.000000'),
+(DEFAULT, 19338, 'Employee 127 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-07-22 04:41:48.000000', '2024-07-22 04:41:48.000000', '2024-07-22 04:46:48.000000'),
+(DEFAULT, 19339, 'Employee 128 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-07-17 20:57:24.000000', '2024-07-17 20:57:24.000000', '2024-07-17 21:02:24.000000'),
+(DEFAULT, 19340, 'Employee 129 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-07-17 23:28:36.000000', '2024-07-17 23:28:36.000000', '2024-07-17 23:33:36.000000'),
+(DEFAULT, 19341, 'Employee 130 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-07-17 21:19:00.000000', '2024-07-17 21:19:00.000000', '2024-07-17 21:24:00.000000'),
+(DEFAULT, 19342, 'Employee 131 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-07-29 07:38:12.000000', '2024-07-29 07:38:12.000000', '2024-07-29 07:43:12.000000'),
+(DEFAULT, 19343, 'Employee 132 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-07-16 10:23:48.000000', '2024-07-16 10:23:48.000000', '2024-07-16 10:28:48.000000'),
+(DEFAULT, 19344, 'Employee 133 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-07-29 07:02:12.000000', '2024-07-29 07:02:12.000000', '2024-07-29 07:07:12.000000'),
+(DEFAULT, 19345, 'Employee 134 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-07-16 19:59:48.000000', '2024-07-16 19:59:48.000000', '2024-07-16 20:04:48.000000'),
+(DEFAULT, 19346, 'Employee 135 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-07-30 10:16:36.000000', '2024-07-30 10:16:36.000000', '2024-07-30 10:21:36.000000');
+
+-- 2024-07-19 00:55:00.000000
+-- 2024-07-19
+INSERT INTO task (id, collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked, start_date, end_date, deadline, created_time, updated_time)
+VALUES (872, 62, 151, NULL, 'Validate CV Submission Approval Flow', 'This is Validate CV Submission Approval Flow', NULL, 'NORMAL', 'TEST', 'NORMAL', FALSE, '2024-07-19', '2024-07-22', '2024-07-23', '2024-07-19 00:55:00.000000', '2024-07-19 00:55:00.000000');
+
+INSERT INTO task_for_users (id, task_id, assigned_to_id, user_task_status, updated_time, started_time)
+VALUES
+(19348, 872, 118, 'JOINED', '2024-07-19 00:55:00.000000', '2024-07-21 12:49:14.400000'),
+(19349, 872, 124, 'JOINED', '2024-07-19 00:55:00.000000', '2024-07-20 13:35:19.200000');
+INSERT INTO report (id, created_by_id, title, content, rejected_reason, report_status, created_time, updated_time, reviewed_time)
+VALUES
+(DEFAULT, 19348, 'Employee 118 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-07-22 06:11:48.000000', '2024-07-22 06:11:48.000000', '2024-07-22 06:16:48.000000'),
+(DEFAULT, 19349, 'Employee 124 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-07-21 05:19:57.600000', '2024-07-21 05:19:57.600000', '2024-07-21 05:24:57.600000');
+
+-- 2024-07-24 00:55:00.000000
+-- 2024-07-24
+INSERT INTO task (id, collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked, start_date, end_date, deadline, created_time, updated_time)
+VALUES (873, 62, 151, NULL, 'Validate CV Recommendation Usefulness', 'This is Validate CV Recommendation Usefulness', NULL, 'ADVANCED', 'TEST', 'LOW', FALSE, '2024-07-24', '2024-08-06', '2024-07-28', '2024-07-24 00:55:00.000000', '2024-07-24 00:55:00.000000');
+
+INSERT INTO task_for_users (id, task_id, assigned_to_id, user_task_status, updated_time, started_time)
+VALUES
+(19351, 873, 116, 'JOINED', '2024-07-24 00:55:00.000000', '2024-07-25 10:19:28.800000'),
+(19352, 873, 117, 'JOINED', '2024-07-24 00:55:00.000000', '2024-07-26 10:16:36.000000'),
+(19353, 873, 118, 'JOINED', '2024-07-24 00:55:00.000000', '2024-07-24 12:14:40.800000'),
+(19354, 873, 119, 'JOINED', '2024-07-24 00:55:00.000000', '2024-07-25 09:27:38.400000'),
+(19355, 873, 120, 'JOINED', '2024-07-24 00:55:00.000000', '2024-07-27 15:19:00.000000'),
+(19356, 873, 121, 'JOINED', '2024-07-24 00:55:00.000000', '2024-07-26 08:32:55.200000'),
+(19357, 873, 122, 'JOINED', '2024-07-24 00:55:00.000000', '2024-07-24 01:46:50.400000'),
+(19358, 873, 123, 'JOINED', '2024-07-24 00:55:00.000000', '2024-07-27 15:19:00.000000'),
+(19359, 873, 124, 'JOINED', '2024-07-24 00:55:00.000000', '2024-07-24 18:17:33.600000'),
+(19360, 873, 125, 'JOINED', '2024-07-24 00:55:00.000000', '2024-07-24 04:45:24.000000'),
+(19361, 873, 126, 'JOINED', '2024-07-24 00:55:00.000000', '2024-07-24 07:38:12.000000'),
+(19362, 873, 127, 'JOINED', '2024-07-24 00:55:00.000000', '2024-07-25 08:38:40.800000'),
+(19363, 873, 128, 'JOINED', '2024-07-24 00:55:00.000000', '2024-07-25 18:03:09.600000'),
+(19364, 873, 129, 'JOINED', '2024-07-24 00:55:00.000000', '2024-07-24 03:59:19.200000'),
+(19365, 873, 130, 'JOINED', '2024-07-24 00:55:00.000000', '2024-07-25 14:07:00.000000'),
+(19366, 873, 131, 'JOINED', '2024-07-24 00:55:00.000000', '2024-07-24 15:42:02.400000'),
+(19367, 873, 132, 'JOINED', '2024-07-24 00:55:00.000000', '2024-07-24 13:06:31.200000'),
+(19368, 873, 133, 'JOINED', '2024-07-24 00:55:00.000000', '2024-07-24 10:59:48.000000'),
+(19369, 873, 134, 'JOINED', '2024-07-24 00:55:00.000000', '2024-07-24 04:39:38.400000'),
+(19370, 873, 135, 'JOINED', '2024-07-24 00:55:00.000000', '2024-07-24 01:23:48.000000');
+INSERT INTO report (id, created_by_id, title, content, rejected_reason, report_status, created_time, updated_time, reviewed_time)
+VALUES
+(DEFAULT, 19351, 'Employee 116 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-07-27 09:27:38.400000', '2024-07-27 09:27:38.400000', '2024-07-27 09:32:38.400000'),
+(DEFAULT, 19352, 'Employee 117 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-07-29 15:33:24.000000', '2024-07-29 15:33:24.000000', '2024-07-29 15:38:24.000000'),
+(DEFAULT, 19353, 'Employee 118 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-07-25 03:13:14.400000', '2024-07-25 03:13:14.400000', '2024-07-25 03:18:14.400000'),
+(DEFAULT, 19354, 'Employee 119 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-07-26 12:49:14.400000', '2024-07-26 12:49:14.400000', '2024-07-26 12:54:14.400000'),
+(DEFAULT, 19355, 'Employee 120 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-06 08:53:04.800000', '2024-08-06 08:53:04.800000', '2024-08-06 08:58:04.800000'),
+(DEFAULT, 19356, 'Employee 121 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-07-29 17:17:04.800000', '2024-07-29 17:17:04.800000', '2024-07-29 17:22:04.800000'),
+(DEFAULT, 19357, 'Employee 122 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-07-25 16:16:36.000000', '2024-07-25 16:16:36.000000', '2024-07-25 16:21:36.000000'),
+(DEFAULT, 19358, 'Employee 123 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-06 19:09:24.000000', '2024-08-06 19:09:24.000000', '2024-08-06 19:14:24.000000'),
+(DEFAULT, 19359, 'Employee 124 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-07-26 03:30:31.200000', '2024-07-26 03:30:31.200000', '2024-07-26 03:35:31.200000'),
+(DEFAULT, 19360, 'Employee 125 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-07-25 03:30:31.200000', '2024-07-25 03:30:31.200000', '2024-07-25 03:35:31.200000'),
+(DEFAULT, 19361, 'Employee 126 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-07-26 04:10:50.400000', '2024-07-26 04:10:50.400000', '2024-07-26 04:15:50.400000'),
+(DEFAULT, 19362, 'Employee 127 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-07-30 17:11:19.200000', '2024-07-30 17:11:19.200000', '2024-07-30 17:16:19.200000'),
+(DEFAULT, 19363, 'Employee 128 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-07-30 07:46:50.400000', '2024-07-30 07:46:50.400000', '2024-07-30 07:51:50.400000'),
+(DEFAULT, 19364, 'Employee 129 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-07-25 00:14:40.800000', '2024-07-25 00:14:40.800000', '2024-07-25 00:19:40.800000'),
+(DEFAULT, 19365, 'Employee 130 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-07-30 11:43:00.000000', '2024-07-30 11:43:00.000000', '2024-07-30 11:48:00.000000'),
+(DEFAULT, 19366, 'Employee 131 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-07-26 08:12:45.600000', '2024-07-26 08:12:45.600000', '2024-07-26 08:17:45.600000'),
+(DEFAULT, 19367, 'Employee 132 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-07-26 03:47:48.000000', '2024-07-26 03:47:48.000000', '2024-07-26 03:52:48.000000'),
+(DEFAULT, 19368, 'Employee 133 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-07-27 10:31:00.000000', '2024-07-27 10:31:00.000000', '2024-07-27 10:36:00.000000'),
+(DEFAULT, 19369, 'Employee 134 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-07-25 06:52:07.200000', '2024-07-25 06:52:07.200000', '2024-07-25 06:57:07.200000'),
+(DEFAULT, 19370, 'Employee 135 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-07-24 22:36:45.600000', '2024-07-24 22:36:45.600000', '2024-07-24 22:41:45.600000');
+
+-- 2024-07-29 00:55:00.000000
+-- 2024-07-29
+INSERT INTO task (id, collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked, start_date, end_date, deadline, created_time, updated_time)
+VALUES (874, 62, 151, NULL, 'Validate Role-based User Journeys', 'This is Validate Role-based User Journeys', NULL, 'ADVANCED', 'TEST', 'HIGH', FALSE, '2024-07-29', '2024-08-01', '2024-08-04', '2024-07-29 00:55:00.000000', '2024-07-29 00:55:00.000000');
+
+INSERT INTO task_for_users (id, task_id, assigned_to_id, user_task_status, updated_time, started_time)
+VALUES
+(19372, 874, 117, 'JOINED', '2024-07-29 00:55:00.000000', '2024-07-30 21:16:07.200000'),
+(19373, 874, 130, 'JOINED', '2024-07-29 00:55:00.000000', '2024-07-29 03:04:36.000000');
+INSERT INTO report (id, created_by_id, title, content, rejected_reason, report_status, created_time, updated_time, reviewed_time)
+VALUES
+(DEFAULT, 19372, 'Employee 117 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-01 18:37:43.200000', '2024-08-01 18:37:43.200000', '2024-08-01 18:42:43.200000'),
+(DEFAULT, 19373, 'Employee 130 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-07-31 05:11:19.200000', '2024-07-31 05:11:19.200000', '2024-07-31 05:16:19.200000');
+
+-- 2024-08-05 00:55:00.000000
+-- 2024-08-05
+INSERT INTO task (id, collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked, start_date, end_date, deadline, created_time, updated_time)
+VALUES (875, 62, 151, NULL, 'Validate Business Rule Interpretation', 'This is Validate Business Rule Interpretation', NULL, 'ADVANCED', 'TEST', 'LOW', FALSE, '2024-08-05', '2024-08-18', '2024-08-09', '2024-08-05 00:55:00.000000', '2024-08-05 00:55:00.000000');
+
+INSERT INTO task_for_users (id, task_id, assigned_to_id, user_task_status, updated_time, started_time)
+VALUES
+(19375, 875, 116, 'JOINED', '2024-08-05 00:55:00.000000', '2024-08-06 01:41:04.800000'),
+(19376, 875, 117, 'JOINED', '2024-08-05 00:55:00.000000', '2024-08-07 02:27:09.600000'),
+(19377, 875, 118, 'JOINED', '2024-08-05 00:55:00.000000', '2024-08-06 01:03:38.400000'),
+(19378, 875, 119, 'JOINED', '2024-08-05 00:55:00.000000', '2024-08-06 15:07:28.800000'),
+(19379, 875, 120, 'JOINED', '2024-08-05 00:55:00.000000', '2024-08-05 01:00:45.600000'),
+(19380, 875, 121, 'JOINED', '2024-08-05 00:55:00.000000', '2024-08-05 05:08:26.400000'),
+(19381, 875, 122, 'JOINED', '2024-08-05 00:55:00.000000', '2024-08-05 04:59:48.000000'),
+(19382, 875, 123, 'JOINED', '2024-08-05 00:55:00.000000', '2024-08-06 18:11:48.000000'),
+(19383, 875, 124, 'JOINED', '2024-08-05 00:55:00.000000', '2024-08-07 03:01:43.200000'),
+(19384, 875, 125, 'JOINED', '2024-08-05 00:55:00.000000', '2024-08-05 21:10:21.600000'),
+(19385, 875, 126, 'JOINED', '2024-08-05 00:55:00.000000', '2024-08-05 18:40:36.000000'),
+(19386, 875, 127, 'JOINED', '2024-08-05 00:55:00.000000', '2024-08-05 23:34:21.600000'),
+(19387, 875, 128, 'JOINED', '2024-08-05 00:55:00.000000', '2024-08-07 16:45:24.000000'),
+(19388, 875, 129, 'JOINED', '2024-08-05 00:55:00.000000', '2024-08-05 17:31:28.800000'),
+(19389, 875, 130, 'JOINED', '2024-08-05 00:55:00.000000', '2024-08-05 15:53:33.600000'),
+(19390, 875, 131, 'JOINED', '2024-08-05 00:55:00.000000', '2024-08-06 04:28:07.200000'),
+(19391, 875, 132, 'JOINED', '2024-08-05 00:55:00.000000', '2024-08-07 12:37:43.200000'),
+(19392, 875, 133, 'JOINED', '2024-08-05 00:55:00.000000', '2024-08-08 06:06:02.400000'),
+(19393, 875, 134, 'JOINED', '2024-08-05 00:55:00.000000', '2024-08-06 20:18:31.200000'),
+(19394, 875, 135, 'JOINED', '2024-08-05 00:55:00.000000', '2024-08-08 15:19:00.000000');
+INSERT INTO report (id, created_by_id, title, content, rejected_reason, report_status, created_time, updated_time, reviewed_time)
+VALUES
+(DEFAULT, 19375, 'Employee 116 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-06 23:17:04.800000', '2024-08-06 23:17:04.800000', '2024-08-06 23:22:04.800000'),
+(DEFAULT, 19376, 'Employee 117 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-07 18:06:02.400000', '2024-08-07 18:06:02.400000', '2024-08-07 18:11:02.400000'),
+(DEFAULT, 19377, 'Employee 118 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-12 00:46:21.600000', '2024-08-12 00:46:21.600000', '2024-08-12 00:51:21.600000'),
+(DEFAULT, 19378, 'Employee 119 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-11 10:42:31.200000', '2024-08-11 10:42:31.200000', '2024-08-11 10:47:31.200000'),
+(DEFAULT, 19379, 'Employee 120 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-06 00:08:55.200000', '2024-08-06 00:08:55.200000', '2024-08-06 00:13:55.200000'),
+(DEFAULT, 19380, 'Employee 121 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-06 02:50:12.000000', '2024-08-06 02:50:12.000000', '2024-08-06 02:55:12.000000'),
+(DEFAULT, 19381, 'Employee 122 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-12 20:50:12.000000', '2024-08-12 20:50:12.000000', '2024-08-12 20:55:12.000000'),
+(DEFAULT, 19382, 'Employee 123 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-07 17:48:45.600000', '2024-08-07 17:48:45.600000', '2024-08-07 17:53:45.600000'),
+(DEFAULT, 19383, 'Employee 124 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-08 23:17:04.800000', '2024-08-08 23:17:04.800000', '2024-08-08 23:22:04.800000'),
+(DEFAULT, 19384, 'Employee 125 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-07 04:22:21.600000', '2024-08-07 04:22:21.600000', '2024-08-07 04:27:21.600000'),
+(DEFAULT, 19385, 'Employee 126 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-08 03:01:43.200000', '2024-08-08 03:01:43.200000', '2024-08-08 03:06:43.200000'),
+(DEFAULT, 19386, 'Employee 127 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-08 11:45:52.800000', '2024-08-08 11:45:52.800000', '2024-08-08 11:50:52.800000'),
+(DEFAULT, 19387, 'Employee 128 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-09 00:49:14.400000', '2024-08-09 00:49:14.400000', '2024-08-09 00:54:14.400000'),
+(DEFAULT, 19388, 'Employee 129 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-07 19:55:28.800000', '2024-08-07 19:55:28.800000', '2024-08-07 20:00:28.800000'),
+(DEFAULT, 19389, 'Employee 130 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-06 09:56:26.400000', '2024-08-06 09:56:26.400000', '2024-08-06 10:01:26.400000'),
+(DEFAULT, 19390, 'Employee 131 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-07 09:10:21.600000', '2024-08-07 09:10:21.600000', '2024-08-07 09:15:21.600000'),
+(DEFAULT, 19391, 'Employee 132 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-08 03:19:00.000000', '2024-08-08 03:19:00.000000', '2024-08-08 03:24:00.000000'),
+(DEFAULT, 19392, 'Employee 133 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-08 21:33:24.000000', '2024-08-08 21:33:24.000000', '2024-08-08 21:38:24.000000'),
+(DEFAULT, 19393, 'Employee 134 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-11 05:31:28.800000', '2024-08-11 05:31:28.800000', '2024-08-11 05:36:28.800000'),
+(DEFAULT, 19394, 'Employee 135 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-18 18:17:33.600000', '2024-08-18 18:17:33.600000', '2024-08-18 18:22:33.600000');
+
+-- 2024-08-10 00:55:00.000000
+-- 2024-08-10
+INSERT INTO task (id, collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked, start_date, end_date, deadline, created_time, updated_time)
+VALUES (876, 62, 151, NULL, 'Validate Error Handling from User Perspective', 'This is Validate Error Handling from User Perspective', NULL, 'ADVANCED', 'TEST', 'HIGH', FALSE, '2024-08-10', '2024-08-15', '2024-08-16', '2024-08-10 00:55:00.000000', '2024-08-10 00:55:00.000000');
+
+INSERT INTO task_for_users (id, task_id, assigned_to_id, user_task_status, updated_time, started_time)
+VALUES
+(19396, 876, 117, 'JOINED', '2024-08-10 00:55:00.000000', '2024-08-13 14:09:52.800000'),
+(19397, 876, 130, 'JOINED', '2024-08-10 00:55:00.000000', '2024-08-11 16:48:16.800000');
+INSERT INTO report (id, created_by_id, title, content, rejected_reason, report_status, created_time, updated_time, reviewed_time)
+VALUES
+(DEFAULT, 19396, 'Employee 117 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-15 14:32:55.200000', '2024-08-15 14:32:55.200000', '2024-08-15 14:37:55.200000'),
+(DEFAULT, 19397, 'Employee 130 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-15 04:19:28.800000', '2024-08-15 04:19:28.800000', '2024-08-15 04:24:28.800000');
+
+-- 2024-08-17 00:55:00.000000
+-- 2024-08-17
+INSERT INTO task (id, collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked, start_date, end_date, deadline, created_time, updated_time)
+VALUES (877, 62, 151, NULL, 'Validate Edge Case Business Scenarios', 'This is Validate Edge Case Business Scenarios', NULL, 'ADVANCED', 'TEST', 'LOW', FALSE, '2024-08-17', '2024-09-01', '2024-08-21', '2024-08-17 00:55:00.000000', '2024-08-17 00:55:00.000000');
+
+INSERT INTO task_for_users (id, task_id, assigned_to_id, user_task_status, updated_time, started_time)
+VALUES
+(19399, 877, 116, 'JOINED', '2024-08-17 00:55:00.000000', '2024-08-17 06:17:33.600000'),
+(19400, 877, 117, 'JOINED', '2024-08-17 00:55:00.000000', '2024-08-18 14:32:55.200000'),
+(19401, 877, 118, 'JOINED', '2024-08-17 00:55:00.000000', '2024-08-17 12:31:57.600000'),
+(19402, 877, 119, 'JOINED', '2024-08-17 00:55:00.000000', '2024-08-20 15:19:00.000000'),
+(19403, 877, 120, 'JOINED', '2024-08-17 00:55:00.000000', '2024-08-19 02:44:26.400000'),
+(19404, 877, 121, 'JOINED', '2024-08-17 00:55:00.000000', '2024-08-17 19:20:55.200000'),
+(19405, 877, 122, 'JOINED', '2024-08-17 00:55:00.000000', '2024-08-20 15:19:00.000000'),
+(19406, 877, 123, 'JOINED', '2024-08-17 00:55:00.000000', '2024-08-17 11:40:07.200000'),
+(19407, 877, 124, 'JOINED', '2024-08-17 00:55:00.000000', '2024-08-17 01:06:31.200000'),
+(19408, 877, 125, 'JOINED', '2024-08-17 00:55:00.000000', '2024-08-17 10:48:16.800000'),
+(19409, 877, 126, 'JOINED', '2024-08-17 00:55:00.000000', '2024-08-17 01:52:36.000000'),
+(19410, 877, 127, 'JOINED', '2024-08-17 00:55:00.000000', '2024-08-17 03:19:00.000000'),
+(19411, 877, 128, 'JOINED', '2024-08-17 00:55:00.000000', '2024-08-17 22:13:43.200000'),
+(19412, 877, 129, 'JOINED', '2024-08-17 00:55:00.000000', '2024-08-17 14:38:40.800000'),
+(19413, 877, 130, 'JOINED', '2024-08-17 00:55:00.000000', '2024-08-17 03:30:31.200000'),
+(19414, 877, 131, 'JOINED', '2024-08-17 00:55:00.000000', '2024-08-17 16:54:02.400000'),
+(19415, 877, 132, 'JOINED', '2024-08-17 00:55:00.000000', '2024-08-18 03:19:00.000000'),
+(19416, 877, 133, 'JOINED', '2024-08-17 00:55:00.000000', '2024-08-18 03:07:28.800000'),
+(19417, 877, 134, 'JOINED', '2024-08-17 00:55:00.000000', '2024-08-17 20:18:31.200000'),
+(19418, 877, 135, 'JOINED', '2024-08-17 00:55:00.000000', '2024-08-17 14:15:38.400000');
+INSERT INTO report (id, created_by_id, title, content, rejected_reason, report_status, created_time, updated_time, reviewed_time)
+VALUES
+(DEFAULT, 19399, 'Employee 116 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-17 22:48:16.800000', '2024-08-17 22:48:16.800000', '2024-08-17 22:53:16.800000'),
+(DEFAULT, 19400, 'Employee 117 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-19 16:51:09.600000', '2024-08-19 16:51:09.600000', '2024-08-19 16:56:09.600000'),
+(DEFAULT, 19401, 'Employee 118 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-18 22:36:45.600000', '2024-08-18 22:36:45.600000', '2024-08-18 22:41:45.600000'),
+(DEFAULT, 19402, 'Employee 119 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-31 20:07:00.000000', '2024-08-31 20:07:00.000000', '2024-08-31 20:12:00.000000'),
+(DEFAULT, 19403, 'Employee 120 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-19 18:57:52.800000', '2024-08-19 18:57:52.800000', '2024-08-19 19:02:52.800000'),
+(DEFAULT, 19404, 'Employee 121 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-18 21:10:21.600000', '2024-08-18 21:10:21.600000', '2024-08-18 21:15:21.600000'),
+(DEFAULT, 19405, 'Employee 122 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-01 03:19:00.000000', '2024-09-01 03:19:00.000000', '2024-09-01 03:24:00.000000'),
+(DEFAULT, 19406, 'Employee 123 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-18 04:28:07.200000', '2024-08-18 04:28:07.200000', '2024-08-18 04:33:07.200000'),
+(DEFAULT, 19407, 'Employee 124 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-20 03:36:16.800000', '2024-08-20 03:36:16.800000', '2024-08-20 03:41:16.800000'),
+(DEFAULT, 19408, 'Employee 125 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-19 05:43:00.000000', '2024-08-19 05:43:00.000000', '2024-08-19 05:48:00.000000'),
+(DEFAULT, 19409, 'Employee 126 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-21 00:49:14.400000', '2024-08-21 00:49:14.400000', '2024-08-21 00:54:14.400000'),
+(DEFAULT, 19410, 'Employee 127 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-18 22:42:31.200000', '2024-08-18 22:42:31.200000', '2024-08-18 22:47:31.200000'),
+(DEFAULT, 19411, 'Employee 128 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-18 16:10:50.400000', '2024-08-18 16:10:50.400000', '2024-08-18 16:15:50.400000'),
+(DEFAULT, 19412, 'Employee 129 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-18 13:46:50.400000', '2024-08-18 13:46:50.400000', '2024-08-18 13:51:50.400000'),
+(DEFAULT, 19413, 'Employee 130 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-19 11:57:24.000000', '2024-08-19 11:57:24.000000', '2024-08-19 12:02:24.000000'),
+(DEFAULT, 19414, 'Employee 131 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-24 08:55:57.600000', '2024-08-24 08:55:57.600000', '2024-08-24 09:00:57.600000'),
+(DEFAULT, 19415, 'Employee 132 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-19 15:19:00.000000', '2024-08-19 15:19:00.000000', '2024-08-19 15:24:00.000000'),
+(DEFAULT, 19416, 'Employee 133 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-23 22:42:31.200000', '2024-08-23 22:42:31.200000', '2024-08-23 22:47:31.200000'),
+(DEFAULT, 19417, 'Employee 134 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-18 13:41:04.800000', '2024-08-18 13:41:04.800000', '2024-08-18 13:46:04.800000'),
+(DEFAULT, 19418, 'Employee 135 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-18 05:08:26.400000', '2024-08-18 05:08:26.400000', '2024-08-18 05:13:26.400000');
+
+-- 2024-08-22 00:55:00.000000
+-- 2024-08-22
+INSERT INTO task (id, collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked, start_date, end_date, deadline, created_time, updated_time)
+VALUES (878, 62, 151, NULL, 'Validate CV Template User Experience', 'This is Validate CV Template User Experience', NULL, 'ADVANCED', 'TEST', 'HIGH', FALSE, '2024-08-22', '2024-09-09', '2024-08-28', '2024-08-22 00:55:00.000000', '2024-08-22 00:55:00.000000');
+
+INSERT INTO task_for_users (id, task_id, assigned_to_id, user_task_status, updated_time, started_time)
+VALUES
+(19420, 878, 117, 'JOINED', '2024-08-22 00:55:00.000000', '2024-08-27 10:31:00.000000'),
+(19421, 878, 130, 'JOINED', '2024-08-22 00:55:00.000000', '2024-08-23 11:19:57.600000');
+INSERT INTO report (id, created_by_id, title, content, rejected_reason, report_status, created_time, updated_time, reviewed_time)
+VALUES
+(DEFAULT, 19420, 'Employee 117 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-09 10:25:14.400000', '2024-09-09 10:25:14.400000', '2024-09-09 10:30:14.400000'),
+(DEFAULT, 19421, 'Employee 130 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-26 15:56:26.400000', '2024-08-26 15:56:26.400000', '2024-08-26 16:01:26.400000');
+
+-- 2024-08-29 00:55:00.000000
+-- 2024-08-29
+INSERT INTO task (id, collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked, start_date, end_date, deadline, created_time, updated_time)
+VALUES (879, 62, 151, NULL, 'Sign Off User Acceptance Testing', 'This is Sign Off User Acceptance Testing', NULL, 'ADVANCED', 'TEST', 'LOW', FALSE, '2024-08-29', '2024-09-05', '2024-09-02', '2024-08-29 00:55:00.000000', '2024-08-29 00:55:00.000000');
+
+INSERT INTO task_for_users (id, task_id, assigned_to_id, user_task_status, updated_time, started_time)
+VALUES
+(19423, 879, 116, 'JOINED', '2024-08-29 00:55:00.000000', '2024-08-30 03:47:48.000000'),
+(19424, 879, 117, 'JOINED', '2024-08-29 00:55:00.000000', '2024-08-30 15:24:45.600000'),
+(19425, 879, 118, 'JOINED', '2024-08-29 00:55:00.000000', '2024-08-30 21:04:36.000000'),
+(19426, 879, 119, 'JOINED', '2024-08-29 00:55:00.000000', '2024-08-30 02:32:55.200000'),
+(19427, 879, 120, 'JOINED', '2024-08-29 00:55:00.000000', '2024-08-29 22:13:43.200000'),
+(19428, 879, 121, 'JOINED', '2024-08-29 00:55:00.000000', '2024-08-29 08:35:48.000000'),
+(19429, 879, 122, 'JOINED', '2024-08-29 00:55:00.000000', '2024-08-30 19:15:09.600000'),
+(19430, 879, 123, 'JOINED', '2024-08-29 00:55:00.000000', '2024-08-30 01:52:36.000000'),
+(19431, 879, 124, 'JOINED', '2024-08-29 00:55:00.000000', '2024-08-31 04:56:55.200000'),
+(19432, 879, 125, 'JOINED', '2024-08-29 00:55:00.000000', '2024-08-29 16:33:52.800000'),
+(19433, 879, 126, 'JOINED', '2024-08-29 00:55:00.000000', '2024-08-29 20:41:33.600000'),
+(19434, 879, 127, 'JOINED', '2024-08-29 00:55:00.000000', '2024-09-01 03:01:43.200000'),
+(19435, 879, 128, 'JOINED', '2024-08-29 00:55:00.000000', '2024-08-29 14:07:00.000000'),
+(19436, 879, 129, 'JOINED', '2024-08-29 00:55:00.000000', '2024-08-31 06:20:26.400000'),
+(19437, 879, 130, 'JOINED', '2024-08-29 00:55:00.000000', '2024-08-30 20:15:38.400000'),
+(19438, 879, 131, 'JOINED', '2024-08-29 00:55:00.000000', '2024-08-29 19:23:48.000000'),
+(19439, 879, 132, 'JOINED', '2024-08-29 00:55:00.000000', '2024-08-29 18:23:19.200000'),
+(19440, 879, 133, 'JOINED', '2024-08-29 00:55:00.000000', '2024-08-29 17:54:31.200000'),
+(19441, 879, 134, 'JOINED', '2024-08-29 00:55:00.000000', '2024-08-30 06:06:02.400000'),
+(19442, 879, 135, 'JOINED', '2024-08-29 00:55:00.000000', '2024-08-29 10:02:12.000000');
+INSERT INTO report (id, created_by_id, title, content, rejected_reason, report_status, created_time, updated_time, reviewed_time)
+VALUES
+(DEFAULT, 19423, 'Employee 116 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-31 03:59:19.200000', '2024-08-31 03:59:19.200000', '2024-08-31 04:04:19.200000'),
+(DEFAULT, 19424, 'Employee 117 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-01 19:20:55.200000', '2024-09-01 19:20:55.200000', '2024-09-01 19:25:55.200000'),
+(DEFAULT, 19425, 'Employee 118 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-01 06:34:50.400000', '2024-09-01 06:34:50.400000', '2024-09-01 06:39:50.400000'),
+(DEFAULT, 19426, 'Employee 119 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-31 11:40:07.200000', '2024-08-31 11:40:07.200000', '2024-08-31 11:45:07.200000'),
+(DEFAULT, 19427, 'Employee 120 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-05 03:36:16.800000', '2024-09-05 03:36:16.800000', '2024-09-05 03:41:16.800000'),
+(DEFAULT, 19428, 'Employee 121 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-30 20:07:00.000000', '2024-08-30 20:07:00.000000', '2024-08-30 20:12:00.000000'),
+(DEFAULT, 19429, 'Employee 122 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-01 20:12:45.600000', '2024-09-01 20:12:45.600000', '2024-09-01 20:17:45.600000'),
+(DEFAULT, 19430, 'Employee 123 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-31 09:50:40.800000', '2024-08-31 09:50:40.800000', '2024-08-31 09:55:40.800000'),
+(DEFAULT, 19431, 'Employee 124 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-31 22:02:12.000000', '2024-08-31 22:02:12.000000', '2024-08-31 22:07:12.000000'),
+(DEFAULT, 19432, 'Employee 125 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-02 00:43:28.800000', '2024-09-02 00:43:28.800000', '2024-09-02 00:48:28.800000'),
+(DEFAULT, 19433, 'Employee 126 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-31 03:19:00.000000', '2024-08-31 03:19:00.000000', '2024-08-31 03:24:00.000000'),
+(DEFAULT, 19434, 'Employee 127 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-01 22:42:31.200000', '2024-09-01 22:42:31.200000', '2024-09-01 22:47:31.200000'),
+(DEFAULT, 19435, 'Employee 128 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-05 11:43:00.000000', '2024-09-05 11:43:00.000000', '2024-09-05 11:48:00.000000'),
+(DEFAULT, 19436, 'Employee 129 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-03 19:29:33.600000', '2024-09-03 19:29:33.600000', '2024-09-03 19:34:33.600000'),
+(DEFAULT, 19437, 'Employee 130 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-04 05:34:21.600000', '2024-09-04 05:34:21.600000', '2024-09-04 05:39:21.600000'),
+(DEFAULT, 19438, 'Employee 131 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-05 06:26:12.000000', '2024-09-05 06:26:12.000000', '2024-09-05 06:31:12.000000'),
+(DEFAULT, 19439, 'Employee 132 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-31 10:54:02.400000', '2024-08-31 10:54:02.400000', '2024-08-31 10:59:02.400000'),
+(DEFAULT, 19440, 'Employee 133 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-31 15:19:00.000000', '2024-08-31 15:19:00.000000', '2024-08-31 15:24:00.000000'),
+(DEFAULT, 19441, 'Employee 134 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-30 23:45:52.800000', '2024-08-30 23:45:52.800000', '2024-08-30 23:50:52.800000'),
+(DEFAULT, 19442, 'Employee 135 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-08-30 15:19:00.000000', '2024-08-30 15:19:00.000000', '2024-08-30 15:24:00.000000');
+
+INSERT INTO collection (`id`, `created_time`, `description`, `due_date`, `start_date`, `name`, `updated_time`, `phase_id`, `created_by_id`)
+VALUES (63, '2024-09-02 00:55:00.000000', 'This is Production Readiness Testing', '2024-10-28', '2024-09-02', 'Production Readiness Testing', '2024-09-02 00:55:00.000000', 11, 154);
+
+
+-- 2024-09-03 01:00:00.000000
+-- 2024-09-03
+INSERT INTO task (id, collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked, start_date, end_date, deadline, created_time, updated_time)
+VALUES (880, 63, 151, NULL, 'Verify Production Configuration Consistency', 'This is Verify Production Configuration Consistency', NULL, 'ADVANCED', 'TEST', 'URGENT', FALSE, '2024-09-03', '2024-09-08', '2024-09-10', '2024-09-03 01:00:00.000000', '2024-09-03 01:00:00.000000');
+
+INSERT INTO task_for_users (id, task_id, assigned_to_id, user_task_status, updated_time, started_time)
+VALUES
+(19444, 880, 118, 'JOINED', '2024-09-03 01:00:00.000000', '2024-09-03 02:50:52.800000'),
+(19445, 880, 133, 'JOINED', '2024-09-03 01:00:00.000000', '2024-09-03 03:41:16.800000');
+INSERT INTO report (id, created_by_id, title, content, rejected_reason, report_status, created_time, updated_time, reviewed_time)
+VALUES
+(DEFAULT, 19444, 'Employee 118 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-06 19:23:02.400000', '2024-09-06 19:23:02.400000', '2024-09-06 19:28:02.400000'),
+(DEFAULT, 19445, 'Employee 133 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-08 15:24:00.000000', '2024-09-08 15:24:00.000000', '2024-09-08 15:29:00.000000');
+
+-- 2024-09-11 01:00:00.000000
+-- 2024-09-11
+INSERT INTO task (id, collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked, start_date, end_date, deadline, created_time, updated_time)
+VALUES (881, 63, 151, NULL, 'Verify Feature Flags Configuration', 'This is Verify Feature Flags Configuration', NULL, 'ADVANCED', 'TEST', 'LOW', FALSE, '2024-09-11', '2024-09-26', '2024-09-15', '2024-09-11 01:00:00.000000', '2024-09-11 01:00:00.000000');
+
+INSERT INTO task_for_users (id, task_id, assigned_to_id, user_task_status, updated_time, started_time)
+VALUES
+(19447, 881, 116, 'JOINED', '2024-09-11 01:00:00.000000', '2024-09-11 22:18:43.200000'),
+(19448, 881, 117, 'JOINED', '2024-09-11 01:00:00.000000', '2024-09-11 15:41:16.800000'),
+(19449, 881, 118, 'JOINED', '2024-09-11 01:00:00.000000', '2024-09-12 08:55:12.000000'),
+(19450, 881, 119, 'JOINED', '2024-09-11 01:00:00.000000', '2024-09-11 08:06:14.400000'),
+(19451, 881, 120, 'JOINED', '2024-09-11 01:00:00.000000', '2024-09-11 03:24:00.000000'),
+(19452, 881, 121, 'JOINED', '2024-09-11 01:00:00.000000', '2024-09-12 00:02:24.000000'),
+(19453, 881, 122, 'JOINED', '2024-09-11 01:00:00.000000', '2024-09-11 04:04:19.200000'),
+(19454, 881, 123, 'JOINED', '2024-09-11 01:00:00.000000', '2024-09-11 18:39:50.400000'),
+(19455, 881, 124, 'JOINED', '2024-09-11 01:00:00.000000', '2024-09-14 15:24:00.000000'),
+(19456, 881, 125, 'JOINED', '2024-09-11 01:00:00.000000', '2024-09-12 23:33:36.000000'),
+(19457, 881, 126, 'JOINED', '2024-09-11 01:00:00.000000', '2024-09-13 05:10:33.600000'),
+(19458, 881, 127, 'JOINED', '2024-09-11 01:00:00.000000', '2024-09-11 09:21:07.200000'),
+(19459, 881, 128, 'JOINED', '2024-09-11 01:00:00.000000', '2024-09-14 15:24:00.000000'),
+(19460, 881, 129, 'JOINED', '2024-09-11 01:00:00.000000', '2024-09-11 02:03:21.600000'),
+(19461, 881, 131, 'JOINED', '2024-09-11 01:00:00.000000', '2024-09-12 02:03:21.600000'),
+(19462, 881, 132, 'JOINED', '2024-09-11 01:00:00.000000', '2024-09-14 15:24:00.000000'),
+(19463, 881, 133, 'JOINED', '2024-09-11 01:00:00.000000', '2024-09-11 06:16:48.000000'),
+(19464, 881, 134, 'JOINED', '2024-09-11 01:00:00.000000', '2024-09-12 03:41:16.800000'),
+(19465, 881, 135, 'JOINED', '2024-09-11 01:00:00.000000', '2024-09-11 02:55:12.000000');
+INSERT INTO report (id, created_by_id, title, content, rejected_reason, report_status, created_time, updated_time, reviewed_time)
+VALUES
+(DEFAULT, 19447, 'Employee 116 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-13 11:50:52.800000', '2024-09-13 11:50:52.800000', '2024-09-13 11:55:52.800000'),
+(DEFAULT, 19448, 'Employee 117 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-12 16:38:52.800000', '2024-09-12 16:38:52.800000', '2024-09-12 16:43:52.800000'),
+(DEFAULT, 19449, 'Employee 118 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-17 17:04:48.000000', '2024-09-17 17:04:48.000000', '2024-09-17 17:09:48.000000'),
+(DEFAULT, 19450, 'Employee 119 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-14 21:03:50.400000', '2024-09-14 21:03:50.400000', '2024-09-14 21:08:50.400000'),
+(DEFAULT, 19451, 'Employee 120 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-12 19:20:09.600000', '2024-09-12 19:20:09.600000', '2024-09-12 19:25:09.600000'),
+(DEFAULT, 19452, 'Employee 121 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-12 14:37:55.200000', '2024-09-12 14:37:55.200000', '2024-09-12 14:42:55.200000'),
+(DEFAULT, 19453, 'Employee 122 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-13 15:00:57.600000', '2024-09-13 15:00:57.600000', '2024-09-13 15:05:57.600000'),
+(DEFAULT, 19454, 'Employee 123 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-14 20:12:00.000000', '2024-09-14 20:12:00.000000', '2024-09-14 20:17:00.000000'),
+(DEFAULT, 19455, 'Employee 124 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-23 22:30:14.400000', '2024-09-23 22:30:14.400000', '2024-09-23 22:35:14.400000'),
+(DEFAULT, 19456, 'Employee 125 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-14 09:38:24.000000', '2024-09-14 09:38:24.000000', '2024-09-14 09:43:24.000000'),
+(DEFAULT, 19457, 'Employee 126 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-16 20:49:26.400000', '2024-09-16 20:49:26.400000', '2024-09-16 20:54:26.400000'),
+(DEFAULT, 19458, 'Employee 127 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-12 11:39:21.600000', '2024-09-12 11:39:21.600000', '2024-09-12 11:44:21.600000'),
+(DEFAULT, 19459, 'Employee 128 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-23 05:42:14.400000', '2024-09-23 05:42:14.400000', '2024-09-23 05:47:14.400000'),
+(DEFAULT, 19460, 'Employee 129 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-12 01:57:36.000000', '2024-09-12 01:57:36.000000', '2024-09-12 02:02:36.000000'),
+(DEFAULT, 19461, 'Employee 131 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-12 21:49:55.200000', '2024-09-12 21:49:55.200000', '2024-09-12 21:54:55.200000'),
+(DEFAULT, 19462, 'Employee 132 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-26 08:17:45.600000', '2024-09-26 08:17:45.600000', '2024-09-26 08:22:45.600000'),
+(DEFAULT, 19463, 'Employee 133 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-13 01:57:36.000000', '2024-09-13 01:57:36.000000', '2024-09-13 02:02:36.000000'),
+(DEFAULT, 19464, 'Employee 134 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-14 03:58:33.600000', '2024-09-14 03:58:33.600000', '2024-09-14 04:03:33.600000'),
+(DEFAULT, 19465, 'Employee 135 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-12 02:49:26.400000', '2024-09-12 02:49:26.400000', '2024-09-12 02:54:26.400000');
+
+-- 2024-09-16 01:00:00.000000
+-- 2024-09-16
+INSERT INTO task (id, collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked, start_date, end_date, deadline, created_time, updated_time)
+VALUES (882, 63, 151, NULL, 'Verify Logging Level in Production Mode', 'This is Verify Logging Level in Production Mode', NULL, 'NORMAL', 'TEST', 'LOW', FALSE, '2024-09-16', '2024-09-18', '2024-09-19', '2024-09-16 01:00:00.000000', '2024-09-16 01:00:00.000000');
+
+INSERT INTO task_for_users (id, task_id, assigned_to_id, user_task_status, updated_time, started_time)
+VALUES
+(19467, 882, 123, 'JOINED', '2024-09-16 01:00:00.000000', '2024-09-17 14:56:38.400000'),
+(19468, 882, 128, 'JOINED', '2024-09-16 01:00:00.000000', '2024-09-16 04:14:24.000000'),
+(19469, 882, 129, 'JOINED', '2024-09-16 01:00:00.000000', '2024-09-16 15:54:14.400000');
+INSERT INTO report (id, created_by_id, title, content, rejected_reason, report_status, created_time, updated_time, reviewed_time)
+VALUES
+(DEFAULT, 19467, 'Employee 123 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-18 07:34:33.600000', '2024-09-18 07:34:33.600000', '2024-09-18 07:39:33.600000'),
+(DEFAULT, 19468, 'Employee 128 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-16 16:50:24.000000', '2024-09-16 16:50:24.000000', '2024-09-16 16:55:24.000000'),
+(DEFAULT, 19469, 'Employee 129 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-17 20:16:19.200000', '2024-09-17 20:16:19.200000', '2024-09-17 20:21:19.200000');
+
+-- 2024-09-20 01:00:00.000000
+-- 2024-09-20
+INSERT INTO task (id, collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked, start_date, end_date, deadline, created_time, updated_time)
+VALUES (883, 63, 151, NULL, 'Verify Monitoring Dashboards', 'This is Verify Monitoring Dashboards', NULL, 'ADVANCED', 'TEST', 'LOW', FALSE, '2024-09-20', '2024-10-01', '2024-09-24', '2024-09-20 01:00:00.000000', '2024-09-20 01:00:00.000000');
+
+INSERT INTO task_for_users (id, task_id, assigned_to_id, user_task_status, updated_time, started_time)
+VALUES
+(19471, 883, 116, 'JOINED', '2024-09-20 01:00:00.000000', '2024-09-21 06:45:36.000000'),
+(19472, 883, 117, 'JOINED', '2024-09-20 01:00:00.000000', '2024-09-21 17:30:43.200000'),
+(19473, 883, 118, 'JOINED', '2024-09-20 01:00:00.000000', '2024-09-21 10:01:26.400000'),
+(19474, 883, 119, 'JOINED', '2024-09-20 01:00:00.000000', '2024-09-23 15:24:00.000000'),
+(19475, 883, 120, 'JOINED', '2024-09-20 01:00:00.000000', '2024-09-20 17:07:40.800000'),
+(19476, 883, 121, 'JOINED', '2024-09-20 01:00:00.000000', '2024-09-20 03:47:02.400000'),
+(19477, 883, 122, 'JOINED', '2024-09-20 01:00:00.000000', '2024-09-20 21:49:55.200000'),
+(19478, 883, 123, 'JOINED', '2024-09-20 01:00:00.000000', '2024-09-20 12:45:36.000000'),
+(19479, 883, 124, 'JOINED', '2024-09-20 01:00:00.000000', '2024-09-21 17:30:43.200000'),
+(19480, 883, 125, 'JOINED', '2024-09-20 01:00:00.000000', '2024-09-20 14:03:21.600000'),
+(19481, 883, 126, 'JOINED', '2024-09-20 01:00:00.000000', '2024-09-21 07:25:55.200000'),
+(19482, 883, 127, 'JOINED', '2024-09-20 01:00:00.000000', '2024-09-21 08:58:04.800000'),
+(19483, 883, 128, 'JOINED', '2024-09-20 01:00:00.000000', '2024-09-20 03:18:14.400000'),
+(19484, 883, 129, 'JOINED', '2024-09-20 01:00:00.000000', '2024-09-20 12:48:28.800000'),
+(19485, 883, 131, 'JOINED', '2024-09-20 01:00:00.000000', '2024-09-20 03:35:31.200000'),
+(19486, 883, 132, 'JOINED', '2024-09-20 01:00:00.000000', '2024-09-20 22:18:43.200000'),
+(19487, 883, 133, 'JOINED', '2024-09-20 01:00:00.000000', '2024-09-20 11:45:07.200000'),
+(19488, 883, 134, 'JOINED', '2024-09-20 01:00:00.000000', '2024-09-21 16:15:50.400000'),
+(19489, 883, 135, 'JOINED', '2024-09-20 01:00:00.000000', '2024-09-20 17:42:14.400000');
+INSERT INTO report (id, created_by_id, title, content, rejected_reason, report_status, created_time, updated_time, reviewed_time)
+VALUES
+(DEFAULT, 19471, 'Employee 116 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-22 01:46:04.800000', '2024-09-22 01:46:04.800000', '2024-09-22 01:51:04.800000'),
+(DEFAULT, 19472, 'Employee 117 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-26 08:29:16.800000', '2024-09-26 08:29:16.800000', '2024-09-26 08:34:16.800000'),
+(DEFAULT, 19473, 'Employee 118 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-22 07:14:24.000000', '2024-09-22 07:14:24.000000', '2024-09-22 07:19:24.000000'),
+(DEFAULT, 19474, 'Employee 119 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-01 23:45:07.200000', '2024-10-01 23:45:07.200000', '2024-10-01 23:50:07.200000'),
+(DEFAULT, 19475, 'Employee 120 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-21 22:01:26.400000', '2024-09-21 22:01:26.400000', '2024-09-21 22:06:26.400000'),
+(DEFAULT, 19476, 'Employee 121 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-21 06:11:02.400000', '2024-09-21 06:11:02.400000', '2024-09-21 06:16:02.400000'),
+(DEFAULT, 19477, 'Employee 122 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-22 02:37:55.200000', '2024-09-22 02:37:55.200000', '2024-09-22 02:42:55.200000'),
+(DEFAULT, 19478, 'Employee 123 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-27 13:14:24.000000', '2024-09-27 13:14:24.000000', '2024-09-27 13:19:24.000000'),
+(DEFAULT, 19479, 'Employee 124 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-22 21:32:38.400000', '2024-09-22 21:32:38.400000', '2024-09-22 21:37:38.400000'),
+(DEFAULT, 19480, 'Employee 125 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-21 19:08:38.400000', '2024-09-21 19:08:38.400000', '2024-09-21 19:13:38.400000'),
+(DEFAULT, 19481, 'Employee 126 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-23 15:47:02.400000', '2024-09-23 15:47:02.400000', '2024-09-23 15:52:02.400000'),
+(DEFAULT, 19482, 'Employee 127 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-22 02:49:26.400000', '2024-09-22 02:49:26.400000', '2024-09-22 02:54:26.400000'),
+(DEFAULT, 19483, 'Employee 128 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-21 06:45:36.000000', '2024-09-21 06:45:36.000000', '2024-09-21 06:50:36.000000'),
+(DEFAULT, 19484, 'Employee 129 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-21 23:39:21.600000', '2024-09-21 23:39:21.600000', '2024-09-21 23:44:21.600000'),
+(DEFAULT, 19485, 'Employee 131 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-21 18:51:21.600000', '2024-09-21 18:51:21.600000', '2024-09-21 18:56:21.600000'),
+(DEFAULT, 19486, 'Employee 132 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-22 03:58:33.600000', '2024-09-22 03:58:33.600000', '2024-09-22 04:03:33.600000'),
+(DEFAULT, 19487, 'Employee 133 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-21 10:30:14.400000', '2024-09-21 10:30:14.400000', '2024-09-21 10:35:14.400000'),
+(DEFAULT, 19488, 'Employee 134 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-23 08:40:48.000000', '2024-09-23 08:40:48.000000', '2024-09-23 08:45:48.000000'),
+(DEFAULT, 19489, 'Employee 135 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-21 20:17:45.600000', '2024-09-21 20:17:45.600000', '2024-09-21 20:22:45.600000');
+
+-- 2024-09-25 01:00:00.000000
+-- 2024-09-25
+INSERT INTO task (id, collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked, start_date, end_date, deadline, created_time, updated_time)
+VALUES (884, 63, 151, NULL, 'Verify Alerting Rules', 'This is Verify Alerting Rules', NULL, 'NORMAL', 'TEST', 'NORMAL', FALSE, '2024-09-25', '2024-09-28', '2024-09-29', '2024-09-25 01:00:00.000000', '2024-09-25 01:00:00.000000');
+
+INSERT INTO task_for_users (id, task_id, assigned_to_id, user_task_status, updated_time, started_time)
+VALUES
+(19491, 884, 118, 'JOINED', '2024-09-25 01:00:00.000000', '2024-09-25 17:01:55.200000'),
+(19492, 884, 124, 'JOINED', '2024-09-25 01:00:00.000000', '2024-09-25 03:12:28.800000'),
+(19493, 884, 128, 'JOINED', '2024-09-25 01:00:00.000000', '2024-09-26 20:00:28.800000');
+INSERT INTO report (id, created_by_id, title, content, rejected_reason, report_status, created_time, updated_time, reviewed_time)
+VALUES
+(DEFAULT, 19491, 'Employee 118 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-27 13:05:45.600000', '2024-09-27 13:05:45.600000', '2024-09-27 13:10:45.600000'),
+(DEFAULT, 19492, 'Employee 124 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-25 22:24:28.800000', '2024-09-25 22:24:28.800000', '2024-09-25 22:29:28.800000'),
+(DEFAULT, 19493, 'Employee 128 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-09-28 18:39:50.400000', '2024-09-28 18:39:50.400000', '2024-09-28 18:44:50.400000');
+
+-- 2024-09-30 01:00:00.000000
+-- 2024-09-30
+INSERT INTO task (id, collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked, start_date, end_date, deadline, created_time, updated_time)
+VALUES (885, 63, 151, NULL, 'Verify Backup Jobs Configuration', 'This is Verify Backup Jobs Configuration', NULL, 'ADVANCED', 'TEST', 'LOW', FALSE, '2024-09-30', '2024-10-13', '2024-10-04', '2024-09-30 01:00:00.000000', '2024-09-30 01:00:00.000000');
+
+INSERT INTO task_for_users (id, task_id, assigned_to_id, user_task_status, updated_time, started_time)
+VALUES
+(19495, 885, 116, 'JOINED', '2024-09-30 01:00:00.000000', '2024-09-30 06:02:24.000000'),
+(19496, 885, 117, 'JOINED', '2024-09-30 01:00:00.000000', '2024-10-03 15:24:00.000000'),
+(19497, 885, 118, 'JOINED', '2024-09-30 01:00:00.000000', '2024-10-03 15:24:00.000000'),
+(19498, 885, 119, 'JOINED', '2024-09-30 01:00:00.000000', '2024-10-01 02:09:07.200000'),
+(19499, 885, 120, 'JOINED', '2024-09-30 01:00:00.000000', '2024-09-30 19:37:26.400000'),
+(19500, 885, 121, 'JOINED', '2024-09-30 01:00:00.000000', '2024-10-01 22:15:50.400000'),
+(19501, 885, 122, 'JOINED', '2024-09-30 01:00:00.000000', '2024-09-30 10:41:45.600000'),
+(19502, 885, 123, 'JOINED', '2024-09-30 01:00:00.000000', '2024-09-30 13:40:19.200000'),
+(19503, 885, 124, 'JOINED', '2024-09-30 01:00:00.000000', '2024-10-01 09:03:50.400000'),
+(19504, 885, 125, 'JOINED', '2024-09-30 01:00:00.000000', '2024-10-01 08:06:14.400000'),
+(19505, 885, 126, 'JOINED', '2024-09-30 01:00:00.000000', '2024-10-01 02:43:40.800000'),
+(19506, 885, 127, 'JOINED', '2024-09-30 01:00:00.000000', '2024-09-30 18:16:48.000000'),
+(19507, 885, 128, 'JOINED', '2024-09-30 01:00:00.000000', '2024-09-30 14:09:07.200000'),
+(19508, 885, 129, 'JOINED', '2024-09-30 01:00:00.000000', '2024-09-30 14:14:52.800000'),
+(19509, 885, 131, 'JOINED', '2024-09-30 01:00:00.000000', '2024-09-30 08:29:16.800000'),
+(19510, 885, 132, 'JOINED', '2024-09-30 01:00:00.000000', '2024-09-30 09:32:38.400000'),
+(19511, 885, 133, 'JOINED', '2024-09-30 01:00:00.000000', '2024-09-30 10:53:16.800000'),
+(19512, 885, 134, 'JOINED', '2024-09-30 01:00:00.000000', '2024-10-02 02:03:21.600000'),
+(19513, 885, 135, 'JOINED', '2024-09-30 01:00:00.000000', '2024-10-02 05:42:14.400000');
+INSERT INTO report (id, created_by_id, title, content, rejected_reason, report_status, created_time, updated_time, reviewed_time)
+VALUES
+(DEFAULT, 19495, 'Employee 116 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-07 19:57:36.000000', '2024-10-07 19:57:36.000000', '2024-10-07 20:02:36.000000'),
+(DEFAULT, 19496, 'Employee 117 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-13 10:18:43.200000', '2024-10-13 10:18:43.200000', '2024-10-13 10:23:43.200000'),
+(DEFAULT, 19497, 'Employee 118 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-12 19:48:57.600000', '2024-10-12 19:48:57.600000', '2024-10-12 19:53:57.600000'),
+(DEFAULT, 19498, 'Employee 119 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-02 05:30:43.200000', '2024-10-02 05:30:43.200000', '2024-10-02 05:35:43.200000'),
+(DEFAULT, 19499, 'Employee 120 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-02 03:24:00.000000', '2024-10-02 03:24:00.000000', '2024-10-02 03:29:00.000000'),
+(DEFAULT, 19500, 'Employee 121 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-06 03:44:09.600000', '2024-10-06 03:44:09.600000', '2024-10-06 03:49:09.600000'),
+(DEFAULT, 19501, 'Employee 122 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-01 10:47:31.200000', '2024-10-01 10:47:31.200000', '2024-10-01 10:52:31.200000'),
+(DEFAULT, 19502, 'Employee 123 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-07 12:19:40.800000', '2024-10-07 12:19:40.800000', '2024-10-07 12:24:40.800000'),
+(DEFAULT, 19503, 'Employee 124 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-02 21:09:36.000000', '2024-10-02 21:09:36.000000', '2024-10-02 21:14:36.000000'),
+(DEFAULT, 19504, 'Employee 125 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-03 10:01:26.400000', '2024-10-03 10:01:26.400000', '2024-10-03 10:06:26.400000'),
+(DEFAULT, 19505, 'Employee 126 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-02 06:11:02.400000', '2024-10-02 06:11:02.400000', '2024-10-02 06:16:02.400000'),
+(DEFAULT, 19506, 'Employee 127 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-01 13:23:02.400000', '2024-10-01 13:23:02.400000', '2024-10-01 13:28:02.400000'),
+(DEFAULT, 19507, 'Employee 128 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-02 18:22:33.600000', '2024-10-02 18:22:33.600000', '2024-10-02 18:27:33.600000'),
+(DEFAULT, 19508, 'Employee 129 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-02 13:11:31.200000', '2024-10-02 13:11:31.200000', '2024-10-02 13:16:31.200000'),
+(DEFAULT, 19509, 'Employee 131 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-01 03:58:33.600000', '2024-10-01 03:58:33.600000', '2024-10-01 04:03:33.600000'),
+(DEFAULT, 19510, 'Employee 132 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-02 11:22:04.800000', '2024-10-02 11:22:04.800000', '2024-10-02 11:27:04.800000'),
+(DEFAULT, 19511, 'Employee 133 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-02 05:19:12.000000', '2024-10-02 05:19:12.000000', '2024-10-02 05:24:12.000000'),
+(DEFAULT, 19512, 'Employee 134 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-02 18:39:50.400000', '2024-10-02 18:39:50.400000', '2024-10-02 18:44:50.400000'),
+(DEFAULT, 19513, 'Employee 135 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-03 15:41:16.800000', '2024-10-03 15:41:16.800000', '2024-10-03 15:46:16.800000');
+
+-- 2024-10-05 01:00:00.000000
+-- 2024-10-05
+INSERT INTO task (id, collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked, start_date, end_date, deadline, created_time, updated_time)
+VALUES (886, 63, 151, NULL, 'Verify Data Migration Safety', 'This is Verify Data Migration Safety', NULL, 'NORMAL', 'TEST', 'HIGH', FALSE, '2024-10-05', '2024-10-07', '2024-10-10', '2024-10-05 01:00:00.000000', '2024-10-05 01:00:00.000000');
+
+INSERT INTO task_for_users (id, task_id, assigned_to_id, user_task_status, updated_time, started_time)
+VALUES
+(19515, 886, 122, 'JOINED', '2024-10-05 01:00:00.000000', '2024-10-05 20:12:00.000000'),
+(19516, 886, 128, 'JOINED', '2024-10-05 01:00:00.000000', '2024-10-06 07:07:12.000000'),
+(19517, 886, 133, 'JOINED', '2024-10-05 01:00:00.000000', '2024-10-05 02:40:48.000000');
+INSERT INTO report (id, created_by_id, title, content, rejected_reason, report_status, created_time, updated_time, reviewed_time)
+VALUES
+(DEFAULT, 19515, 'Employee 122 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-07 10:36:00.000000', '2024-10-07 10:36:00.000000', '2024-10-07 10:41:00.000000'),
+(DEFAULT, 19516, 'Employee 128 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-07 21:16:48.000000', '2024-10-07 21:16:48.000000', '2024-10-07 21:21:48.000000'),
+(DEFAULT, 19517, 'Employee 133 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-07 01:21:36.000000', '2024-10-07 01:21:36.000000', '2024-10-07 01:26:36.000000');
+
+-- 2024-10-11 01:00:00.000000
+-- 2024-10-11
+INSERT INTO task (id, collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked, start_date, end_date, deadline, created_time, updated_time)
+VALUES (887, 63, 151, NULL, 'Verify Rollback Plan Execution', 'This is Verify Rollback Plan Execution', NULL, 'NORMAL', 'TEST', 'NORMAL', FALSE, '2024-10-11', '2024-10-17', '2024-10-15', '2024-10-11 01:00:00.000000', '2024-10-11 01:00:00.000000');
+
+INSERT INTO task_for_users (id, task_id, assigned_to_id, user_task_status, updated_time, started_time)
+VALUES
+(19519, 887, 116, 'JOINED', '2024-10-11 01:00:00.000000', '2024-10-12 08:12:00.000000'),
+(19520, 887, 117, 'JOINED', '2024-10-11 01:00:00.000000', '2024-10-11 22:01:26.400000'),
+(19521, 887, 118, 'JOINED', '2024-10-11 01:00:00.000000', '2024-10-13 06:05:16.800000'),
+(19522, 887, 119, 'JOINED', '2024-10-11 01:00:00.000000', '2024-10-11 09:55:40.800000'),
+(19523, 887, 120, 'JOINED', '2024-10-11 01:00:00.000000', '2024-10-12 10:30:14.400000'),
+(19524, 887, 121, 'JOINED', '2024-10-11 01:00:00.000000', '2024-10-12 19:08:38.400000'),
+(19525, 887, 122, 'JOINED', '2024-10-11 01:00:00.000000', '2024-10-11 05:13:26.400000'),
+(19526, 887, 124, 'JOINED', '2024-10-11 01:00:00.000000', '2024-10-13 10:24:28.800000'),
+(19527, 887, 125, 'JOINED', '2024-10-11 01:00:00.000000', '2024-10-12 02:32:09.600000'),
+(19528, 887, 126, 'JOINED', '2024-10-11 01:00:00.000000', '2024-10-12 20:00:28.800000'),
+(19529, 887, 127, 'JOINED', '2024-10-11 01:00:00.000000', '2024-10-11 22:30:14.400000'),
+(19530, 887, 128, 'JOINED', '2024-10-11 01:00:00.000000', '2024-10-11 16:33:07.200000'),
+(19531, 887, 129, 'JOINED', '2024-10-11 01:00:00.000000', '2024-10-11 07:25:55.200000'),
+(19532, 887, 130, 'JOINED', '2024-10-11 01:00:00.000000', '2024-10-11 21:09:36.000000'),
+(19533, 887, 131, 'JOINED', '2024-10-11 01:00:00.000000', '2024-10-11 14:55:12.000000'),
+(19534, 887, 132, 'JOINED', '2024-10-11 01:00:00.000000', '2024-10-12 18:39:50.400000'),
+(19535, 887, 133, 'JOINED', '2024-10-11 01:00:00.000000', '2024-10-11 10:18:43.200000'),
+(19536, 887, 134, 'JOINED', '2024-10-11 01:00:00.000000', '2024-10-13 00:54:14.400000'),
+(19537, 887, 135, 'JOINED', '2024-10-11 01:00:00.000000', '2024-10-12 08:35:02.400000');
+INSERT INTO report (id, created_by_id, title, content, rejected_reason, report_status, created_time, updated_time, reviewed_time)
+VALUES
+(DEFAULT, 19519, 'Employee 116 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-13 02:26:24.000000', '2024-10-13 02:26:24.000000', '2024-10-13 02:31:24.000000'),
+(DEFAULT, 19520, 'Employee 117 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-13 07:25:55.200000', '2024-10-13 07:25:55.200000', '2024-10-13 07:30:55.200000'),
+(DEFAULT, 19521, 'Employee 118 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-14 17:07:40.800000', '2024-10-14 17:07:40.800000', '2024-10-14 17:12:40.800000'),
+(DEFAULT, 19522, 'Employee 119 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-12 11:50:52.800000', '2024-10-12 11:50:52.800000', '2024-10-12 11:55:52.800000'),
+(DEFAULT, 19523, 'Employee 120 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-13 16:10:04.800000', '2024-10-13 16:10:04.800000', '2024-10-13 16:15:04.800000'),
+(DEFAULT, 19524, 'Employee 121 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-14 12:02:24.000000', '2024-10-14 12:02:24.000000', '2024-10-14 12:07:24.000000'),
+(DEFAULT, 19525, 'Employee 122 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-11 22:41:45.600000', '2024-10-11 22:41:45.600000', '2024-10-11 22:46:45.600000'),
+(DEFAULT, 19526, 'Employee 124 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-14 22:12:57.600000', '2024-10-14 22:12:57.600000', '2024-10-14 22:17:57.600000'),
+(DEFAULT, 19527, 'Employee 125 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-13 21:49:55.200000', '2024-10-13 21:49:55.200000', '2024-10-13 21:54:55.200000'),
+(DEFAULT, 19528, 'Employee 126 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-13 17:19:12.000000', '2024-10-13 17:19:12.000000', '2024-10-13 17:24:12.000000'),
+(DEFAULT, 19529, 'Employee 127 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-13 11:04:48.000000', '2024-10-13 11:04:48.000000', '2024-10-13 11:09:48.000000'),
+(DEFAULT, 19530, 'Employee 128 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-13 01:40:19.200000', '2024-10-13 01:40:19.200000', '2024-10-13 01:45:19.200000'),
+(DEFAULT, 19531, 'Employee 129 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-12 05:07:40.800000', '2024-10-12 05:07:40.800000', '2024-10-12 05:12:40.800000'),
+(DEFAULT, 19532, 'Employee 130 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-12 23:04:48.000000', '2024-10-12 23:04:48.000000', '2024-10-12 23:09:48.000000'),
+(DEFAULT, 19533, 'Employee 131 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-12 11:22:04.800000', '2024-10-12 11:22:04.800000', '2024-10-12 11:27:04.800000'),
+(DEFAULT, 19534, 'Employee 132 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-13 13:00:00.000000', '2024-10-13 13:00:00.000000', '2024-10-13 13:05:00.000000'),
+(DEFAULT, 19535, 'Employee 133 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-13 00:08:09.600000', '2024-10-13 00:08:09.600000', '2024-10-13 00:13:09.600000'),
+(DEFAULT, 19536, 'Employee 134 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-17 01:05:45.600000', '2024-10-17 01:05:45.600000', '2024-10-17 01:10:45.600000'),
+(DEFAULT, 19537, 'Employee 135 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-13 13:46:04.800000', '2024-10-13 13:46:04.800000', '2024-10-13 13:51:04.800000');
+
+-- 2024-10-16 01:00:00.000000
+-- 2024-10-16
+INSERT INTO task (id, collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked, start_date, end_date, deadline, created_time, updated_time)
+VALUES (888, 63, 151, NULL, 'Verify Deployment Smoke Tests', 'This is Verify Deployment Smoke Tests', NULL, 'NORMAL', 'TEST', 'URGENT', FALSE, '2024-10-16', '2024-10-26', '2024-10-22', '2024-10-16 01:00:00.000000', '2024-10-16 01:00:00.000000');
+
+INSERT INTO task_for_users (id, task_id, assigned_to_id, user_task_status, updated_time, started_time)
+VALUES
+(19539, 888, 117, 'JOINED', '2024-10-16 01:00:00.000000', '2024-10-17 06:39:50.400000'),
+(19540, 888, 118, 'JOINED', '2024-10-16 01:00:00.000000', '2024-10-17 02:29:16.800000'),
+(19541, 888, 128, 'JOINED', '2024-10-16 01:00:00.000000', '2024-10-16 03:44:09.600000');
+INSERT INTO report (id, created_by_id, title, content, rejected_reason, report_status, created_time, updated_time, reviewed_time)
+VALUES
+(DEFAULT, 19539, 'Employee 117 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-19 03:44:09.600000', '2024-10-19 03:44:09.600000', '2024-10-19 03:49:09.600000'),
+(DEFAULT, 19540, 'Employee 118 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-26 23:30:43.200000', '2024-10-26 23:30:43.200000', '2024-10-26 23:35:43.200000'),
+(DEFAULT, 19541, 'Employee 128 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-18 05:59:31.200000', '2024-10-18 05:59:31.200000', '2024-10-18 06:04:31.200000');
+
+-- 2024-10-23 01:00:00.000000
+-- 2024-10-23
+INSERT INTO task (id, collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked, start_date, end_date, deadline, created_time, updated_time)
+VALUES (889, 63, 151, NULL, 'Approve Production Readiness', 'This is Approve Production Readiness', NULL, 'NORMAL', 'TEST', 'NORMAL', FALSE, '2024-10-23', '2024-10-28', '2024-10-27', '2024-10-23 01:00:00.000000', '2024-10-23 01:00:00.000000');
+
+INSERT INTO task_for_users (id, task_id, assigned_to_id, user_task_status, updated_time, started_time)
+VALUES
+(19543, 889, 116, 'JOINED', '2024-10-23 01:00:00.000000', '2024-10-25 14:55:12.000000'),
+(19544, 889, 117, 'JOINED', '2024-10-23 01:00:00.000000', '2024-10-24 17:53:45.600000'),
+(19545, 889, 118, 'JOINED', '2024-10-23 01:00:00.000000', '2024-10-24 12:08:09.600000'),
+(19546, 889, 119, 'JOINED', '2024-10-23 01:00:00.000000', '2024-10-25 05:13:26.400000'),
+(19547, 889, 120, 'JOINED', '2024-10-23 01:00:00.000000', '2024-10-23 13:05:45.600000'),
+(19548, 889, 121, 'JOINED', '2024-10-23 01:00:00.000000', '2024-10-23 04:10:04.800000'),
+(19549, 889, 122, 'JOINED', '2024-10-23 01:00:00.000000', '2024-10-24 15:24:00.000000'),
+(19550, 889, 124, 'JOINED', '2024-10-23 01:00:00.000000', '2024-10-26 00:54:14.400000'),
+(19551, 889, 125, 'JOINED', '2024-10-23 01:00:00.000000', '2024-10-24 20:52:19.200000'),
+(19552, 889, 126, 'JOINED', '2024-10-23 01:00:00.000000', '2024-10-25 02:17:45.600000'),
+(19553, 889, 127, 'JOINED', '2024-10-23 01:00:00.000000', '2024-10-25 09:44:09.600000'),
+(19554, 889, 128, 'JOINED', '2024-10-23 01:00:00.000000', '2024-10-23 13:40:19.200000'),
+(19555, 889, 129, 'JOINED', '2024-10-23 01:00:00.000000', '2024-10-23 01:23:02.400000'),
+(19556, 889, 130, 'JOINED', '2024-10-23 01:00:00.000000', '2024-10-23 19:37:26.400000'),
+(19557, 889, 131, 'JOINED', '2024-10-23 01:00:00.000000', '2024-10-24 01:17:16.800000'),
+(19558, 889, 132, 'JOINED', '2024-10-23 01:00:00.000000', '2024-10-25 11:04:48.000000'),
+(19559, 889, 133, 'JOINED', '2024-10-23 01:00:00.000000', '2024-10-24 16:50:24.000000'),
+(19560, 889, 134, 'JOINED', '2024-10-23 01:00:00.000000', '2024-10-25 05:59:31.200000'),
+(19561, 889, 135, 'JOINED', '2024-10-23 01:00:00.000000', '2024-10-23 07:43:12.000000');
+INSERT INTO report (id, created_by_id, title, content, rejected_reason, report_status, created_time, updated_time, reviewed_time)
+VALUES
+(DEFAULT, 19543, 'Employee 116 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-26 06:28:19.200000', '2024-10-26 06:28:19.200000', '2024-10-26 06:33:19.200000'),
+(DEFAULT, 19544, 'Employee 117 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-26 10:18:43.200000', '2024-10-26 10:18:43.200000', '2024-10-26 10:23:43.200000'),
+(DEFAULT, 19545, 'Employee 118 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-26 02:37:55.200000', '2024-10-26 02:37:55.200000', '2024-10-26 02:42:55.200000'),
+(DEFAULT, 19546, 'Employee 119 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-26 19:08:38.400000', '2024-10-26 19:08:38.400000', '2024-10-26 19:13:38.400000'),
+(DEFAULT, 19547, 'Employee 120 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-24 23:56:38.400000', '2024-10-24 23:56:38.400000', '2024-10-25 00:01:38.400000'),
+(DEFAULT, 19548, 'Employee 121 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-24 16:15:50.400000', '2024-10-24 16:15:50.400000', '2024-10-24 16:20:50.400000'),
+(DEFAULT, 19549, 'Employee 122 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-25 22:18:43.200000', '2024-10-25 22:18:43.200000', '2024-10-25 22:23:43.200000'),
+(DEFAULT, 19550, 'Employee 124 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-26 22:01:26.400000', '2024-10-26 22:01:26.400000', '2024-10-26 22:06:26.400000'),
+(DEFAULT, 19551, 'Employee 125 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-26 04:38:52.800000', '2024-10-26 04:38:52.800000', '2024-10-26 04:43:52.800000'),
+(DEFAULT, 19552, 'Employee 126 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-28 23:42:14.400000', '2024-10-28 23:42:14.400000', '2024-10-28 23:47:14.400000'),
+(DEFAULT, 19553, 'Employee 127 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-26 06:11:02.400000', '2024-10-26 06:11:02.400000', '2024-10-26 06:16:02.400000'),
+(DEFAULT, 19554, 'Employee 128 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-25 13:40:19.200000', '2024-10-25 13:40:19.200000', '2024-10-25 13:45:19.200000'),
+(DEFAULT, 19555, 'Employee 129 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-24 02:03:21.600000', '2024-10-24 02:03:21.600000', '2024-10-24 02:08:21.600000'),
+(DEFAULT, 19556, 'Employee 130 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-25 00:48:28.800000', '2024-10-25 00:48:28.800000', '2024-10-25 00:53:28.800000'),
+(DEFAULT, 19557, 'Employee 131 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-25 17:42:14.400000', '2024-10-25 17:42:14.400000', '2024-10-25 17:47:14.400000'),
+(DEFAULT, 19558, 'Employee 132 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-26 17:36:28.800000', '2024-10-26 17:36:28.800000', '2024-10-26 17:41:28.800000'),
+(DEFAULT, 19559, 'Employee 133 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-25 13:11:31.200000', '2024-10-25 13:11:31.200000', '2024-10-25 13:16:31.200000'),
+(DEFAULT, 19560, 'Employee 134 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-26 08:40:48.000000', '2024-10-26 08:40:48.000000', '2024-10-26 08:45:48.000000'),
+(DEFAULT, 19561, 'Employee 135 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-24 01:05:45.600000', '2024-10-24 01:05:45.600000', '2024-10-24 01:10:45.600000');
+
+INSERT INTO collection (`id`, `created_time`, `description`, `due_date`, `start_date`, `name`, `updated_time`, `phase_id`, `created_by_id`)
+VALUES (64, '2024-10-27 01:00:00.000000', 'This is Post-deployment Validation', '2025-01-02', '2024-10-27', 'Post-deployment Validation', '2024-10-27 01:00:00.000000', 11, 154);
+
+
+-- 2024-10-28 01:05:00.000000
+-- 2024-10-28
+INSERT INTO task (id, collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked, start_date, end_date, deadline, created_time, updated_time)
+VALUES (890, 64, 151, NULL, 'Execute Production Smoke Testing', 'This is Execute Production Smoke Testing', NULL, 'NORMAL', 'TEST', 'URGENT', FALSE, '2024-10-28', '2024-11-01', '2024-11-03', '2024-10-28 01:05:00.000000', '2024-10-28 01:05:00.000000');
+
+INSERT INTO task_for_users (id, task_id, assigned_to_id, user_task_status, updated_time, started_time)
+VALUES
+(19563, 890, 117, 'JOINED', '2024-10-28 01:05:00.000000', '2024-10-29 14:22:45.600000'),
+(19564, 890, 118, 'JOINED', '2024-10-28 01:05:00.000000', '2024-10-29 16:06:26.400000'),
+(19565, 890, 128, 'JOINED', '2024-10-28 01:05:00.000000', '2024-10-28 14:11:14.400000');
+INSERT INTO report (id, created_by_id, title, content, rejected_reason, report_status, created_time, updated_time, reviewed_time)
+VALUES
+(DEFAULT, 19563, 'Employee 117 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-01 00:50:36.000000', '2024-11-01 00:50:36.000000', '2024-11-01 00:55:36.000000'),
+(DEFAULT, 19564, 'Employee 118 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-01 01:33:48.000000', '2024-11-01 01:33:48.000000', '2024-11-01 01:38:48.000000'),
+(DEFAULT, 19565, 'Employee 128 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-10-30 13:59:43.200000', '2024-10-30 13:59:43.200000', '2024-10-30 14:04:43.200000');
+
+-- 2024-11-04 01:05:00.000000
+-- 2024-11-04
+INSERT INTO task (id, collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked, start_date, end_date, deadline, created_time, updated_time)
+VALUES (891, 64, 151, NULL, 'Validate Live User Authentication', 'This is Validate Live User Authentication', NULL, 'NORMAL', 'TEST', 'LOW', FALSE, '2024-11-04', '2024-11-15', '2024-11-07', '2024-11-04 01:05:00.000000', '2024-11-04 01:05:00.000000');
+
+INSERT INTO task_for_users (id, task_id, assigned_to_id, user_task_status, updated_time, started_time)
+VALUES
+(19567, 891, 116, 'JOINED', '2024-11-04 01:05:00.000000', '2024-11-05 10:25:09.600000'),
+(19568, 891, 117, 'JOINED', '2024-11-04 01:05:00.000000', '2024-11-05 13:00:40.800000'),
+(19569, 891, 119, 'JOINED', '2024-11-04 01:05:00.000000', '2024-11-04 11:05:28.800000'),
+(19570, 891, 120, 'JOINED', '2024-11-04 01:05:00.000000', '2024-11-05 09:20:21.600000'),
+(19571, 891, 121, 'JOINED', '2024-11-04 01:05:00.000000', '2024-11-04 03:10:16.800000'),
+(19572, 891, 122, 'JOINED', '2024-11-04 01:05:00.000000', '2024-11-06 17:53:00.000000'),
+(19573, 891, 123, 'JOINED', '2024-11-04 01:05:00.000000', '2024-11-05 11:51:33.600000'),
+(19574, 891, 124, 'JOINED', '2024-11-04 01:05:00.000000', '2024-11-04 17:25:38.400000'),
+(19575, 891, 125, 'JOINED', '2024-11-04 01:05:00.000000', '2024-11-04 13:10:45.600000'),
+(19576, 891, 126, 'JOINED', '2024-11-04 01:05:00.000000', '2024-11-04 18:56:21.600000'),
+(19577, 891, 127, 'JOINED', '2024-11-04 01:05:00.000000', '2024-11-05 02:08:21.600000'),
+(19578, 891, 128, 'JOINED', '2024-11-04 01:05:00.000000', '2024-11-05 05:48:40.800000'),
+(19579, 891, 129, 'JOINED', '2024-11-04 01:05:00.000000', '2024-11-04 15:46:16.800000'),
+(19580, 891, 130, 'JOINED', '2024-11-04 01:05:00.000000', '2024-11-05 09:54:55.200000'),
+(19581, 891, 131, 'JOINED', '2024-11-04 01:05:00.000000', '2024-11-04 12:05:57.600000'),
+(19582, 891, 132, 'JOINED', '2024-11-04 01:05:00.000000', '2024-11-05 20:47:14.400000'),
+(19583, 891, 133, 'JOINED', '2024-11-04 01:05:00.000000', '2024-11-05 08:37:09.600000'),
+(19584, 891, 134, 'JOINED', '2024-11-04 01:05:00.000000', '2024-11-05 01:07:52.800000'),
+(19585, 891, 135, 'JOINED', '2024-11-04 01:05:00.000000', '2024-11-04 05:32:50.400000');
+INSERT INTO report (id, created_by_id, title, content, rejected_reason, report_status, created_time, updated_time, reviewed_time)
+VALUES
+(DEFAULT, 19567, 'Employee 116 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-06 06:56:21.600000', '2024-11-06 06:56:21.600000', '2024-11-06 07:01:21.600000'),
+(DEFAULT, 19568, 'Employee 117 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-06 11:41:28.800000', '2024-11-06 11:41:28.800000', '2024-11-06 11:46:28.800000'),
+(DEFAULT, 19569, 'Employee 119 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-05 02:34:16.800000', '2024-11-05 02:34:16.800000', '2024-11-05 02:39:16.800000'),
+(DEFAULT, 19570, 'Employee 120 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-06 09:40:31.200000', '2024-11-06 09:40:31.200000', '2024-11-06 09:45:31.200000'),
+(DEFAULT, 19571, 'Employee 121 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-05 12:26:07.200000', '2024-11-05 12:26:07.200000', '2024-11-05 12:31:07.200000'),
+(DEFAULT, 19572, 'Employee 122 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-15 02:15:33.600000', '2024-11-15 02:15:33.600000', '2024-11-15 02:20:33.600000'),
+(DEFAULT, 19573, 'Employee 123 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-06 17:01:09.600000', '2024-11-06 17:01:09.600000', '2024-11-06 17:06:09.600000'),
+(DEFAULT, 19574, 'Employee 124 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-05 15:31:52.800000', '2024-11-05 15:31:52.800000', '2024-11-05 15:36:52.800000'),
+(DEFAULT, 19575, 'Employee 125 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-05 07:41:00.000000', '2024-11-05 07:41:00.000000', '2024-11-05 07:46:00.000000'),
+(DEFAULT, 19576, 'Employee 126 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-05 23:01:09.600000', '2024-11-05 23:01:09.600000', '2024-11-05 23:06:09.600000'),
+(DEFAULT, 19577, 'Employee 127 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-06 01:49:38.400000', '2024-11-06 01:49:38.400000', '2024-11-06 01:54:38.400000'),
+(DEFAULT, 19578, 'Employee 128 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-06 04:25:09.600000', '2024-11-06 04:25:09.600000', '2024-11-06 04:30:09.600000'),
+(DEFAULT, 19579, 'Employee 129 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-05 17:45:48.000000', '2024-11-05 17:45:48.000000', '2024-11-05 17:50:48.000000'),
+(DEFAULT, 19580, 'Employee 130 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-06 07:39:33.600000', '2024-11-06 07:39:33.600000', '2024-11-06 07:44:33.600000'),
+(DEFAULT, 19581, 'Employee 131 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-05 21:08:50.400000', '2024-11-05 21:08:50.400000', '2024-11-05 21:13:50.400000'),
+(DEFAULT, 19582, 'Employee 132 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-07 00:21:48.000000', '2024-11-07 00:21:48.000000', '2024-11-07 00:26:48.000000'),
+(DEFAULT, 19583, 'Employee 133 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-06 01:53:57.600000', '2024-11-06 01:53:57.600000', '2024-11-06 01:58:57.600000'),
+(DEFAULT, 19584, 'Employee 134 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-05 21:00:12.000000', '2024-11-05 21:00:12.000000', '2024-11-05 21:05:12.000000'),
+(DEFAULT, 19585, 'Employee 135 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-05 13:09:19.200000', '2024-11-05 13:09:19.200000', '2024-11-05 13:14:19.200000');
+
+-- 2024-11-08 01:05:00.000000
+-- 2024-11-08
+INSERT INTO task (id, collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked, start_date, end_date, deadline, created_time, updated_time)
+VALUES (892, 64, 151, NULL, 'Validate Live CV Submission', 'This is Validate Live CV Submission', NULL, 'ADVANCED', 'TEST', 'LOW', FALSE, '2024-11-08', '2024-11-15', '2024-11-12', '2024-11-08 01:05:00.000000', '2024-11-08 01:05:00.000000');
+
+INSERT INTO task_for_users (id, task_id, assigned_to_id, user_task_status, updated_time, started_time)
+VALUES
+(19587, 892, 123, 'JOINED', '2024-11-08 01:05:00.000000', '2024-11-08 10:12:12.000000'),
+(19588, 892, 127, 'JOINED', '2024-11-08 01:05:00.000000', '2024-11-08 01:56:50.400000'),
+(19589, 892, 132, 'JOINED', '2024-11-08 01:05:00.000000', '2024-11-09 05:12:40.800000');
+INSERT INTO report (id, created_by_id, title, content, rejected_reason, report_status, created_time, updated_time, reviewed_time)
+VALUES
+(DEFAULT, 19587, 'Employee 123 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-15 15:57:48.000000', '2024-11-15 15:57:48.000000', '2024-11-15 16:02:48.000000'),
+(DEFAULT, 19588, 'Employee 127 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-09 12:59:14.400000', '2024-11-09 12:59:14.400000', '2024-11-09 13:04:14.400000'),
+(DEFAULT, 19589, 'Employee 132 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-10 11:55:52.800000', '2024-11-10 11:55:52.800000', '2024-11-10 12:00:52.800000');
+
+-- 2024-11-13 01:05:00.000000
+-- 2024-11-13
+INSERT INTO task (id, collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked, start_date, end_date, deadline, created_time, updated_time)
+VALUES (893, 64, 151, NULL, 'Validate Live CV Parsing Output', 'This is Validate Live CV Parsing Output', NULL, 'NORMAL', 'TEST', 'LOW', FALSE, '2024-11-13', '2024-11-15', '2024-11-16', '2024-11-13 01:05:00.000000', '2024-11-13 01:05:00.000000');
+
+INSERT INTO task_for_users (id, task_id, assigned_to_id, user_task_status, updated_time, started_time)
+VALUES
+(19591, 893, 116, 'JOINED', '2024-11-13 01:05:00.000000', '2024-11-13 04:02:07.200000'),
+(19592, 893, 117, 'JOINED', '2024-11-13 01:05:00.000000', '2024-11-14 21:00:12.000000'),
+(19593, 893, 119, 'JOINED', '2024-11-13 01:05:00.000000', '2024-11-13 08:21:19.200000'),
+(19594, 893, 120, 'JOINED', '2024-11-13 01:05:00.000000', '2024-11-13 08:25:38.400000'),
+(19595, 893, 121, 'JOINED', '2024-11-13 01:05:00.000000', '2024-11-14 05:14:07.200000'),
+(19596, 893, 122, 'JOINED', '2024-11-13 01:05:00.000000', '2024-11-14 02:29:57.600000'),
+(19597, 893, 123, 'JOINED', '2024-11-13 01:05:00.000000', '2024-11-14 13:09:19.200000'),
+(19598, 893, 124, 'JOINED', '2024-11-13 01:05:00.000000', '2024-11-13 08:51:33.600000'),
+(19599, 893, 125, 'JOINED', '2024-11-13 01:05:00.000000', '2024-11-15 01:45:19.200000'),
+(19600, 893, 126, 'JOINED', '2024-11-13 01:05:00.000000', '2024-11-14 03:04:31.200000'),
+(19601, 893, 127, 'JOINED', '2024-11-13 01:05:00.000000', '2024-11-14 23:14:07.200000'),
+(19602, 893, 128, 'JOINED', '2024-11-13 01:05:00.000000', '2024-11-13 09:00:12.000000'),
+(19603, 893, 129, 'JOINED', '2024-11-13 01:05:00.000000', '2024-11-13 03:01:38.400000'),
+(19604, 893, 130, 'JOINED', '2024-11-13 01:05:00.000000', '2024-11-13 02:40:02.400000'),
+(19605, 893, 131, 'JOINED', '2024-11-13 01:05:00.000000', '2024-11-13 18:08:50.400000'),
+(19606, 893, 132, 'JOINED', '2024-11-13 01:05:00.000000', '2024-11-13 02:01:09.600000'),
+(19607, 893, 133, 'JOINED', '2024-11-13 01:05:00.000000', '2024-11-13 01:48:12.000000'),
+(19608, 893, 134, 'JOINED', '2024-11-13 01:05:00.000000', '2024-11-13 17:25:38.400000'),
+(19609, 893, 135, 'JOINED', '2024-11-13 01:05:00.000000', '2024-11-13 23:45:48.000000');
+INSERT INTO report (id, created_by_id, title, content, rejected_reason, report_status, created_time, updated_time, reviewed_time)
+VALUES
+(DEFAULT, 19591, 'Employee 116 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-13 18:34:45.600000', '2024-11-13 18:34:45.600000', '2024-11-13 18:39:45.600000'),
+(DEFAULT, 19592, 'Employee 117 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-15 12:07:24.000000', '2024-11-15 12:07:24.000000', '2024-11-15 12:12:24.000000'),
+(DEFAULT, 19593, 'Employee 119 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-13 20:14:07.200000', '2024-11-13 20:14:07.200000', '2024-11-13 20:19:07.200000'),
+(DEFAULT, 19594, 'Employee 120 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-14 11:21:19.200000', '2024-11-14 11:21:19.200000', '2024-11-14 11:26:19.200000'),
+(DEFAULT, 19595, 'Employee 121 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-15 09:49:09.600000', '2024-11-15 09:49:09.600000', '2024-11-15 09:54:09.600000'),
+(DEFAULT, 19596, 'Employee 122 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-14 14:53:00.000000', '2024-11-14 14:53:00.000000', '2024-11-14 14:58:00.000000'),
+(DEFAULT, 19597, 'Employee 123 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-15 06:08:50.400000', '2024-11-15 06:08:50.400000', '2024-11-15 06:13:50.400000'),
+(DEFAULT, 19598, 'Employee 124 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-14 17:58:45.600000', '2024-11-14 17:58:45.600000', '2024-11-14 18:03:45.600000'),
+(DEFAULT, 19599, 'Employee 125 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-15 14:51:33.600000', '2024-11-15 14:51:33.600000', '2024-11-15 14:56:33.600000'),
+(DEFAULT, 19600, 'Employee 126 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-15 07:35:14.400000', '2024-11-15 07:35:14.400000', '2024-11-15 07:40:14.400000'),
+(DEFAULT, 19601, 'Employee 127 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-15 20:28:31.200000', '2024-11-15 20:28:31.200000', '2024-11-15 20:33:31.200000'),
+(DEFAULT, 19602, 'Employee 128 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-14 19:16:31.200000', '2024-11-14 19:16:31.200000', '2024-11-14 19:21:31.200000'),
+(DEFAULT, 19603, 'Employee 129 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-13 15:50:36.000000', '2024-11-13 15:50:36.000000', '2024-11-13 15:55:36.000000'),
+(DEFAULT, 19604, 'Employee 130 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-13 20:01:09.600000', '2024-11-13 20:01:09.600000', '2024-11-13 20:06:09.600000'),
+(DEFAULT, 19605, 'Employee 131 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-14 21:13:09.600000', '2024-11-14 21:13:09.600000', '2024-11-14 21:18:09.600000'),
+(DEFAULT, 19606, 'Employee 132 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-13 16:25:09.600000', '2024-11-13 16:25:09.600000', '2024-11-13 16:30:09.600000'),
+(DEFAULT, 19607, 'Employee 133 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-14 09:59:14.400000', '2024-11-14 09:59:14.400000', '2024-11-14 10:04:14.400000'),
+(DEFAULT, 19608, 'Employee 134 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-14 14:01:09.600000', '2024-11-14 14:01:09.600000', '2024-11-14 14:06:09.600000'),
+(DEFAULT, 19609, 'Employee 135 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-14 22:30:55.200000', '2024-11-14 22:30:55.200000', '2024-11-14 22:35:55.200000');
+
+-- 2024-11-17 01:05:00.000000
+-- 2024-11-17
+INSERT INTO task (id, collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked, start_date, end_date, deadline, created_time, updated_time)
+VALUES (894, 64, 151, NULL, 'Validate Live Recommendation Results', 'This is Validate Live Recommendation Results', NULL, 'ADVANCED', 'TEST', 'LOW', FALSE, '2024-11-17', '2024-11-23', '2024-11-21', '2024-11-17 01:05:00.000000', '2024-11-17 01:05:00.000000');
+
+INSERT INTO task_for_users (id, task_id, assigned_to_id, user_task_status, updated_time, started_time)
+VALUES
+(19611, 894, 123, 'JOINED', '2024-11-17 01:05:00.000000', '2024-11-18 12:13:09.600000'),
+(19612, 894, 127, 'JOINED', '2024-11-17 01:05:00.000000', '2024-11-17 04:26:36.000000'),
+(19613, 894, 132, 'JOINED', '2024-11-17 01:05:00.000000', '2024-11-18 22:49:38.400000');
+INSERT INTO report (id, created_by_id, title, content, rejected_reason, report_status, created_time, updated_time, reviewed_time)
+VALUES
+(DEFAULT, 19611, 'Employee 123 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-19 21:03:04.800000', '2024-11-19 21:03:04.800000', '2024-11-19 21:08:04.800000'),
+(DEFAULT, 19612, 'Employee 127 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-17 23:32:50.400000', '2024-11-17 23:32:50.400000', '2024-11-17 23:37:50.400000'),
+(DEFAULT, 19613, 'Employee 132 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-23 03:20:21.600000', '2024-11-23 03:20:21.600000', '2024-11-23 03:25:21.600000');
+
+-- 2024-11-22 01:05:00.000000
+-- 2024-11-22
+INSERT INTO task (id, collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked, start_date, end_date, deadline, created_time, updated_time)
+VALUES (895, 64, 151, NULL, 'Validate Monitoring Metrics After Release', 'This is Validate Monitoring Metrics After Release', NULL, 'ADVANCED', 'TEST', 'HIGH', FALSE, '2024-11-22', '2024-12-14', '2024-11-28', '2024-11-22 01:05:00.000000', '2024-11-22 01:05:00.000000');
+
+INSERT INTO task_for_users (id, task_id, assigned_to_id, user_task_status, updated_time, started_time)
+VALUES
+(19615, 895, 116, 'JOINED', '2024-11-22 01:05:00.000000', '2024-11-27 10:41:00.000000'),
+(19616, 895, 117, 'JOINED', '2024-11-22 01:05:00.000000', '2024-11-23 00:54:55.200000'),
+(19617, 895, 118, 'JOINED', '2024-11-22 01:05:00.000000', '2024-11-27 10:41:00.000000'),
+(19618, 895, 119, 'JOINED', '2024-11-22 01:05:00.000000', '2024-11-27 10:41:00.000000'),
+(19619, 895, 121, 'JOINED', '2024-11-22 01:05:00.000000', '2024-11-22 19:30:55.200000'),
+(19620, 895, 122, 'JOINED', '2024-11-22 01:05:00.000000', '2024-11-22 04:23:43.200000'),
+(19621, 895, 123, 'JOINED', '2024-11-22 01:05:00.000000', '2024-11-22 02:31:24.000000'),
+(19622, 895, 124, 'JOINED', '2024-11-22 01:05:00.000000', '2024-11-27 10:41:00.000000'),
+(19623, 895, 125, 'JOINED', '2024-11-22 01:05:00.000000', '2024-11-27 10:41:00.000000'),
+(19624, 895, 126, 'JOINED', '2024-11-22 01:05:00.000000', '2024-11-27 10:41:00.000000'),
+(19625, 895, 127, 'JOINED', '2024-11-22 01:05:00.000000', '2024-11-22 04:23:43.200000'),
+(19626, 895, 128, 'JOINED', '2024-11-22 01:05:00.000000', '2024-11-22 13:06:26.400000'),
+(19627, 895, 130, 'JOINED', '2024-11-22 01:05:00.000000', '2024-11-24 02:45:48.000000'),
+(19628, 895, 131, 'JOINED', '2024-11-22 01:05:00.000000', '2024-11-22 23:58:45.600000'),
+(19629, 895, 132, 'JOINED', '2024-11-22 01:05:00.000000', '2024-11-22 05:24:12.000000'),
+(19630, 895, 133, 'JOINED', '2024-11-22 01:05:00.000000', '2024-11-22 14:45:48.000000'),
+(19631, 895, 134, 'JOINED', '2024-11-22 01:05:00.000000', '2024-11-27 10:41:00.000000'),
+(19632, 895, 135, 'JOINED', '2024-11-22 01:05:00.000000', '2024-11-24 15:26:07.200000');
+INSERT INTO report (id, created_by_id, title, content, rejected_reason, report_status, created_time, updated_time, reviewed_time)
+VALUES
+(DEFAULT, 19615, 'Employee 116 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-13 19:39:33.600000', '2024-12-13 19:39:33.600000', '2024-12-13 19:44:33.600000'),
+(DEFAULT, 19616, 'Employee 117 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-03 01:15:04.800000', '2024-12-03 01:15:04.800000', '2024-12-03 01:20:04.800000'),
+(DEFAULT, 19617, 'Employee 118 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-13 19:30:55.200000', '2024-12-13 19:30:55.200000', '2024-12-13 19:35:55.200000'),
+(DEFAULT, 19618, 'Employee 119 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-10 10:35:14.400000', '2024-12-10 10:35:14.400000', '2024-12-10 10:40:14.400000'),
+(DEFAULT, 19619, 'Employee 121 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-28 00:13:09.600000', '2024-11-28 00:13:09.600000', '2024-11-28 00:18:09.600000'),
+(DEFAULT, 19620, 'Employee 122 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-25 00:47:43.200000', '2024-11-25 00:47:43.200000', '2024-11-25 00:52:43.200000'),
+(DEFAULT, 19621, 'Employee 123 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-25 04:32:21.600000', '2024-11-25 04:32:21.600000', '2024-11-25 04:37:21.600000'),
+(DEFAULT, 19622, 'Employee 124 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-11 18:16:02.400000', '2024-12-11 18:16:02.400000', '2024-12-11 18:21:02.400000'),
+(DEFAULT, 19623, 'Employee 125 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-14 07:28:02.400000', '2024-12-14 07:28:02.400000', '2024-12-14 07:33:02.400000'),
+(DEFAULT, 19624, 'Employee 126 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-11 16:15:04.800000', '2024-12-11 16:15:04.800000', '2024-12-11 16:20:04.800000'),
+(DEFAULT, 19625, 'Employee 127 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-24 07:30:55.200000', '2024-11-24 07:30:55.200000', '2024-11-24 07:35:55.200000'),
+(DEFAULT, 19626, 'Employee 128 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-03 13:03:33.600000', '2024-12-03 13:03:33.600000', '2024-12-03 13:08:33.600000'),
+(DEFAULT, 19627, 'Employee 130 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-27 13:25:09.600000', '2024-11-27 13:25:09.600000', '2024-11-27 13:30:09.600000'),
+(DEFAULT, 19628, 'Employee 131 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-03 02:11:14.400000', '2024-12-03 02:11:14.400000', '2024-12-03 02:16:14.400000'),
+(DEFAULT, 19629, 'Employee 132 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-24 01:02:07.200000', '2024-11-24 01:02:07.200000', '2024-11-24 01:07:07.200000'),
+(DEFAULT, 19630, 'Employee 133 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-24 14:34:16.800000', '2024-11-24 14:34:16.800000', '2024-11-24 14:39:16.800000'),
+(DEFAULT, 19631, 'Employee 134 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-11 02:17:00.000000', '2024-12-11 02:17:00.000000', '2024-12-11 02:22:00.000000'),
+(DEFAULT, 19632, 'Employee 135 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-11-27 22:55:24.000000', '2024-11-27 22:55:24.000000', '2024-11-27 23:00:24.000000');
+
+-- 2024-11-29 01:05:00.000000
+-- 2024-11-29
+INSERT INTO task (id, collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked, start_date, end_date, deadline, created_time, updated_time)
+VALUES (896, 64, 151, NULL, 'Validate Error Rate Thresholds', 'This is Validate Error Rate Thresholds', NULL, 'ADVANCED', 'TEST', 'NORMAL', FALSE, '2024-11-29', '2024-12-15', '2024-12-04', '2024-11-29 01:05:00.000000', '2024-11-29 01:05:00.000000');
+
+INSERT INTO task_for_users (id, task_id, assigned_to_id, user_task_status, updated_time, started_time)
+VALUES
+(19634, 896, 116, 'JOINED', '2024-11-29 01:05:00.000000', '2024-12-01 09:07:24.000000'),
+(19635, 896, 124, 'JOINED', '2024-11-29 01:05:00.000000', '2024-12-03 13:05:00.000000'),
+(19636, 896, 131, 'JOINED', '2024-11-29 01:05:00.000000', '2024-12-03 13:05:00.000000');
+INSERT INTO report (id, created_by_id, title, content, rejected_reason, report_status, created_time, updated_time, reviewed_time)
+VALUES
+(DEFAULT, 19634, 'Employee 116 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-02 10:48:12.000000', '2024-12-02 10:48:12.000000', '2024-12-02 10:53:12.000000'),
+(DEFAULT, 19635, 'Employee 124 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-15 12:43:24.000000', '2024-12-15 12:43:24.000000', '2024-12-15 12:48:24.000000'),
+(DEFAULT, 19636, 'Employee 131 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-15 15:29:00.000000', '2024-12-15 15:29:00.000000', '2024-12-15 15:34:00.000000');
+
+-- 2024-12-05 01:05:00.000000
+-- 2024-12-05
+INSERT INTO task (id, collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked, start_date, end_date, deadline, created_time, updated_time)
+VALUES (897, 64, 151, NULL, 'Validate Performance Under Real Traffic', 'This is Validate Performance Under Real Traffic', NULL, 'ADVANCED', 'TEST', 'HIGH', FALSE, '2024-12-05', '2024-12-28', '2024-12-11', '2024-12-05 01:05:00.000000', '2024-12-05 01:05:00.000000');
+
+INSERT INTO task_for_users (id, task_id, assigned_to_id, user_task_status, updated_time, started_time)
+VALUES
+(19638, 897, 116, 'JOINED', '2024-12-05 01:05:00.000000', '2024-12-06 10:07:52.800000'),
+(19639, 897, 117, 'JOINED', '2024-12-05 01:05:00.000000', '2024-12-10 10:41:00.000000'),
+(19640, 897, 118, 'JOINED', '2024-12-05 01:05:00.000000', '2024-12-05 04:06:26.400000'),
+(19641, 897, 119, 'JOINED', '2024-12-05 01:05:00.000000', '2024-12-05 07:25:09.600000'),
+(19642, 897, 121, 'JOINED', '2024-12-05 01:05:00.000000', '2024-12-07 01:45:19.200000'),
+(19643, 897, 122, 'JOINED', '2024-12-05 01:05:00.000000', '2024-12-06 06:36:12.000000'),
+(19644, 897, 123, 'JOINED', '2024-12-05 01:05:00.000000', '2024-12-06 11:08:21.600000'),
+(19645, 897, 124, 'JOINED', '2024-12-05 01:05:00.000000', '2024-12-10 10:41:00.000000'),
+(19646, 897, 125, 'JOINED', '2024-12-05 01:05:00.000000', '2024-12-10 10:41:00.000000'),
+(19647, 897, 126, 'JOINED', '2024-12-05 01:05:00.000000', '2024-12-05 14:11:14.400000'),
+(19648, 897, 127, 'JOINED', '2024-12-05 01:05:00.000000', '2024-12-05 06:50:36.000000'),
+(19649, 897, 128, 'JOINED', '2024-12-05 01:05:00.000000', '2024-12-05 23:19:52.800000'),
+(19650, 897, 130, 'JOINED', '2024-12-05 01:05:00.000000', '2024-12-06 08:24:12.000000'),
+(19651, 897, 131, 'JOINED', '2024-12-05 01:05:00.000000', '2024-12-05 07:59:43.200000'),
+(19652, 897, 132, 'JOINED', '2024-12-05 01:05:00.000000', '2024-12-05 20:40:02.400000'),
+(19653, 897, 133, 'JOINED', '2024-12-05 01:05:00.000000', '2024-12-10 10:41:00.000000'),
+(19654, 897, 134, 'JOINED', '2024-12-05 01:05:00.000000', '2024-12-05 18:04:31.200000'),
+(19655, 897, 135, 'JOINED', '2024-12-05 01:05:00.000000', '2024-12-06 07:45:19.200000');
+INSERT INTO report (id, created_by_id, title, content, rejected_reason, report_status, created_time, updated_time, reviewed_time)
+VALUES
+(DEFAULT, 19638, 'Employee 116 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-15 16:02:07.200000', '2024-12-15 16:02:07.200000', '2024-12-15 16:07:07.200000'),
+(DEFAULT, 19639, 'Employee 117 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-23 18:47:43.200000', '2024-12-23 18:47:43.200000', '2024-12-23 18:52:43.200000'),
+(DEFAULT, 19640, 'Employee 118 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-08 06:16:02.400000', '2024-12-08 06:16:02.400000', '2024-12-08 06:21:02.400000'),
+(DEFAULT, 19641, 'Employee 119 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-07 21:29:00.000000', '2024-12-07 21:29:00.000000', '2024-12-07 21:34:00.000000'),
+(DEFAULT, 19642, 'Employee 121 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-09 13:22:16.800000', '2024-12-09 13:22:16.800000', '2024-12-09 13:27:16.800000'),
+(DEFAULT, 19643, 'Employee 122 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-08 05:58:45.600000', '2024-12-08 05:58:45.600000', '2024-12-08 06:03:45.600000'),
+(DEFAULT, 19644, 'Employee 123 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-15 15:01:38.400000', '2024-12-15 15:01:38.400000', '2024-12-15 15:06:38.400000'),
+(DEFAULT, 19645, 'Employee 124 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-28 02:54:26.400000', '2024-12-28 02:54:26.400000', '2024-12-28 02:59:26.400000'),
+(DEFAULT, 19646, 'Employee 125 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-24 22:09:19.200000', '2024-12-24 22:09:19.200000', '2024-12-24 22:14:19.200000'),
+(DEFAULT, 19647, 'Employee 126 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-09 17:32:50.400000', '2024-12-09 17:32:50.400000', '2024-12-09 17:37:50.400000'),
+(DEFAULT, 19648, 'Employee 127 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-16 19:19:24.000000', '2024-12-16 19:19:24.000000', '2024-12-16 19:24:24.000000'),
+(DEFAULT, 19649, 'Employee 128 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-16 02:50:07.200000', '2024-12-16 02:50:07.200000', '2024-12-16 02:55:07.200000'),
+(DEFAULT, 19650, 'Employee 130 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-15 17:45:48.000000', '2024-12-15 17:45:48.000000', '2024-12-15 17:50:48.000000'),
+(DEFAULT, 19651, 'Employee 131 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-16 18:10:16.800000', '2024-12-16 18:10:16.800000', '2024-12-16 18:15:16.800000'),
+(DEFAULT, 19652, 'Employee 132 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-08 05:06:55.200000', '2024-12-08 05:06:55.200000', '2024-12-08 05:11:55.200000'),
+(DEFAULT, 19653, 'Employee 133 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-26 16:03:33.600000', '2024-12-26 16:03:33.600000', '2024-12-26 16:08:33.600000'),
+(DEFAULT, 19654, 'Employee 134 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-08 22:15:04.800000', '2024-12-08 22:15:04.800000', '2024-12-08 22:20:04.800000'),
+(DEFAULT, 19655, 'Employee 135 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-08 19:56:50.400000', '2024-12-08 19:56:50.400000', '2024-12-08 20:01:50.400000');
+
+-- 2024-12-12 01:05:00.000000
+-- 2024-12-12
+INSERT INTO task (id, collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked, start_date, end_date, deadline, created_time, updated_time)
+VALUES (898, 64, 151, NULL, 'Validate No Critical Incident in First 24h', 'This is Validate No Critical Incident in First 24h', NULL, 'ADVANCED', 'TEST', 'URGENT', FALSE, '2024-12-12', '2025-01-02', '2024-12-19', '2024-12-12 01:05:00.000000', '2024-12-12 01:05:00.000000');
+
+INSERT INTO task_for_users (id, task_id, assigned_to_id, user_task_status, updated_time, started_time)
+VALUES
+(19657, 898, 117, 'JOINED', '2024-12-12 01:05:00.000000', '2024-12-13 16:13:38.400000'),
+(19658, 898, 118, 'JOINED', '2024-12-12 01:05:00.000000', '2024-12-18 08:17:00.000000'),
+(19659, 898, 133, 'JOINED', '2024-12-12 01:05:00.000000', '2024-12-13 18:34:45.600000');
+INSERT INTO report (id, created_by_id, title, content, rejected_reason, report_status, created_time, updated_time, reviewed_time)
+VALUES
+(DEFAULT, 19657, 'Employee 117 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-18 11:58:45.600000', '2024-12-18 11:58:45.600000', '2024-12-18 12:03:45.600000'),
+(DEFAULT, 19658, 'Employee 118 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-01-02 04:56:50.400000', '2025-01-02 04:56:50.400000', '2025-01-02 05:01:50.400000'),
+(DEFAULT, 19659, 'Employee 133 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-24 07:35:14.400000', '2024-12-24 07:35:14.400000', '2024-12-24 07:40:14.400000');
+
+INSERT INTO collection (`id`, `created_time`, `description`, `due_date`, `start_date`, `name`, `updated_time`, `phase_id`, `created_by_id`)
+VALUES (65, '2024-12-19 01:05:00.000000', 'This is QA Closure & Reporting', '2025-02-26', '2024-12-19', 'QA Closure & Reporting', '2024-12-19 01:05:00.000000', 11, 154);
+
+
+-- 2024-12-20 01:10:00.000000
+-- 2024-12-20
+INSERT INTO task (id, collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked, start_date, end_date, deadline, created_time, updated_time)
+VALUES (899, 65, 151, NULL, 'Collect QA Metrics Summary', 'This is Collect QA Metrics Summary', NULL, 'ADVANCED', 'TEST', 'NORMAL', FALSE, '2024-12-20', '2024-12-28', '2024-12-25', '2024-12-20 01:10:00.000000', '2024-12-20 01:10:00.000000');
+
+INSERT INTO task_for_users (id, task_id, assigned_to_id, user_task_status, updated_time, started_time)
+VALUES
+(19661, 899, 116, 'JOINED', '2024-12-20 01:10:00.000000', '2024-12-20 15:55:36.000000'),
+(19662, 899, 118, 'JOINED', '2024-12-20 01:10:00.000000', '2024-12-20 14:29:12.000000'),
+(19663, 899, 119, 'JOINED', '2024-12-20 01:10:00.000000', '2024-12-20 05:58:00.000000'),
+(19664, 899, 120, 'JOINED', '2024-12-20 01:10:00.000000', '2024-12-20 03:34:00.000000'),
+(19665, 899, 121, 'JOINED', '2024-12-20 01:10:00.000000', '2024-12-20 16:53:12.000000'),
+(19666, 899, 122, 'JOINED', '2024-12-20 01:10:00.000000', '2024-12-20 07:53:12.000000'),
+(19667, 899, 123, 'JOINED', '2024-12-20 01:10:00.000000', '2024-12-20 07:53:12.000000'),
+(19668, 899, 124, 'JOINED', '2024-12-20 01:10:00.000000', '2024-12-23 03:34:00.000000'),
+(19669, 899, 125, 'JOINED', '2024-12-20 01:10:00.000000', '2024-12-20 10:17:12.000000'),
+(19670, 899, 127, 'JOINED', '2024-12-20 01:10:00.000000', '2024-12-20 04:38:48.000000'),
+(19671, 899, 128, 'JOINED', '2024-12-20 01:10:00.000000', '2024-12-20 06:19:36.000000'),
+(19672, 899, 129, 'JOINED', '2024-12-20 01:10:00.000000', '2024-12-20 15:19:36.000000'),
+(19673, 899, 130, 'JOINED', '2024-12-20 01:10:00.000000', '2024-12-22 04:28:00.000000'),
+(19674, 899, 131, 'JOINED', '2024-12-20 01:10:00.000000', '2024-12-21 12:34:00.000000'),
+(19675, 899, 132, 'JOINED', '2024-12-20 01:10:00.000000', '2024-12-20 03:19:36.000000'),
+(19676, 899, 133, 'JOINED', '2024-12-20 01:10:00.000000', '2024-12-22 22:49:36.000000'),
+(19677, 899, 134, 'JOINED', '2024-12-20 01:10:00.000000', '2024-12-20 11:58:00.000000'),
+(19678, 899, 135, 'JOINED', '2024-12-20 01:10:00.000000', '2024-12-20 15:19:36.000000');
+INSERT INTO report (id, created_by_id, title, content, rejected_reason, report_status, created_time, updated_time, reviewed_time)
+VALUES
+(DEFAULT, 19661, 'Employee 116 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-23 23:00:24.000000', '2024-12-23 23:00:24.000000', '2024-12-23 23:05:24.000000'),
+(DEFAULT, 19662, 'Employee 118 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-22 04:53:12.000000', '2024-12-22 04:53:12.000000', '2024-12-22 04:58:12.000000'),
+(DEFAULT, 19663, 'Employee 119 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-22 23:58:00.000000', '2024-12-22 23:58:00.000000', '2024-12-23 00:03:00.000000'),
+(DEFAULT, 19664, 'Employee 120 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-22 09:48:24.000000', '2024-12-22 09:48:24.000000', '2024-12-22 09:53:24.000000'),
+(DEFAULT, 19665, 'Employee 121 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-23 05:29:12.000000', '2024-12-23 05:29:12.000000', '2024-12-23 05:34:12.000000'),
+(DEFAULT, 19666, 'Employee 122 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-23 01:17:12.000000', '2024-12-23 01:17:12.000000', '2024-12-23 01:22:12.000000'),
+(DEFAULT, 19667, 'Employee 123 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-22 09:55:36.000000', '2024-12-22 09:55:36.000000', '2024-12-22 10:00:36.000000'),
+(DEFAULT, 19668, 'Employee 124 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-24 11:00:24.000000', '2024-12-24 11:00:24.000000', '2024-12-24 11:05:24.000000'),
+(DEFAULT, 19669, 'Employee 125 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-21 21:55:36.000000', '2024-12-21 21:55:36.000000', '2024-12-21 22:00:36.000000'),
+(DEFAULT, 19670, 'Employee 127 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-21 10:31:36.000000', '2024-12-21 10:31:36.000000', '2024-12-21 10:36:36.000000'),
+(DEFAULT, 19671, 'Employee 128 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-22 13:02:48.000000', '2024-12-22 13:02:48.000000', '2024-12-22 13:07:48.000000'),
+(DEFAULT, 19672, 'Employee 129 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-21 19:31:36.000000', '2024-12-21 19:31:36.000000', '2024-12-21 19:36:36.000000'),
+(DEFAULT, 19673, 'Employee 130 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-27 21:52:00.000000', '2024-12-27 21:52:00.000000', '2024-12-27 21:57:00.000000'),
+(DEFAULT, 19674, 'Employee 131 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-28 13:46:00.000000', '2024-12-28 13:46:00.000000', '2024-12-28 13:51:00.000000'),
+(DEFAULT, 19675, 'Employee 132 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-22 05:58:00.000000', '2024-12-22 05:58:00.000000', '2024-12-22 06:03:00.000000'),
+(DEFAULT, 19676, 'Employee 133 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-27 03:30:24.000000', '2024-12-27 03:30:24.000000', '2024-12-27 03:35:24.000000'),
+(DEFAULT, 19677, 'Employee 134 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-21 08:58:00.000000', '2024-12-21 08:58:00.000000', '2024-12-21 09:03:00.000000'),
+(DEFAULT, 19678, 'Employee 135 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-22 00:48:24.000000', '2024-12-22 00:48:24.000000', '2024-12-22 00:53:24.000000');
+
+-- 2024-12-26 01:10:00.000000
+-- 2024-12-26
+INSERT INTO task (id, collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked, start_date, end_date, deadline, created_time, updated_time)
+VALUES (900, 65, 151, NULL, 'Analyze Production Issues Feedback', 'This is Analyze Production Issues Feedback', NULL, 'ADVANCED', 'TEST', 'URGENT', FALSE, '2024-12-26', '2025-01-19', '2025-01-02', '2024-12-26 01:10:00.000000', '2024-12-26 01:10:00.000000');
+
+INSERT INTO task_for_users (id, task_id, assigned_to_id, user_task_status, updated_time, started_time)
+VALUES
+(19680, 900, 117, 'JOINED', '2024-12-26 01:10:00.000000', '2025-01-01 08:22:00.000000'),
+(19681, 900, 118, 'JOINED', '2024-12-26 01:10:00.000000', '2025-01-01 08:22:00.000000'),
+(19682, 900, 133, 'JOINED', '2024-12-26 01:10:00.000000', '2024-12-26 02:30:38.400000');
+INSERT INTO report (id, created_by_id, title, content, rejected_reason, report_status, created_time, updated_time, reviewed_time)
+VALUES
+(DEFAULT, 19680, 'Employee 117 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-01-18 14:59:26.400000', '2025-01-18 14:59:26.400000', '2025-01-18 15:04:26.400000'),
+(DEFAULT, 19681, 'Employee 118 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-01-19 16:01:21.600000', '2025-01-19 16:01:21.600000', '2025-01-19 16:06:21.600000'),
+(DEFAULT, 19682, 'Employee 133 submit Report', 'Completed Task.', NULL, 'APPROVED', '2024-12-30 00:25:21.600000', '2024-12-30 00:25:21.600000', '2024-12-30 00:30:21.600000');
+
+-- 2025-01-03 01:10:00.000000
+-- 2025-01-03
+INSERT INTO task (id, collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked, start_date, end_date, deadline, created_time, updated_time)
+VALUES (901, 65, 151, NULL, 'Confirm No Critical Open Defects', 'This is Confirm No Critical Open Defects', NULL, 'NORMAL', 'TEST', 'NORMAL', FALSE, '2025-01-03', '2025-01-09', '2025-01-07', '2025-01-03 01:10:00.000000', '2025-01-03 01:10:00.000000');
+
+INSERT INTO task_for_users (id, task_id, assigned_to_id, user_task_status, updated_time, started_time)
+VALUES
+(19684, 901, 117, 'JOINED', '2025-01-03 01:10:00.000000', '2025-01-05 00:35:26.400000'),
+(19685, 901, 118, 'JOINED', '2025-01-03 01:10:00.000000', '2025-01-03 10:46:00.000000'),
+(19686, 901, 119, 'JOINED', '2025-01-03 01:10:00.000000', '2025-01-05 18:15:16.800000'),
+(19687, 901, 120, 'JOINED', '2025-01-03 01:10:00.000000', '2025-01-04 23:14:48.000000'),
+(19688, 901, 121, 'JOINED', '2025-01-03 01:10:00.000000', '2025-01-03 11:43:36.000000'),
+(19689, 901, 124, 'JOINED', '2025-01-03 01:10:00.000000', '2025-01-03 22:17:12.000000'),
+(19690, 901, 128, 'JOINED', '2025-01-03 01:10:00.000000', '2025-01-03 04:37:21.600000'),
+(19691, 901, 129, 'JOINED', '2025-01-03 01:10:00.000000', '2025-01-03 23:43:36.000000'),
+(19692, 901, 131, 'JOINED', '2025-01-03 01:10:00.000000', '2025-01-04 06:00:52.800000'),
+(19693, 901, 132, 'JOINED', '2025-01-03 01:10:00.000000', '2025-01-04 15:39:45.600000'),
+(19694, 901, 133, 'JOINED', '2025-01-03 01:10:00.000000', '2025-01-04 11:55:07.200000'),
+(19695, 901, 134, 'JOINED', '2025-01-03 01:10:00.000000', '2025-01-03 18:38:19.200000'),
+(19696, 901, 135, 'JOINED', '2025-01-03 01:10:00.000000', '2025-01-03 12:52:43.200000');
+INSERT INTO report (id, created_by_id, title, content, rejected_reason, report_status, created_time, updated_time, reviewed_time)
+VALUES
+(DEFAULT, 19684, 'Employee 117 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-01-06 18:26:48.000000', '2025-01-06 18:26:48.000000', '2025-01-06 18:31:48.000000'),
+(DEFAULT, 19685, 'Employee 118 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-01-04 18:49:50.400000', '2025-01-04 18:49:50.400000', '2025-01-04 18:54:50.400000'),
+(DEFAULT, 19686, 'Employee 119 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-01-06 11:09:02.400000', '2025-01-06 11:09:02.400000', '2025-01-06 11:14:02.400000'),
+(DEFAULT, 19687, 'Employee 120 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-01-05 20:50:48.000000', '2025-01-05 20:50:48.000000', '2025-01-05 20:55:48.000000'),
+(DEFAULT, 19688, 'Employee 121 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-01-04 04:37:21.600000', '2025-01-04 04:37:21.600000', '2025-01-04 04:42:21.600000'),
+(DEFAULT, 19689, 'Employee 124 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-01-04 23:14:48.000000', '2025-01-04 23:14:48.000000', '2025-01-04 23:19:48.000000'),
+(DEFAULT, 19690, 'Employee 128 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-01-03 23:32:04.800000', '2025-01-03 23:32:04.800000', '2025-01-03 23:37:04.800000'),
+(DEFAULT, 19691, 'Employee 129 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-01-05 19:12:52.800000', '2025-01-05 19:12:52.800000', '2025-01-05 19:17:52.800000'),
+(DEFAULT, 19692, 'Employee 131 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-01-09 20:19:07.200000', '2025-01-09 20:19:07.200000', '2025-01-09 20:24:07.200000'),
+(DEFAULT, 19693, 'Employee 132 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-01-05 18:26:48.000000', '2025-01-05 18:26:48.000000', '2025-01-05 18:31:48.000000'),
+(DEFAULT, 19694, 'Employee 133 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-01-05 21:54:09.600000', '2025-01-05 21:54:09.600000', '2025-01-05 21:59:09.600000'),
+(DEFAULT, 19695, 'Employee 134 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-01-04 17:11:55.200000', '2025-01-04 17:11:55.200000', '2025-01-04 17:16:55.200000'),
+(DEFAULT, 19696, 'Employee 135 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-01-05 01:21:31.200000', '2025-01-05 01:21:31.200000', '2025-01-05 01:26:31.200000');
+
+-- 2025-01-08 01:10:00.000000
+-- 2025-01-08
+INSERT INTO task (id, collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked, start_date, end_date, deadline, created_time, updated_time)
+VALUES (902, 65, 151, NULL, 'Finalize QA Release Report', 'This is Finalize QA Release Report', NULL, 'NORMAL', 'TEST', 'HIGH', FALSE, '2025-01-08', '2025-01-13', '2025-01-13', '2025-01-08 01:10:00.000000', '2025-01-08 01:10:00.000000');
+
+INSERT INTO task_for_users (id, task_id, assigned_to_id, user_task_status, updated_time, started_time)
+VALUES
+(19698, 902, 122, 'JOINED', '2025-01-08 01:10:00.000000', '2025-01-08 18:19:36.000000'),
+(19699, 902, 128, 'JOINED', '2025-01-08 01:10:00.000000', '2025-01-10 23:00:24.000000'),
+(19700, 902, 132, 'JOINED', '2025-01-08 01:10:00.000000', '2025-01-10 04:24:24.000000'),
+(19701, 902, 133, 'JOINED', '2025-01-08 01:10:00.000000', '2025-01-10 06:26:48.000000');
+INSERT INTO report (id, created_by_id, title, content, rejected_reason, report_status, created_time, updated_time, reviewed_time)
+VALUES
+(DEFAULT, 19698, 'Employee 122 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-01-10 02:22:00.000000', '2025-01-10 02:22:00.000000', '2025-01-10 02:27:00.000000'),
+(DEFAULT, 19699, 'Employee 128 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-01-13 00:12:24.000000', '2025-01-13 00:12:24.000000', '2025-01-13 00:17:24.000000'),
+(DEFAULT, 19700, 'Employee 132 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-01-11 18:34:00.000000', '2025-01-11 18:34:00.000000', '2025-01-11 18:39:00.000000'),
+(DEFAULT, 19701, 'Employee 133 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-01-12 12:19:36.000000', '2025-01-12 12:19:36.000000', '2025-01-12 12:24:36.000000');
+
+-- 2025-01-14 01:10:00.000000
+-- 2025-01-14
+INSERT INTO task (id, collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked, start_date, end_date, deadline, created_time, updated_time)
+VALUES (903, 65, 151, NULL, 'Review QA Lessons Learned', 'This is Review QA Lessons Learned', NULL, 'ADVANCED', 'TEST', 'URGENT', FALSE, '2025-01-14', '2025-02-08', '2025-01-21', '2025-01-14 01:10:00.000000', '2025-01-14 01:10:00.000000');
+
+INSERT INTO task_for_users (id, task_id, assigned_to_id, user_task_status, updated_time, started_time)
+VALUES
+(19703, 903, 116, 'JOINED', '2025-01-14 01:10:00.000000', '2025-01-14 22:30:09.600000'),
+(19704, 903, 117, 'JOINED', '2025-01-14 01:10:00.000000', '2025-01-15 04:12:52.800000'),
+(19705, 903, 118, 'JOINED', '2025-01-14 01:10:00.000000', '2025-01-14 22:10:00.000000'),
+(19706, 903, 120, 'JOINED', '2025-01-14 01:10:00.000000', '2025-01-14 13:56:04.800000'),
+(19707, 903, 122, 'JOINED', '2025-01-14 01:10:00.000000', '2025-01-14 06:42:38.400000'),
+(19708, 903, 124, 'JOINED', '2025-01-14 01:10:00.000000', '2025-01-20 08:22:00.000000'),
+(19709, 903, 125, 'JOINED', '2025-01-14 01:10:00.000000', '2025-01-20 08:22:00.000000'),
+(19710, 903, 126, 'JOINED', '2025-01-14 01:10:00.000000', '2025-01-20 08:22:00.000000'),
+(19711, 903, 128, 'JOINED', '2025-01-14 01:10:00.000000', '2025-01-14 18:58:28.800000'),
+(19712, 903, 129, 'JOINED', '2025-01-14 01:10:00.000000', '2025-01-20 08:22:00.000000'),
+(19713, 903, 131, 'JOINED', '2025-01-14 01:10:00.000000', '2025-01-20 08:22:00.000000'),
+(19714, 903, 133, 'JOINED', '2025-01-14 01:10:00.000000', '2025-01-20 08:22:00.000000');
+INSERT INTO report (id, created_by_id, title, content, rejected_reason, report_status, created_time, updated_time, reviewed_time)
+VALUES
+(DEFAULT, 19703, 'Employee 116 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-01-18 18:44:04.800000', '2025-01-18 18:44:04.800000', '2025-01-18 18:49:04.800000'),
+(DEFAULT, 19704, 'Employee 117 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-01-26 22:07:07.200000', '2025-01-26 22:07:07.200000', '2025-01-26 22:12:07.200000'),
+(DEFAULT, 19705, 'Employee 118 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-01-18 21:25:21.600000', '2025-01-18 21:25:21.600000', '2025-01-18 21:30:21.600000'),
+(DEFAULT, 19706, 'Employee 120 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-01-19 04:08:33.600000', '2025-01-19 04:08:33.600000', '2025-01-19 04:13:33.600000'),
+(DEFAULT, 19707, 'Employee 122 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-01-17 20:43:36.000000', '2025-01-17 20:43:36.000000', '2025-01-17 20:48:36.000000'),
+(DEFAULT, 19708, 'Employee 124 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-02-04 23:40:43.200000', '2025-02-04 23:40:43.200000', '2025-02-04 23:45:43.200000'),
+(DEFAULT, 19709, 'Employee 125 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-02-07 23:55:07.200000', '2025-02-07 23:55:07.200000', '2025-02-08 00:00:07.200000'),
+(DEFAULT, 19710, 'Employee 126 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-02-08 13:41:40.800000', '2025-02-08 13:41:40.800000', '2025-02-08 13:46:40.800000'),
+(DEFAULT, 19711, 'Employee 128 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-01-18 20:34:57.600000', '2025-01-18 20:34:57.600000', '2025-01-18 20:39:57.600000'),
+(DEFAULT, 19712, 'Employee 129 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-02-06 07:56:04.800000', '2025-02-06 07:56:04.800000', '2025-02-06 08:01:04.800000'),
+(DEFAULT, 19713, 'Employee 131 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-02-07 08:07:36.000000', '2025-02-07 08:07:36.000000', '2025-02-07 08:12:36.000000'),
+(DEFAULT, 19714, 'Employee 133 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-02-05 03:42:38.400000', '2025-02-05 03:42:38.400000', '2025-02-05 03:47:38.400000');
+
+-- 2025-01-22 01:10:00.000000
+-- 2025-01-22
+INSERT INTO task (id, collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked, start_date, end_date, deadline, created_time, updated_time)
+VALUES (904, 65, 151, NULL, 'Archive QA Artifacts', 'This is Archive QA Artifacts', NULL, 'ADVANCED', 'TEST', 'LOW', FALSE, '2025-01-22', '2025-02-04', '2025-01-26', '2025-01-22 01:10:00.000000', '2025-01-22 01:10:00.000000');
+
+INSERT INTO task_for_users (id, task_id, assigned_to_id, user_task_status, updated_time, started_time)
+VALUES
+(19716, 904, 123, 'JOINED', '2025-01-22 01:10:00.000000', '2025-01-24 03:25:21.600000'),
+(19717, 904, 127, 'JOINED', '2025-01-22 01:10:00.000000', '2025-01-25 15:34:00.000000'),
+(19718, 904, 129, 'JOINED', '2025-01-22 01:10:00.000000', '2025-01-22 13:56:04.800000'),
+(19719, 904, 132, 'JOINED', '2025-01-22 01:10:00.000000', '2025-01-23 02:53:40.800000');
+INSERT INTO report (id, created_by_id, title, content, rejected_reason, report_status, created_time, updated_time, reviewed_time)
+VALUES
+(DEFAULT, 19716, 'Employee 123 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-01-27 22:54:38.400000', '2025-01-27 22:54:38.400000', '2025-01-27 22:59:38.400000'),
+(DEFAULT, 19717, 'Employee 127 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-02-04 07:24:24.000000', '2025-02-04 07:24:24.000000', '2025-02-04 07:29:24.000000'),
+(DEFAULT, 19718, 'Employee 129 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-01-24 10:17:12.000000', '2025-01-24 10:17:12.000000', '2025-01-24 10:22:12.000000'),
+(DEFAULT, 19719, 'Employee 132 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-01-24 00:29:40.800000', '2025-01-24 00:29:40.800000', '2025-01-24 00:34:40.800000');
+
+-- 2025-01-27 01:10:00.000000
+-- 2025-01-27
+INSERT INTO task (id, collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked, start_date, end_date, deadline, created_time, updated_time)
+VALUES (905, 65, 151, NULL, 'Close QA Release Phase', 'This is Close QA Release Phase', NULL, 'ADVANCED', 'TEST', 'URGENT', FALSE, '2025-01-27', '2025-02-20', '2025-02-03', '2025-01-27 01:10:00.000000', '2025-01-27 01:10:00.000000');
+
+INSERT INTO task_for_users (id, task_id, assigned_to_id, user_task_status, updated_time, started_time)
+VALUES
+(19721, 905, 116, 'JOINED', '2025-01-27 01:10:00.000000', '2025-01-27 03:41:12.000000'),
+(19722, 905, 117, 'JOINED', '2025-01-27 01:10:00.000000', '2025-01-28 18:29:40.800000'),
+(19723, 905, 118, 'JOINED', '2025-01-27 01:10:00.000000', '2025-01-27 15:26:48.000000'),
+(19724, 905, 120, 'JOINED', '2025-01-27 01:10:00.000000', '2025-02-02 08:22:00.000000'),
+(19725, 905, 122, 'JOINED', '2025-01-27 01:10:00.000000', '2025-02-02 08:22:00.000000'),
+(19726, 905, 124, 'JOINED', '2025-01-27 01:10:00.000000', '2025-02-02 08:22:00.000000'),
+(19727, 905, 125, 'JOINED', '2025-01-27 01:10:00.000000', '2025-01-28 16:58:57.600000'),
+(19728, 905, 126, 'JOINED', '2025-01-27 01:10:00.000000', '2025-02-02 08:22:00.000000'),
+(19729, 905, 128, 'JOINED', '2025-01-27 01:10:00.000000', '2025-01-28 12:41:55.200000'),
+(19730, 905, 129, 'JOINED', '2025-01-27 01:10:00.000000', '2025-01-27 18:43:21.600000'),
+(19731, 905, 131, 'JOINED', '2025-01-27 01:10:00.000000', '2025-02-02 08:22:00.000000'),
+(19732, 905, 133, 'JOINED', '2025-01-27 01:10:00.000000', '2025-01-27 06:02:19.200000');
+INSERT INTO report (id, created_by_id, title, content, rejected_reason, report_status, created_time, updated_time, reviewed_time)
+VALUES
+(DEFAULT, 19721, 'Employee 116 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-02-09 22:38:48.000000', '2025-02-09 22:38:48.000000', '2025-02-09 22:43:48.000000'),
+(DEFAULT, 19722, 'Employee 117 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-02-08 07:50:19.200000', '2025-02-08 07:50:19.200000', '2025-02-08 07:55:19.200000'),
+(DEFAULT, 19723, 'Employee 118 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-01-31 04:17:12.000000', '2025-01-31 04:17:12.000000', '2025-01-31 04:22:12.000000'),
+(DEFAULT, 19724, 'Employee 120 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-02-17 15:06:38.400000', '2025-02-17 15:06:38.400000', '2025-02-17 15:11:38.400000'),
+(DEFAULT, 19725, 'Employee 122 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-02-18 06:13:50.400000', '2025-02-18 06:13:50.400000', '2025-02-18 06:18:50.400000'),
+(DEFAULT, 19726, 'Employee 124 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-02-20 22:24:24.000000', '2025-02-20 22:24:24.000000', '2025-02-20 22:29:24.000000'),
+(DEFAULT, 19727, 'Employee 125 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-02-08 09:21:02.400000', '2025-02-08 09:21:02.400000', '2025-02-08 09:26:02.400000'),
+(DEFAULT, 19728, 'Employee 126 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-02-18 06:34:00.000000', '2025-02-18 06:34:00.000000', '2025-02-18 06:39:00.000000'),
+(DEFAULT, 19729, 'Employee 128 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-02-08 13:38:04.800000', '2025-02-08 13:38:04.800000', '2025-02-08 13:43:04.800000'),
+(DEFAULT, 19730, 'Employee 129 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-02-09 07:36:38.400000', '2025-02-09 07:36:38.400000', '2025-02-09 07:41:38.400000'),
+(DEFAULT, 19731, 'Employee 131 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-02-17 04:21:31.200000', '2025-02-17 04:21:31.200000', '2025-02-17 04:26:31.200000'),
+(DEFAULT, 19732, 'Employee 133 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-02-01 04:38:48.000000', '2025-02-01 04:38:48.000000', '2025-02-01 04:43:48.000000');
+
+-- 2025-02-04 01:10:00.000000
+-- 2025-02-04
+INSERT INTO task (id, collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked, start_date, end_date, deadline, created_time, updated_time)
+VALUES (906, 65, 151, NULL, 'Final QA Sign-off', 'This is Final QA Sign-off', NULL, 'ADVANCED', 'TEST', 'NORMAL', FALSE, '2025-02-04', '2025-02-13', '2025-02-09', '2025-02-04 01:10:00.000000', '2025-02-04 01:10:00.000000');
+
+INSERT INTO task_for_users (id, task_id, assigned_to_id, user_task_status, updated_time, started_time)
+VALUES
+(19734, 906, 116, 'JOINED', '2025-02-04 01:10:00.000000', '2025-02-04 07:24:24.000000'),
+(19735, 906, 124, 'JOINED', '2025-02-04 01:10:00.000000', '2025-02-05 11:54:24.000000'),
+(19736, 906, 127, 'JOINED', '2025-02-04 01:10:00.000000', '2025-02-04 07:10:00.000000'),
+(19737, 906, 131, 'JOINED', '2025-02-04 01:10:00.000000', '2025-02-04 22:20:48.000000');
+INSERT INTO report (id, created_by_id, title, content, rejected_reason, report_status, created_time, updated_time, reviewed_time)
+VALUES
+(DEFAULT, 19734, 'Employee 116 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-02-07 23:29:12.000000', '2025-02-07 23:29:12.000000', '2025-02-07 23:34:12.000000'),
+(DEFAULT, 19735, 'Employee 124 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-02-12 14:25:36.000000', '2025-02-12 14:25:36.000000', '2025-02-12 14:30:36.000000'),
+(DEFAULT, 19736, 'Employee 127 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-02-05 02:00:24.000000', '2025-02-05 02:00:24.000000', '2025-02-05 02:05:24.000000'),
+(DEFAULT, 19737, 'Employee 131 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-02-13 03:59:12.000000', '2025-02-13 03:59:12.000000', '2025-02-13 04:04:12.000000');
+
+-- 2025-02-10 01:10:00.000000
+-- 2025-02-10
+INSERT INTO task (id, collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked, start_date, end_date, deadline, created_time, updated_time)
+VALUES (907, 65, 151, NULL, 'Support Post-release Monitoring', 'This is Support Post-release Monitoring', NULL, 'ADVANCED', 'TEST', 'HIGH', FALSE, '2025-02-10', '2025-03-02', '2025-02-16', '2025-02-10 01:10:00.000000', '2025-02-10 01:10:00.000000');
+
+INSERT INTO task_for_users (id, task_id, assigned_to_id, user_task_status, updated_time, started_time)
+VALUES
+(19739, 907, 116, 'JOINED', '2025-02-10 01:10:00.000000', '2025-02-10 17:09:02.400000'),
+(19740, 907, 117, 'JOINED', '2025-02-10 01:10:00.000000', '2025-02-15 10:46:00.000000'),
+(19741, 907, 118, 'JOINED', '2025-02-10 01:10:00.000000', '2025-02-15 10:46:00.000000'),
+(19742, 907, 121, 'JOINED', '2025-02-10 01:10:00.000000', '2025-02-15 10:46:00.000000'),
+(19743, 907, 122, 'JOINED', '2025-02-10 01:10:00.000000', '2025-02-10 05:11:55.200000'),
+(19744, 907, 123, 'JOINED', '2025-02-10 01:10:00.000000', '2025-02-15 10:46:00.000000'),
+(19745, 907, 125, 'JOINED', '2025-02-10 01:10:00.000000', '2025-02-10 22:33:02.400000'),
+(19746, 907, 130, 'JOINED', '2025-02-10 01:10:00.000000', '2025-02-10 17:00:24.000000'),
+(19747, 907, 132, 'JOINED', '2025-02-10 01:10:00.000000', '2025-02-15 10:46:00.000000'),
+(19748, 907, 133, 'JOINED', '2025-02-10 01:10:00.000000', '2025-02-10 15:16:43.200000'),
+(19749, 907, 134, 'JOINED', '2025-02-10 01:10:00.000000', '2025-02-11 20:13:21.600000'),
+(19750, 907, 135, 'JOINED', '2025-02-10 01:10:00.000000', '2025-02-10 08:09:02.400000');
+INSERT INTO report (id, created_by_id, title, content, rejected_reason, report_status, created_time, updated_time, reviewed_time)
+VALUES
+(DEFAULT, 19739, 'Employee 116 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-02-21 09:10:57.600000', '2025-02-21 09:10:57.600000', '2025-02-21 09:15:57.600000'),
+(DEFAULT, 19740, 'Employee 117 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-03-01 07:07:07.200000', '2025-03-01 07:07:07.200000', '2025-03-01 07:12:07.200000'),
+(DEFAULT, 19741, 'Employee 118 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-03-02 00:58:28.800000', '2025-03-02 00:58:28.800000', '2025-03-02 01:03:28.800000'),
+(DEFAULT, 19742, 'Employee 121 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-02-27 12:21:02.400000', '2025-02-27 12:21:02.400000', '2025-02-27 12:26:02.400000'),
+(DEFAULT, 19743, 'Employee 122 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-02-12 11:03:16.800000', '2025-02-12 11:03:16.800000', '2025-02-12 11:08:16.800000'),
+(DEFAULT, 19744, 'Employee 123 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-02-27 16:40:14.400000', '2025-02-27 16:40:14.400000', '2025-02-27 16:45:14.400000'),
+(DEFAULT, 19745, 'Employee 125 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-02-21 03:46:57.600000', '2025-02-21 03:46:57.600000', '2025-02-21 03:51:57.600000'),
+(DEFAULT, 19746, 'Employee 130 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-02-15 14:56:33.600000', '2025-02-15 14:56:33.600000', '2025-02-15 15:01:33.600000'),
+(DEFAULT, 19747, 'Employee 132 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-02-28 18:35:26.400000', '2025-02-28 18:35:26.400000', '2025-02-28 18:40:26.400000'),
+(DEFAULT, 19748, 'Employee 133 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-02-13 06:03:45.600000', '2025-02-13 06:03:45.600000', '2025-02-13 06:08:45.600000'),
+(DEFAULT, 19749, 'Employee 134 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-02-14 01:30:09.600000', '2025-02-14 01:30:09.600000', '2025-02-14 01:35:09.600000'),
+(DEFAULT, 19750, 'Employee 135 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-02-21 18:10:57.600000', '2025-02-21 18:10:57.600000', '2025-02-21 18:15:57.600000');
+
+-- 2025-02-17 01:10:00.000000
+-- 2025-02-17
+INSERT INTO task (id, collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked, start_date, end_date, deadline, created_time, updated_time)
+VALUES (908, 65, 151, NULL, 'Confirm System Stability After Release', 'This is Confirm System Stability After Release', NULL, 'ADVANCED', 'TEST', 'NORMAL', FALSE, '2025-02-17', '2025-02-26', '2025-02-22', '2025-02-17 01:10:00.000000', '2025-02-17 01:10:00.000000');
+
+INSERT INTO task_for_users (id, task_id, assigned_to_id, user_task_status, updated_time, started_time)
+VALUES
+(19752, 908, 116, 'JOINED', '2025-02-17 01:10:00.000000', '2025-02-17 04:46:00.000000'),
+(19753, 908, 124, 'JOINED', '2025-02-17 01:10:00.000000', '2025-02-17 20:14:48.000000'),
+(19754, 908, 127, 'JOINED', '2025-02-17 01:10:00.000000', '2025-02-20 08:58:00.000000'),
+(19755, 908, 131, 'JOINED', '2025-02-17 01:10:00.000000', '2025-02-17 03:26:48.000000');
+INSERT INTO report (id, created_by_id, title, content, rejected_reason, report_status, created_time, updated_time, reviewed_time)
+VALUES
+(DEFAULT, 19752, 'Employee 116 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-02-18 21:19:36.000000', '2025-02-18 21:19:36.000000', '2025-02-18 21:24:36.000000'),
+(DEFAULT, 19753, 'Employee 124 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-02-26 06:05:12.000000', '2025-02-26 06:05:12.000000', '2025-02-26 06:10:12.000000'),
+(DEFAULT, 19754, 'Employee 127 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-02-21 06:41:12.000000', '2025-02-21 06:41:12.000000', '2025-02-21 06:46:12.000000'),
+(DEFAULT, 19755, 'Employee 131 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-02-19 20:29:12.000000', '2025-02-19 20:29:12.000000', '2025-02-19 20:34:12.000000');
+
+INSERT INTO collection (`id`, `created_time`, `description`, `due_date`, `start_date`, `name`, `updated_time`, `phase_id`, `created_by_id`)
+VALUES (66, '2025-02-22 01:10:00.000000', 'This is Extended QA Safeguards', '2025-04-21', '2025-02-22', 'Extended QA Safeguards', '2025-02-22 01:10:00.000000', 11, 154);
+
+
+-- 2025-02-23 01:15:00.000000
+-- 2025-02-23
+INSERT INTO task (id, collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked, start_date, end_date, deadline, created_time, updated_time)
+VALUES (909, 66, 151, NULL, 'Validate Long-term Session Stability', 'This is Validate Long-term Session Stability', NULL, 'ADVANCED', 'TEST', 'HIGH', FALSE, '2025-02-23', '2025-03-16', '2025-03-01', '2025-02-23 01:15:00.000000', '2025-02-23 01:15:00.000000');
+
+INSERT INTO task_for_users (id, task_id, assigned_to_id, user_task_status, updated_time, started_time)
+VALUES
+(19757, 909, 116, 'JOINED', '2025-02-23 01:15:00.000000', '2025-02-23 15:21:43.200000'),
+(19758, 909, 117, 'JOINED', '2025-02-23 01:15:00.000000', '2025-02-28 10:51:00.000000'),
+(19759, 909, 118, 'JOINED', '2025-02-23 01:15:00.000000', '2025-02-23 04:25:04.800000'),
+(19760, 909, 121, 'JOINED', '2025-02-23 01:15:00.000000', '2025-02-23 22:20:45.600000'),
+(19761, 909, 122, 'JOINED', '2025-02-23 01:15:00.000000', '2025-02-23 05:42:50.400000'),
+(19762, 909, 123, 'JOINED', '2025-02-23 01:15:00.000000', '2025-02-28 10:51:00.000000'),
+(19763, 909, 125, 'JOINED', '2025-02-23 01:15:00.000000', '2025-02-23 14:38:31.200000'),
+(19764, 909, 130, 'JOINED', '2025-02-23 01:15:00.000000', '2025-02-25 02:29:52.800000'),
+(19765, 909, 132, 'JOINED', '2025-02-23 01:15:00.000000', '2025-02-26 18:40:26.400000'),
+(19766, 909, 133, 'JOINED', '2025-02-23 01:15:00.000000', '2025-02-23 06:04:26.400000'),
+(19767, 909, 134, 'JOINED', '2025-02-23 01:15:00.000000', '2025-02-28 10:51:00.000000'),
+(19768, 909, 135, 'JOINED', '2025-02-23 01:15:00.000000', '2025-02-23 16:39:28.800000');
+INSERT INTO report (id, created_by_id, title, content, rejected_reason, report_status, created_time, updated_time, reviewed_time)
+VALUES
+(DEFAULT, 19757, 'Employee 116 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-02-27 12:49:04.800000', '2025-02-27 12:49:04.800000', '2025-02-27 12:54:04.800000'),
+(DEFAULT, 19758, 'Employee 117 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-03-16 22:42:21.600000', '2025-03-16 22:42:21.600000', '2025-03-16 22:47:21.600000'),
+(DEFAULT, 19759, 'Employee 118 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-02-27 04:10:40.800000', '2025-02-27 04:10:40.800000', '2025-02-27 04:15:40.800000'),
+(DEFAULT, 19760, 'Employee 121 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-03-06 04:09:14.400000', '2025-03-06 04:09:14.400000', '2025-03-06 04:14:14.400000'),
+(DEFAULT, 19761, 'Employee 122 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-02-28 19:55:19.200000', '2025-02-28 19:55:19.200000', '2025-02-28 20:00:19.200000'),
+(DEFAULT, 19762, 'Employee 123 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-03-15 06:31:48.000000', '2025-03-15 06:31:48.000000', '2025-03-15 06:36:48.000000'),
+(DEFAULT, 19763, 'Employee 125 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-02-27 11:48:36.000000', '2025-02-27 11:48:36.000000', '2025-02-27 11:53:36.000000'),
+(DEFAULT, 19764, 'Employee 130 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-02-27 06:54:50.400000', '2025-02-27 06:54:50.400000', '2025-02-27 06:59:50.400000'),
+(DEFAULT, 19765, 'Employee 132 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-02-28 17:37:04.800000', '2025-02-28 17:37:04.800000', '2025-02-28 17:42:04.800000'),
+(DEFAULT, 19766, 'Employee 133 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-03-06 20:25:33.600000', '2025-03-06 20:25:33.600000', '2025-03-06 20:30:33.600000'),
+(DEFAULT, 19767, 'Employee 134 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-03-15 03:56:16.800000', '2025-03-15 03:56:16.800000', '2025-03-15 04:01:16.800000'),
+(DEFAULT, 19768, 'Employee 135 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-02-28 20:55:48.000000', '2025-02-28 20:55:48.000000', '2025-02-28 21:00:48.000000');
+
+-- 2025-03-02 01:15:00.000000
+-- 2025-03-02
+INSERT INTO task (id, collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked, start_date, end_date, deadline, created_time, updated_time)
+VALUES (910, 66, 151, NULL, 'Validate Data Retention Rules', 'This is Validate Data Retention Rules', NULL, 'ADVANCED', 'TEST', 'HIGH', FALSE, '2025-03-02', '2025-03-20', '2025-03-08', '2025-03-02 01:15:00.000000', '2025-03-02 01:15:00.000000');
+
+INSERT INTO task_for_users (id, task_id, assigned_to_id, user_task_status, updated_time, started_time)
+VALUES
+(19770, 910, 117, 'JOINED', '2025-03-02 01:15:00.000000', '2025-03-02 04:25:04.800000'),
+(19771, 910, 121, 'JOINED', '2025-03-02 01:15:00.000000', '2025-03-02 15:08:45.600000'),
+(19772, 910, 130, 'JOINED', '2025-03-02 01:15:00.000000', '2025-03-02 21:59:09.600000'),
+(19773, 910, 134, 'JOINED', '2025-03-02 01:15:00.000000', '2025-03-07 10:51:00.000000');
+INSERT INTO report (id, created_by_id, title, content, rejected_reason, report_status, created_time, updated_time, reviewed_time)
+VALUES
+(DEFAULT, 19770, 'Employee 117 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-03-13 22:04:55.200000', '2025-03-13 22:04:55.200000', '2025-03-13 22:09:55.200000'),
+(DEFAULT, 19771, 'Employee 121 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-03-13 11:21:14.400000', '2025-03-13 11:21:14.400000', '2025-03-13 11:26:14.400000'),
+(DEFAULT, 19772, 'Employee 130 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-03-05 10:19:19.200000', '2025-03-05 10:19:19.200000', '2025-03-05 10:24:19.200000'),
+(DEFAULT, 19773, 'Employee 134 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-03-20 13:38:02.400000', '2025-03-20 13:38:02.400000', '2025-03-20 13:43:02.400000');
+
+-- 2025-03-09 01:15:00.000000
+-- 2025-03-09
+INSERT INTO task (id, collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked, start_date, end_date, deadline, created_time, updated_time)
+VALUES (911, 66, 151, NULL, 'Validate Audit Trail Completeness', 'This is Validate Audit Trail Completeness', NULL, 'ADVANCED', 'TEST', 'HIGH', FALSE, '2025-03-09', '2025-03-29', '2025-03-15', '2025-03-09 01:15:00.000000', '2025-03-09 01:15:00.000000');
+
+INSERT INTO task_for_users (id, task_id, assigned_to_id, user_task_status, updated_time, started_time)
+VALUES
+(19775, 911, 116, 'JOINED', '2025-03-09 01:15:00.000000', '2025-03-09 17:31:19.200000'),
+(19776, 911, 117, 'JOINED', '2025-03-09 01:15:00.000000', '2025-03-10 11:14:02.400000'),
+(19777, 911, 118, 'JOINED', '2025-03-09 01:15:00.000000', '2025-03-10 18:51:57.600000'),
+(19778, 911, 121, 'JOINED', '2025-03-09 01:15:00.000000', '2025-03-10 15:07:19.200000'),
+(19779, 911, 122, 'JOINED', '2025-03-09 01:15:00.000000', '2025-03-09 21:59:09.600000'),
+(19780, 911, 123, 'JOINED', '2025-03-09 01:15:00.000000', '2025-03-10 00:17:24.000000'),
+(19781, 911, 125, 'JOINED', '2025-03-09 01:15:00.000000', '2025-03-10 11:14:02.400000'),
+(19782, 911, 130, 'JOINED', '2025-03-09 01:15:00.000000', '2025-03-09 19:53:52.800000'),
+(19783, 911, 132, 'JOINED', '2025-03-09 01:15:00.000000', '2025-03-09 03:07:19.200000'),
+(19784, 911, 133, 'JOINED', '2025-03-09 01:15:00.000000', '2025-03-11 13:35:09.600000'),
+(19785, 911, 134, 'JOINED', '2025-03-09 01:15:00.000000', '2025-03-14 10:51:00.000000'),
+(19786, 911, 135, 'JOINED', '2025-03-09 01:15:00.000000', '2025-03-10 09:21:43.200000');
+INSERT INTO report (id, created_by_id, title, content, rejected_reason, report_status, created_time, updated_time, reviewed_time)
+VALUES
+(DEFAULT, 19775, 'Employee 116 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-03-13 21:18:50.400000', '2025-03-13 21:18:50.400000', '2025-03-13 21:23:50.400000'),
+(DEFAULT, 19776, 'Employee 117 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-03-14 05:14:02.400000', '2025-03-14 05:14:02.400000', '2025-03-14 05:19:02.400000'),
+(DEFAULT, 19777, 'Employee 118 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-03-19 07:38:02.400000', '2025-03-19 07:38:02.400000', '2025-03-19 07:43:02.400000'),
+(DEFAULT, 19778, 'Employee 121 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-03-19 11:22:40.800000', '2025-03-19 11:22:40.800000', '2025-03-19 11:27:40.800000'),
+(DEFAULT, 19779, 'Employee 122 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-03-14 02:29:52.800000', '2025-03-14 02:29:52.800000', '2025-03-14 02:34:52.800000'),
+(DEFAULT, 19780, 'Employee 123 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-03-14 09:50:31.200000', '2025-03-14 09:50:31.200000', '2025-03-14 09:55:31.200000'),
+(DEFAULT, 19781, 'Employee 125 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-03-14 07:58:12.000000', '2025-03-14 07:58:12.000000', '2025-03-14 08:03:12.000000'),
+(DEFAULT, 19782, 'Employee 130 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-03-20 06:36:07.200000', '2025-03-20 06:36:07.200000', '2025-03-20 06:41:07.200000'),
+(DEFAULT, 19783, 'Employee 132 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-03-11 22:13:33.600000', '2025-03-11 22:13:33.600000', '2025-03-11 22:18:33.600000'),
+(DEFAULT, 19784, 'Employee 133 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-03-13 14:15:28.800000', '2025-03-13 14:15:28.800000', '2025-03-13 14:20:28.800000'),
+(DEFAULT, 19785, 'Employee 134 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-03-29 19:12:07.200000', '2025-03-29 19:12:07.200000', '2025-03-29 19:17:07.200000'),
+(DEFAULT, 19786, 'Employee 135 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-03-19 17:08:16.800000', '2025-03-19 17:08:16.800000', '2025-03-19 17:13:16.800000');
+
+-- 2025-03-16 01:15:00.000000
+-- 2025-03-16
+INSERT INTO task (id, collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked, start_date, end_date, deadline, created_time, updated_time)
+VALUES (912, 66, 151, NULL, 'Validate Compliance Evidence Collection', 'This is Validate Compliance Evidence Collection', NULL, 'ADVANCED', 'TEST', 'HIGH', FALSE, '2025-03-16', '2025-04-06', '2025-03-22', '2025-03-16 01:15:00.000000', '2025-03-16 01:15:00.000000');
+
+INSERT INTO task_for_users (id, task_id, assigned_to_id, user_task_status, updated_time, started_time)
+VALUES
+(19788, 912, 117, 'JOINED', '2025-03-16 01:15:00.000000', '2025-03-16 20:24:07.200000'),
+(19789, 912, 121, 'JOINED', '2025-03-16 01:15:00.000000', '2025-03-21 10:51:00.000000'),
+(19790, 912, 130, 'JOINED', '2025-03-16 01:15:00.000000', '2025-03-21 10:51:00.000000'),
+(19791, 912, 134, 'JOINED', '2025-03-16 01:15:00.000000', '2025-03-21 10:51:00.000000');
+INSERT INTO report (id, created_by_id, title, content, rejected_reason, report_status, created_time, updated_time, reviewed_time)
+VALUES
+(DEFAULT, 19788, 'Employee 117 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-03-19 22:59:38.400000', '2025-03-19 22:59:38.400000', '2025-03-19 23:04:38.400000'),
+(DEFAULT, 19789, 'Employee 121 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-04-05 19:29:24.000000', '2025-04-05 19:29:24.000000', '2025-04-05 19:34:24.000000'),
+(DEFAULT, 19790, 'Employee 130 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-04-06 06:00:07.200000', '2025-04-06 06:00:07.200000', '2025-04-06 06:05:07.200000'),
+(DEFAULT, 19791, 'Employee 134 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-04-04 11:39:57.600000', '2025-04-04 11:39:57.600000', '2025-04-04 11:44:57.600000');
+
+-- 2025-03-23 01:15:00.000000
+-- 2025-03-23
+INSERT INTO task (id, collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked, start_date, end_date, deadline, created_time, updated_time)
+VALUES (913, 66, 151, NULL, 'Validate Cross-region Behavior', 'This is Validate Cross-region Behavior', NULL, 'ADVANCED', 'TEST', 'NORMAL', FALSE, '2025-03-23', '2025-04-09', '2025-03-28', '2025-03-23 01:15:00.000000', '2025-03-23 01:15:00.000000');
+
+INSERT INTO task_for_users (id, task_id, assigned_to_id, user_task_status, updated_time, started_time)
+VALUES
+(19793, 913, 116, 'JOINED', '2025-03-23 01:15:00.000000', '2025-03-26 02:27:00.000000'),
+(19794, 913, 118, 'JOINED', '2025-03-23 01:15:00.000000', '2025-03-24 23:52:12.000000'),
+(19795, 913, 122, 'JOINED', '2025-03-23 01:15:00.000000', '2025-03-25 02:16:12.000000'),
+(19796, 913, 124, 'JOINED', '2025-03-23 01:15:00.000000', '2025-03-23 17:34:12.000000'),
+(19797, 913, 125, 'JOINED', '2025-03-23 01:15:00.000000', '2025-03-27 13:15:00.000000'),
+(19798, 913, 127, 'JOINED', '2025-03-23 01:15:00.000000', '2025-03-25 11:37:48.000000'),
+(19799, 913, 128, 'JOINED', '2025-03-23 01:15:00.000000', '2025-03-27 13:15:00.000000'),
+(19800, 913, 131, 'JOINED', '2025-03-23 01:15:00.000000', '2025-03-23 05:05:24.000000'),
+(19801, 913, 132, 'JOINED', '2025-03-23 01:15:00.000000', '2025-03-23 18:24:36.000000'),
+(19802, 913, 133, 'JOINED', '2025-03-23 01:15:00.000000', '2025-03-24 05:55:48.000000'),
+(19803, 913, 134, 'JOINED', '2025-03-23 01:15:00.000000', '2025-03-24 08:27:00.000000'),
+(19804, 913, 135, 'JOINED', '2025-03-23 01:15:00.000000', '2025-03-23 13:00:36.000000');
+INSERT INTO report (id, created_by_id, title, content, rejected_reason, report_status, created_time, updated_time, reviewed_time)
+VALUES
+(DEFAULT, 19793, 'Employee 116 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-03-27 10:22:12.000000', '2025-03-27 10:22:12.000000', '2025-03-27 10:27:12.000000'),
+(DEFAULT, 19794, 'Employee 118 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-03-31 02:37:48.000000', '2025-03-31 02:37:48.000000', '2025-03-31 02:42:48.000000'),
+(DEFAULT, 19795, 'Employee 122 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-03-31 00:13:48.000000', '2025-03-31 00:13:48.000000', '2025-03-31 00:18:48.000000'),
+(DEFAULT, 19796, 'Employee 124 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-03-25 05:12:36.000000', '2025-03-25 05:12:36.000000', '2025-03-25 05:17:36.000000'),
+(DEFAULT, 19797, 'Employee 125 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-04-09 14:27:00.000000', '2025-04-09 14:27:00.000000', '2025-04-09 14:32:00.000000'),
+(DEFAULT, 19798, 'Employee 127 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-03-30 14:52:12.000000', '2025-03-30 14:52:12.000000', '2025-03-30 14:57:12.000000'),
+(DEFAULT, 19799, 'Employee 128 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-04-08 20:05:24.000000', '2025-04-08 20:05:24.000000', '2025-04-08 20:10:24.000000'),
+(DEFAULT, 19800, 'Employee 131 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-03-24 10:22:12.000000', '2025-03-24 10:22:12.000000', '2025-03-24 10:27:12.000000'),
+(DEFAULT, 19801, 'Employee 132 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-03-26 02:12:36.000000', '2025-03-26 02:12:36.000000', '2025-03-26 02:17:36.000000'),
+(DEFAULT, 19802, 'Employee 133 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-03-26 10:51:00.000000', '2025-03-26 10:51:00.000000', '2025-03-26 10:56:00.000000'),
+(DEFAULT, 19803, 'Employee 134 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-03-25 03:53:24.000000', '2025-03-25 03:53:24.000000', '2025-03-25 03:58:24.000000'),
+(DEFAULT, 19804, 'Employee 135 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-03-26 06:39:00.000000', '2025-03-26 06:39:00.000000', '2025-03-26 06:44:00.000000');
+
+-- 2025-03-29 01:15:00.000000
+-- 2025-03-29
+INSERT INTO task (id, collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked, start_date, end_date, deadline, created_time, updated_time)
+VALUES (914, 66, 151, NULL, 'Validate Disaster Recovery Drill', 'This is Validate Disaster Recovery Drill', NULL, 'ADVANCED', 'TEST', 'URGENT', FALSE, '2025-03-29', '2025-04-19', '2025-04-05', '2025-03-29 01:15:00.000000', '2025-03-29 01:15:00.000000');
+
+INSERT INTO task_for_users (id, task_id, assigned_to_id, user_task_status, updated_time, started_time)
+VALUES
+(19806, 914, 116, 'JOINED', '2025-03-29 01:15:00.000000', '2025-04-04 08:27:00.000000'),
+(19807, 914, 117, 'JOINED', '2025-03-29 01:15:00.000000', '2025-03-30 23:27:00.000000'),
+(19808, 914, 118, 'JOINED', '2025-03-29 01:15:00.000000', '2025-03-29 16:32:16.800000'),
+(19809, 914, 133, 'JOINED', '2025-03-29 01:15:00.000000', '2025-03-30 12:01:33.600000');
+INSERT INTO report (id, created_by_id, title, content, rejected_reason, report_status, created_time, updated_time, reviewed_time)
+VALUES
+(DEFAULT, 19806, 'Employee 116 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-04-19 08:28:26.400000', '2025-04-19 08:28:26.400000', '2025-04-19 08:33:26.400000'),
+(DEFAULT, 19807, 'Employee 117 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-04-04 07:06:21.600000', '2025-04-04 07:06:21.600000', '2025-04-04 07:11:21.600000'),
+(DEFAULT, 19808, 'Employee 118 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-04-11 09:57:43.200000', '2025-04-11 09:57:43.200000', '2025-04-11 10:02:43.200000'),
+(DEFAULT, 19809, 'Employee 133 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-04-10 14:28:26.400000', '2025-04-10 14:28:26.400000', '2025-04-10 14:33:26.400000');
+
+-- 2025-04-06 01:15:00.000000
+-- 2025-04-06
+INSERT INTO task (id, collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked, start_date, end_date, deadline, created_time, updated_time)
+VALUES (915, 66, 151, NULL, 'Final QA Project Closure', 'This is Final QA Project Closure', NULL, 'HARD', 'TEST', 'LOW', FALSE, '2025-04-06', '2025-04-22', '2025-04-11', '2025-04-06 01:15:00.000000', '2025-04-06 01:15:00.000000');
+
+INSERT INTO task_for_users (id, task_id, assigned_to_id, user_task_status, updated_time, started_time)
+VALUES
+(19811, 915, 111, 'JOINED', '2025-04-06 01:15:00.000000', '2025-04-07 00:53:24.000000'),
+(19812, 915, 112, 'JOINED', '2025-04-06 01:15:00.000000', '2025-04-06 05:55:48.000000'),
+(19813, 915, 113, 'JOINED', '2025-04-06 01:15:00.000000', '2025-04-07 07:18:36.000000'),
+(19814, 915, 114, 'JOINED', '2025-04-06 01:15:00.000000', '2025-04-07 18:46:12.000000'),
+(19815, 915, 115, 'JOINED', '2025-04-06 01:15:00.000000', '2025-04-10 13:15:00.000000');
+INSERT INTO report (id, created_by_id, title, content, rejected_reason, report_status, created_time, updated_time, reviewed_time)
+VALUES
+(DEFAULT, 19811, 'Employee 111 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-04-15 01:36:36.000000', '2025-04-15 01:36:36.000000', '2025-04-15 01:41:36.000000'),
+(DEFAULT, 19812, 'Employee 112 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-04-08 06:53:24.000000', '2025-04-08 06:53:24.000000', '2025-04-08 06:58:24.000000'),
+(DEFAULT, 19813, 'Employee 113 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-04-14 19:11:24.000000', '2025-04-14 19:11:24.000000', '2025-04-14 19:16:24.000000'),
+(DEFAULT, 19814, 'Employee 114 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-04-09 05:55:48.000000', '2025-04-09 05:55:48.000000', '2025-04-09 06:00:48.000000'),
+(DEFAULT, 19815, 'Employee 115 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-04-22 15:53:24.000000', '2025-04-22 15:53:24.000000', '2025-04-22 15:58:24.000000');
+
+-- 2025-04-12 01:15:00.000000
+-- 2025-04-12
+INSERT INTO task (id, collection_id, created_by_id, root_task_id, name, description, report_format, level, task_type, priority, is_locked, start_date, end_date, deadline, created_time, updated_time)
+VALUES (916, 66, 151, NULL, 'QA Executive Sign-off', 'This is QA Executive Sign-off', NULL, 'HARD', 'TEST', 'LOW', FALSE, '2025-04-12', '2025-04-21', '2025-04-17', '2025-04-12 01:15:00.000000', '2025-04-12 01:15:00.000000');
+
+INSERT INTO task_for_users (id, task_id, assigned_to_id, user_task_status, updated_time, started_time)
+VALUES
+(19817, 916, 111, 'JOINED', '2025-04-12 01:15:00.000000', '2025-04-14 22:04:12.000000'),
+(19818, 916, 112, 'JOINED', '2025-04-12 01:15:00.000000', '2025-04-14 20:05:24.000000'),
+(19819, 916, 113, 'JOINED', '2025-04-12 01:15:00.000000', '2025-04-12 10:51:00.000000'),
+(19820, 916, 114, 'JOINED', '2025-04-12 01:15:00.000000', '2025-04-12 17:27:00.000000'),
+(19821, 916, 115, 'JOINED', '2025-04-12 01:15:00.000000', '2025-04-12 05:55:48.000000');
+INSERT INTO report (id, created_by_id, title, content, rejected_reason, report_status, created_time, updated_time, reviewed_time)
+VALUES
+(DEFAULT, 19817, 'Employee 111 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-04-19 04:25:48.000000', '2025-04-19 04:25:48.000000', '2025-04-19 04:30:48.000000'),
+(DEFAULT, 19818, 'Employee 112 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-04-15 22:15:00.000000', '2025-04-15 22:15:00.000000', '2025-04-15 22:20:00.000000'),
+(DEFAULT, 19819, 'Employee 113 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-04-15 01:29:24.000000', '2025-04-15 01:29:24.000000', '2025-04-15 01:34:24.000000'),
+(DEFAULT, 19820, 'Employee 114 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-04-21 09:03:00.000000', '2025-04-21 09:03:00.000000', '2025-04-21 09:08:00.000000'),
+(DEFAULT, 19821, 'Employee 115 submit Report', 'Completed Task.', NULL, 'APPROVED', '2025-04-13 02:55:48.000000', '2025-04-13 02:55:48.000000', '2025-04-13 03:00:48.000000');
+
 ALTER TABLE project AUTO_INCREMENT = 4;
 ALTER TABLE project_role AUTO_INCREMENT = 7;
-ALTER TABLE `phase` AUTO_INCREMENT = 11;
-ALTER TABLE collection AUTO_INCREMENT = 62;
-ALTER TABLE task AUTO_INCREMENT = 870;
-ALTER TABLE task_for_users AUTO_INCREMENT = 19324;
-ALTER TABLE report AUTO_INCREMENT = 19324;
+ALTER TABLE `phase` AUTO_INCREMENT = 12;
+ALTER TABLE collection AUTO_INCREMENT = 67;
+ALTER TABLE task AUTO_INCREMENT = 917;
+ALTER TABLE task_for_users AUTO_INCREMENT = 19823;
+ALTER TABLE report AUTO_INCREMENT = 19823;
 
 COMMIT;
