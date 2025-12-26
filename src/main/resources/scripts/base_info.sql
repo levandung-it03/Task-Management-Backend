@@ -370,8 +370,8 @@ VALUES (155, 1);
 
 -- 6. Tạo UserInfo liên kết Account, 10 employee + 3 lead + 1 pm, phòng ban assign đơn giản
 INSERT INTO user_info (full_name, email, phone, identity, department_id, account_id)
-VALUES ('Employee 1', 'employee1@example.com', '0900000001', '001', 1, 1),
-       ('Employee 2', 'employee2@example.com', '0900000002', '002', 1, 2),
+VALUES ('Employee 1', 'n21dccn042@student.ptithcm.edu.vn', '0900000001', '001', 1, 1),
+       ('Employee 2', 'pkstranger2003@gmail.com', '0900000002', '002', 1, 2),
        ('Employee 3', 'employee3@example.com', '0900000003', '003', 1, 3),
        ('Employee 4', 'employee4@example.com', '0900000004', '004', 1, 4),
        ('Employee 5', 'employee5@example.com', '0900000005', '005', 1, 5),
